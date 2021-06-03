@@ -33,3 +33,29 @@
 2.
 
 ##### Properties:
+
+### Users
+
+##### Features:
+
+- Create bugs
+- Assign bugs
+
+### Bug Status
+
+##### Types:
+
+- Open
+- To-do
+- In Progress
+- Testing
+- Closed
+
+### Bug Severity
+
+##### Types:
+
+- Low
+- High
+- Medium
+- Severe
