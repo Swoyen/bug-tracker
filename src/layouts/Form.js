@@ -12,7 +12,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Form = (props) => {
   const classes = useStyles();
-  return <form className={classes.root} noValidate autoComplete="off"></form>;
+  return (
+    <form className={classes.root} noValidate autoComplete="off">
+      {props.children}
+    </form>
+  );
 };
 
 export default Form;

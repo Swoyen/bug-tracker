@@ -11,14 +11,14 @@ const useStyles = makeStyles((theme) => ({
 
 const BugDetails = (props) => {
   const severityList = ["Low", "High", "Severe", "Sos"];
-  const { openBugDetails, setOpenBugDetails, selectedBug, setSelectedBug } =
-    props;
+  const {
+    openBugDetails,
+    setOpenBugDetails,
+    selectedBug,
+    setSelectedBug,
+    handleInputChange,
+  } = props;
   const classes = useStyles();
-
-  const handleChanged = (e) => {
-    const { name, value } = e.target;
-    setSelectedBug({ ...selectedBug, [name]: value });
-  };
 
   return (
     <Popup
@@ -85,7 +85,7 @@ const BugDetails = (props) => {
                   label="Severity"
                   name="severity"
                   value={selectedBug.severity}
-                  onChange={(e) => handleChanged(e)}
+                  onChange={(e) => handleInputChange(e)}
                   options={severityList}
                 ></Select>
                 {/* <Typography variant="body2">{selectedBug.severity}</Typography> */}

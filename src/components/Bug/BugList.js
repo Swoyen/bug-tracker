@@ -19,8 +19,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function createBug(id, bugName, reporter, created, status, assignee, severity) {
-  return { id, bugName, reporter, created, status, assignee, severity };
+function createBug(
+  bugId,
+  bugName,
+  reporter,
+  created,
+  status,
+  assignee,
+  severity
+) {
+  return { bugId, bugName, reporter, created, status, assignee, severity };
 }
 
 const bugs = [
@@ -73,9 +81,11 @@ const bugs = [
   createBug(15, "Page broken", "Hugo", "12/12/12", "Open", "God", "High"),
 ];
 
+var prevId = -1;
+
 const BugList = (props) => {
-  const [openBugDetails, setOpenBugDetails] = useState(false);
-  const [selectedBug, setSelectedBug] = useState();
+  const { openBugDetails, setOpenBugDetails, selectedBug, setSelectedBug } =
+    props;
 
   const classes = useStyles();
 
@@ -83,6 +93,20 @@ const BugList = (props) => {
     setSelectedBug(bug);
     setOpenBugDetails(true);
   };
+
+  useEffect(() => {
+    let bug = bugs.find((bug) => {
+      return bug.bugId === selectedBug.bugId;
+    });
+
+    if (bug && prevId === bug.bugId) {
+      let index = bugs.indexOf(bug);
+      bugs[index] = selectedBug;
+    }
+    if (bug) {
+      prevId = bug.bugId;
+    }
+  }, [selectedBug]);
 
   return (
     <>
@@ -104,7 +128,7 @@ const BugList = (props) => {
                 <TableRow
                   className={classes.bugRow}
                   onClick={() => showBugDetails(bug)}
-                  key={bug.id}
+                  key={bug.bugId}
                 >
                   <TableCell>{bug.bugName}</TableCell>
                   <TableCell>{bug.reporter}</TableCell>
@@ -118,9 +142,6 @@ const BugList = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <BugDetails
-        {...{ openBugDetails, setOpenBugDetails, selectedBug, setSelectedBug }}
-      ></BugDetails>
     </>
   );
 };
