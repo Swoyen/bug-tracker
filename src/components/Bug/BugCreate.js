@@ -29,8 +29,15 @@ const BugCreate = (props) => {
   const [severityId, setSeverityId] = useState("");
   const [errors, setErrors] = useState({});
 
-  const { bugs, setBugs, users, severities, openBugCreate, setOpenBugCreate } =
-    props;
+  const {
+    bugs,
+    setBugs,
+    users,
+    severities,
+    openBugCreate,
+    setOpenBugCreate,
+    resetList,
+  } = props;
   const classes = useStyles();
 
   const refactorArray = (array, first, second) => {
@@ -53,15 +60,6 @@ const BugCreate = (props) => {
     return Object.values(temp).every((x) => x === "");
   };
 
-  //   "bugId": 0,
-  //   "bugName": "string",
-  //   "bugDescription": "string",
-  //   "reporterUserId": 1,
-  //   "assigneeUserId": 1,
-  //   "createdDate": "2021-06-09T07:12:28.473Z",
-  //   "severityId": 1,
-  //   "statusId": 2
-  // }
   const AddBug = () => {
     let newBug = {};
     newBug.bugID = 0;
@@ -73,25 +71,10 @@ const BugCreate = (props) => {
     newBug.statusId = 1;
     newBug.severityId = severityId;
 
-    // const options = {
-    //   year: "2-digit",
-    //   month: "2-digit",
-    //   day: "2-digit",
-    //   hour: "2-digit",
-    //   minute: "2-digit",
-    //   timeZoneName: "short",
-    // };
-
-    // const date = new Date();
-    // const formattedDateTime = new Intl.DateTimeFormat("en-AU", options).format;
-    // newBug.createdDate = formattedDateTime(date);
-
     createAPIEndPoint(ENDPOINTS.BUG)
       .create(newBug)
-      .then((res) => console.log(res))
+      .then((res) => resetList())
       .catch((err) => console.log(err));
-
-    //setBugs([newBug, ...bugs]);
   };
 
   const submitBug = (e) => {

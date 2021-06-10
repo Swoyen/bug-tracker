@@ -1,4 +1,5 @@
 import React from "react";
+import Input from "../controls/Input";
 import {
   Dialog,
   Button,
@@ -16,7 +17,12 @@ const useStyles = makeStyles((theme) => ({
   dialogWrapper: {
     padding: theme.spacing(1),
     position: "absolute",
-    top: theme.spacing(5),
+  },
+  top: {
+    top: (props) => props.topMargin,
+  },
+  middle: {
+    top: "50%",
   },
   dialogTitle: {
     paddingRight: "0px",
@@ -30,15 +36,33 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 30,
     paddingRight: 30,
   },
+  titleInput: {
+    fontSize: 33,
+    margin: 1,
+    padding: 1,
+  },
 }));
 
 const Popup = (props) => {
-  const { openPopup, setOpenPopup, title } = props;
-  const classes = useStyles();
+  const {
+    openPopup,
+    setOpenPopup,
+    title,
+    setTitle,
+    editTitle = false,
+    titleVariant = "h4",
+    center = false,
+    topMargin,
+  } = props;
+  const classes = useStyles(props);
 
   return (
     <Dialog
-      classes={{ paper: classes.dialogWrapper }}
+      classes={{
+        paper: `${classes.dialogWrapper} ${
+          center ? classes.middle : classes.top
+        }`,
+      }}
       open={openPopup}
       maxWidth="md"
       aria-labelledby=""
@@ -48,9 +72,24 @@ const Popup = (props) => {
         className={classes.dialogTitle}
         id="simple-title"
       >
-        <Typography variant="h4" color="initial">
-          {title}
-        </Typography>
+        {editTitle ? (
+          <Input
+            className={classes.titleInput}
+            name="title"
+            label=""
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            InputProps={{
+              classes: {
+                input: classes.titleInput,
+              },
+            }}
+          ></Input>
+        ) : (
+          <Typography variant={titleVariant} color="initial">
+            {title}
+          </Typography>
+        )}
         <IconButton
           className={classes.closeButton}
           onClick={() => setOpenPopup(false)}

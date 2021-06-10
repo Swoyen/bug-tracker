@@ -26,13 +26,17 @@ const BugList = (props) => {
     setOpenBugDetails,
     selectedBugId,
     setSelectedBugId,
+    selectedBugComponent,
+    setSelectedBugComponent,
+    handleInputChange,
   } = props;
 
   const classes = useStyles();
 
-  const showBugDetails = (bugId) => {
-    setSelectedBugId(bugId);
+  const showBugDetails = (bug) => {
+    setSelectedBugId(bug.bugId);
     setOpenBugDetails(true);
+    setSelectedBugComponent(bug);
   };
 
   useEffect(() => {}, [selectedBugId]);
@@ -56,7 +60,7 @@ const BugList = (props) => {
               return (
                 <TableRow
                   className={classes.bugRow}
-                  onClick={() => showBugDetails(bug.bugId)}
+                  onClick={() => showBugDetails(bug)}
                   key={bug.bugId}
                 >
                   <TableCell>{bug.bugName}</TableCell>

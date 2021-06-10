@@ -26,22 +26,49 @@ const useStyles = makeStyles((theme) => ({
 
 const Bug = () => {
   const {
+    bugList,
+    setBugList,
     selectedBugId,
     setSelectedBugId,
     handleInputChange,
     resetFormControls,
+    resetList,
   } = useBug();
 
   const [openBugDetails, setOpenBugDetails] = useState(false);
 
   const [openBugCreate, setOpenBugCreate] = useState(false);
 
-  const [bugList, setBugList] = useState([]);
-
   const [users, setUsers] = useState([]);
   const [severities, setSeverities] = useState([]);
   const [statuses, setStatuses] = useState([]);
+  const [selectedBugComponent, setSelectedBugComponent] = useState({});
+  const [prevSelectedBugComponent, setPrevSelectedBugComponent] = useState({});
   const classes = useStyles();
+
+  useEffect(() => {
+    if (prevSelectedBugComponent.bugId === selectedBugComponent.bugId) {
+      if (Object.keys(selectedBugComponent).length !== 0) {
+        let item = bugList.find(
+          (bug) => bug.bugId === selectedBugComponent.bugId
+        );
+        let index = bugList.indexOf(item);
+        let newList = bugList;
+        newList[index] = selectedBugComponent;
+        setBugList(newList);
+      }
+    }
+    setPrevSelectedBugComponent(selectedBugComponent);
+  }, [
+    selectedBugComponent.severity,
+    selectedBugComponent.status,
+    selectedBugComponent.reporter,
+    selectedBugComponent.bugName,
+  ]);
+
+  useEffect(() => {
+    setPrevSelectedBugComponent(selectedBugComponent);
+  }, [selectedBugComponent]);
 
   useEffect(() => {
     createAPIEndPoint(ENDPOINTS.USER)
@@ -65,8 +92,16 @@ const Bug = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  useEffect(() => {});
+
   const showCreateDialog = () => {
     setOpenBugCreate(true);
+  };
+
+  const removeBugFromList = (bugId) => {
+    let newList = bugList;
+    let filtered = newList.filter((bug) => bug.bugId !== bugId);
+    setBugList(filtered);
   };
 
   return (
@@ -87,6 +122,8 @@ const Bug = () => {
           severities,
           selectedBugId,
           setSelectedBugId,
+          selectedBugComponent,
+          setSelectedBugComponent,
           handleInputChange,
         }}
       ></BugList>
@@ -94,10 +131,16 @@ const Bug = () => {
         {...{
           openBugDetails,
           setOpenBugDetails,
+          users,
+          statuses,
           severities,
           selectedBugId,
           setSelectedBugId,
+          selectedBugComponent,
+          setSelectedBugComponent,
+          removeBugFromList,
           handleInputChange,
+          resetList,
         }}
       ></BugDetails>
       <BugCreate
@@ -108,6 +151,7 @@ const Bug = () => {
           severities,
           openBugCreate,
           setOpenBugCreate,
+          resetList,
         }}
       ></BugCreate>
     </>
