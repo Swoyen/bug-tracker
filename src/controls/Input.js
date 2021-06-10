@@ -17,6 +17,7 @@ const Input = (props) => {
       label={label}
       name={name}
       value={value}
+      onChange={onChange}
       {...other}
       {...(error && { error: true, helperText: error })}
     />

@@ -19,94 +19,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function createBug(
-  bugId,
-  bugName,
-  reporter,
-  created,
-  status,
-  assignee,
-  severity
-) {
-  return { bugId, bugName, reporter, created, status, assignee, severity };
-}
-
-const bugs = [
-  createBug(1, "Fix Header", "Swoyen", "12/12/12", "Open", "God", "High"),
-  createBug(
-    2,
-    "Mobile responsive",
-    "Sam",
-    "12/13/11",
-    "To do",
-    "Someone",
-    "Low"
-  ),
-  createBug(3, "Labels hidden", "Dean", "1/2/19", "Open", "God", "Severe"),
-  createBug(4, "Image not showing", "Ariel", "18/12/22", "Open", "God", "High"),
-  createBug(5, "Page broken", "Hugo", "12/12/12", "Open", "God", "High"),
-  createBug(6, "Fix Header", "Swoyen", "12/12/12", "Open", "God", "High"),
-  createBug(
-    7,
-    "Mobile responsive",
-    "Sam",
-    "12/13/11",
-    "To do",
-    "Someone",
-    "Low"
-  ),
-  createBug(8, "Labels hidden", "Dean", "1/2/19", "Open", "God", "Severe"),
-  createBug(9, "Image not showing", "Ariel", "18/12/22", "Open", "God", "High"),
-  createBug(10, "Page broken", "Hugo", "12/12/12", "Open", "God", "High"),
-  createBug(11, "Fix Header", "Swoyen", "12/12/12", "Open", "God", "High"),
-  createBug(
-    12,
-    "Mobile responsive",
-    "Sam",
-    "12/13/11",
-    "To do",
-    "Someone",
-    "Low"
-  ),
-  createBug(13, "Labels hidden", "Dean", "1/2/19", "Open", "God", "Severe"),
-  createBug(
-    14,
-    "Image not showing",
-    "Ariel",
-    "18/12/22",
-    "Open",
-    "God",
-    "High"
-  ),
-  createBug(15, "Page broken", "Hugo", "12/12/12", "Open", "God", "High"),
-];
-
-var prevId = -1;
-
 const BugList = (props) => {
-  const { openBugDetails, setOpenBugDetails, selectedBug, setSelectedBug } =
-    props;
+  const {
+    bugList,
+    openBugDetails,
+    setOpenBugDetails,
+    selectedBugId,
+    setSelectedBugId,
+  } = props;
 
   const classes = useStyles();
 
-  const showBugDetails = (bug) => {
-    setSelectedBug(bug);
+  const showBugDetails = (bugId) => {
+    setSelectedBugId(bugId);
     setOpenBugDetails(true);
   };
 
-  useEffect(() => {
-    let bug = bugs.find((bug) => {
-      return bug.bugId === selectedBug.bugId;
-    });
-
-    if (bug && prevId === bug.bugId) {
-      let index = bugs.indexOf(bug);
-      bugs[index] = selectedBug;
-    }
-    if (bug) {
-      prevId = bug.bugId;
-    }
-  }, [selectedBug]);
+  useEffect(() => {}, [selectedBugId]);
 
   return (
     <>
@@ -123,19 +52,19 @@ const BugList = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {bugs.map((bug) => {
+            {bugList.map((bug) => {
               return (
                 <TableRow
                   className={classes.bugRow}
-                  onClick={() => showBugDetails(bug)}
+                  onClick={() => showBugDetails(bug.bugId)}
                   key={bug.bugId}
                 >
                   <TableCell>{bug.bugName}</TableCell>
-                  <TableCell>{bug.reporter}</TableCell>
-                  <TableCell>{bug.created}</TableCell>
-                  <TableCell>{bug.status}</TableCell>
-                  <TableCell>{bug.assignee}</TableCell>
-                  <TableCell>{bug.severity}</TableCell>
+                  <TableCell>{bug.reporter.userName}</TableCell>
+                  <TableCell>{bug.createdDate}</TableCell>
+                  <TableCell>{bug.status.statusName}</TableCell>
+                  <TableCell>{bug.assignee.userName}</TableCell>
+                  <TableCell>{bug.severity.severityName}</TableCell>
                 </TableRow>
               );
             })}

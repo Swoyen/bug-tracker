@@ -12,8 +12,9 @@ const useStyles = makeStyles((theme) => ({
 
 const Form = (props) => {
   const classes = useStyles();
+  const { ...other } = props;
   return (
-    <form className={classes.root} noValidate autoComplete="off">
+    <form className={classes.root} noValidate autoComplete="off" {...other}>
       {props.children}
     </form>
   );

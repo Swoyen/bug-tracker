@@ -1,21 +1,26 @@
 import React, { useState } from "react";
 
-const useBug = (getFreshModelObject) => {
-  const [selectedBug, setSelectedBug] = useState(getFreshModelObject());
+const useBug = () => {
+  const [selectedBugId, setSelectedBugId] = useState(-1);
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setSelectedBug({
-      ...selectedBug,
-      [name]: value,
-    });
+    // const { name, value } = event.target;
+    // setSelectedBug({
+    //   ...selectedBug,
+    //   [name]: value,
+    // });
   };
 
   const resetFormControls = () => {
-    setSelectedBug(getFreshModelObject());
+    setSelectedBugId(-1);
   };
 
-  return { selectedBug, setSelectedBug, handleInputChange, resetFormControls };
+  return {
+    selectedBugId,
+    setSelectedBugId,
+    handleInputChange,
+    resetFormControls,
+  };
 };
 
 export default useBug;

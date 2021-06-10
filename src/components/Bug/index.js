@@ -2,21 +2,22 @@ import BugList from "./BugList";
 import BugDetails from "./BugDetails";
 import BugCreate from "./BugCreate";
 import useBug from "../../hooks/useBug";
+import { ENDPOINTS, createAPIEndPoint } from "../../api";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../../controls/Button";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import { Grid, makeStyles } from "@material-ui/core";
 
-const getFreshModelObject = () => ({
-  bugId: -1,
-  bugName: "",
-  reporter: "",
-  created: "",
-  status: "Pending",
-  assignee: "Me",
-  severity: "Low",
-});
+// const getFreshModelObject = () => ({
+//   bugId: -1,
+//   bugName: "",
+//   reporter: "",
+//   created: "",
+//   status: "",
+//   assignee: "",
+//   severity: "",
+// });
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -24,12 +25,45 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Bug = () => {
-  const { selectedBug, setSelectedBug, handleInputChange, resetFormControls } =
-    useBug(getFreshModelObject);
+  const {
+    selectedBugId,
+    setSelectedBugId,
+    handleInputChange,
+    resetFormControls,
+  } = useBug();
 
   const [openBugDetails, setOpenBugDetails] = useState(false);
+
   const [openBugCreate, setOpenBugCreate] = useState(false);
+
+  const [bugList, setBugList] = useState([]);
+
+  const [users, setUsers] = useState([]);
+  const [severities, setSeverities] = useState([]);
+  const [statuses, setStatuses] = useState([]);
   const classes = useStyles();
+
+  useEffect(() => {
+    createAPIEndPoint(ENDPOINTS.USER)
+      .fetchAll()
+      .then((res) => setUsers(res.data))
+      .catch((err) => console.log(err));
+
+    createAPIEndPoint(ENDPOINTS.SEVERITY)
+      .fetchAll()
+      .then((res) => setSeverities(res.data))
+      .catch((err) => console.log(err));
+
+    createAPIEndPoint(ENDPOINTS.STATUS)
+      .fetchAll()
+      .then((res) => setStatuses(res.data))
+      .catch((err) => console.log(err));
+
+    createAPIEndPoint(ENDPOINTS.BUG)
+      .fetchAll()
+      .then((res) => setBugList(res.data))
+      .catch((err) => console.log(err));
+  }, []);
 
   const showCreateDialog = () => {
     setOpenBugCreate(true);
@@ -47,10 +81,12 @@ const Bug = () => {
       </Grid>
       <BugList
         {...{
+          bugList,
           openBugDetails,
           setOpenBugDetails,
-          selectedBug,
-          setSelectedBug,
+          severities,
+          selectedBugId,
+          setSelectedBugId,
           handleInputChange,
         }}
       ></BugList>
@@ -58,12 +94,22 @@ const Bug = () => {
         {...{
           openBugDetails,
           setOpenBugDetails,
-          selectedBug,
-          setSelectedBug,
+          severities,
+          selectedBugId,
+          setSelectedBugId,
           handleInputChange,
         }}
       ></BugDetails>
-      <BugCreate {...{ openBugCreate, setOpenBugCreate }}></BugCreate>
+      <BugCreate
+        {...{
+          bugList,
+          setBugs: setBugList,
+          users,
+          severities,
+          openBugCreate,
+          setOpenBugCreate,
+        }}
+      ></BugCreate>
     </>
   );
 };
