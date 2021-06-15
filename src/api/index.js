@@ -7,6 +7,13 @@ export const ENDPOINTS = {
   USER: "User",
   STATUS: "Status",
   SEVERITY: "Severity",
+  REGISTER: "Register",
+};
+
+export const AUTHENTICATIONENDPOINTS = {
+  REGISTER: "Register",
+  LOGIN: "Login",
+  LOGOUT: "Logout",
 };
 
 export const createAPIEndPoint = (endPoint) => {
@@ -17,5 +24,12 @@ export const createAPIEndPoint = (endPoint) => {
     create: (newRecord) => axios.post(url, newRecord),
     update: (id, updatedRecord) => axios.put(url + id, updatedRecord),
     delete: (id) => axios.delete(url + id),
+  };
+};
+
+export const createAuthenticationEndPoint = (endPoint) => {
+  let url = BASE_URL + endPoint + "/";
+  return {
+    post: (user) => axios.post(url, user),
   };
 };

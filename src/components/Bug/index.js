@@ -7,7 +7,7 @@ import { ENDPOINTS, createAPIEndPoint } from "../../api";
 import React, { useEffect, useState } from "react";
 import Button from "../../controls/Button";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid, makeStyles, Typography } from "@material-ui/core";
 
 // const getFreshModelObject = () => ({
 //   bugId: -1,
@@ -106,6 +106,9 @@ const Bug = () => {
 
   return (
     <>
+      <Typography gutterBottom variant="h2" color="initial">
+        Bug Tracker
+      </Typography>
       <Grid className={classes.buttons} container justify="flex-end">
         <Button
           startIcon={<AddOutlinedIcon />}
