@@ -8,6 +8,8 @@ import React, { useEffect, useState } from "react";
 import Button from "../../controls/Button";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
+import { Redirect } from "react-router-dom";
+import { cleanup } from "@testing-library/react";
 
 // const getFreshModelObject = () => ({
 //   bugId: -1,
@@ -24,7 +26,9 @@ const useStyles = makeStyles((theme) => ({
   buttons: { marginBottom: theme.spacing(2) },
 }));
 
-const Bug = () => {
+const Bug = (props) => {
+  const { isLoggedIn } = props;
+
   const {
     bugList,
     setBugList,
@@ -36,15 +40,21 @@ const Bug = () => {
   } = useBug();
 
   const [openBugDetails, setOpenBugDetails] = useState(false);
-
   const [openBugCreate, setOpenBugCreate] = useState(false);
-
   const [users, setUsers] = useState([]);
   const [severities, setSeverities] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [selectedBugComponent, setSelectedBugComponent] = useState({});
   const [prevSelectedBugComponent, setPrevSelectedBugComponent] = useState({});
+
   const classes = useStyles();
+
+  useEffect(() => {
+    return () => {
+      setSelectedBugComponent({});
+      setPrevSelectedBugComponent({});
+    };
+  }, []);
 
   useEffect(() => {
     if (prevSelectedBugComponent.bugId === selectedBugComponent.bugId) {
@@ -92,8 +102,6 @@ const Bug = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  useEffect(() => {});
-
   const showCreateDialog = () => {
     setOpenBugCreate(true);
   };
@@ -104,6 +112,9 @@ const Bug = () => {
     setBugList(filtered);
   };
 
+  if (!isLoggedIn) {
+    return <Redirect to="/login" />;
+  }
   return (
     <>
       <Typography gutterBottom variant="h2" color="initial">

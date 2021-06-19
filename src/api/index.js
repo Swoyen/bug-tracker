@@ -13,6 +13,7 @@ export const ENDPOINTS = {
 export const AUTHENTICATIONENDPOINTS = {
   REGISTER: "Register",
   LOGIN: "Login",
+  JWTLOGIN: "Jwtlogin",
   LOGOUT: "Logout",
 };
 
@@ -30,6 +31,15 @@ export const createAPIEndPoint = (endPoint) => {
 export const createAuthenticationEndPoint = (endPoint) => {
   let url = BASE_URL + endPoint + "/";
   return {
-    post: (user) => axios.post(url, user),
+    post: (user, withCredentials = false) =>
+      axios.post(url, user, { withCredentials: withCredentials }),
+    fetch: () => axios.get(url, { withCredentials: true }),
+    postWithNoArg: () =>
+      // fetch("http://localhost:5000/api/logout", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   credentials: "include",
+      // }),
+      axios.get(url, { withCredentials: true }),
   };
 };

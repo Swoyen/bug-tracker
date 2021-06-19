@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -11,7 +9,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Link as RouterLink } from "react-router-dom";
+import { Redirect, Link as RouterLink } from "react-router-dom";
 import Input from "../controls/Input";
 import Button from "../controls/Button";
 import Form from "../layouts/Form";
@@ -56,26 +54,52 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline",
     },
   },
+  error: {
+    color: "#F50057",
+  },
 }));
 
-const Login = () => {
+const Login = (props) => {
+  const { isLoggedIn, setIsLoggedIn } = props;
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      setEmail("");
+      setPassword();
+      setError(false);
+    };
+  }, []);
 
   const submit = async (e) => {
     e.preventDefault();
     let user = { email: email, password: password };
 
-    let response = await createAuthenticationEndPoint(
-      AUTHENTICATIONENDPOINTS.LOGIN
-    ).post(user);
+    try {
+      let response = await createAuthenticationEndPoint(
+        AUTHENTICATIONENDPOINTS.LOGIN
+      ).post(user, true);
 
-    console.log(response);
+      if (response.status === 200) {
+        setIsLoggedIn(true);
+        setError(false);
+      } else {
+        setError(true);
+      }
+    } catch (err) {
+      setError(true);
+    }
   };
 
+  if (isLoggedIn) {
+    return <Redirect to="/" />;
+  }
+
   return (
-    <Container component="main" maxWidth="xs">
+    <Container maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -84,13 +108,16 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
+        <Typography className={classes.error} variant="body2" color="initial">
+          {error ? "Email Address or Password is Invalid." : ""}
+        </Typography>
+
         <Form className={classes.form} noValidate onSubmit={submit}>
           <Input
             fullWidth
             label="Email Address"
             name="email"
             variant="outlined"
-            margin="normal"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
