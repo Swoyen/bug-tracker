@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
@@ -14,6 +14,7 @@ import Input from "../controls/Input";
 import Button from "../controls/Button";
 import Form from "../layouts/Form";
 import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "../api";
+import { UserContext } from "../context/BugContext";
 
 function Copyright() {
   return (
@@ -60,6 +61,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = (props) => {
+  const [userName, setUserName] = useContext(UserContext);
+
   const { isLoggedIn, setIsLoggedIn } = props;
   const classes = useStyles();
   const [email, setEmail] = useState("");
@@ -85,6 +88,7 @@ const Login = (props) => {
 
       if (response.status === 200) {
         setIsLoggedIn(true);
+        setUserName(response.data.userName);
         setError(false);
       } else {
         setError(true);

@@ -67,6 +67,9 @@ const Nav = (props) => {
             </>
           ) : ( */}
           <>
+            <Link className={classes.link} to="/projects">
+              <Button variant="text">Projects</Button>
+            </Link>
             <IconButton>
               <AccountCircle></AccountCircle>
             </IconButton>

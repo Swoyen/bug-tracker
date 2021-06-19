@@ -8,6 +8,7 @@ export const ENDPOINTS = {
   STATUS: "Status",
   SEVERITY: "Severity",
   REGISTER: "Register",
+  PROJECT: "Project",
 };
 
 export const AUTHENTICATIONENDPOINTS = {
@@ -25,6 +26,13 @@ export const createAPIEndPoint = (endPoint) => {
     create: (newRecord) => axios.post(url, newRecord),
     update: (id, updatedRecord) => axios.put(url + id, updatedRecord),
     delete: (id) => axios.delete(url + id),
+  };
+};
+
+export const createProjectApiEndPoint = () => {
+  let url = BASE_URL + ENDPOINTS.PROJECT + "/";
+  return {
+    fetchAll: () => axios.get(url, { withCredentials: true }),
   };
 };
 

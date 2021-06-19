@@ -12,6 +12,8 @@ import { Inbox as InboxIcon, Mail as MailIcon } from "@material-ui/icons";
 import React from "react";
 import BugReportIcon from "@material-ui/icons/BugReport";
 import { Link } from "react-router-dom";
+import AccountTreeIcon from "@material-ui/icons/AccountTree";
+import { ProjectContext } from "../../context/BugContext";
 
 const drawerWidth = 240;
 
@@ -51,27 +53,17 @@ const SideBar = () => {
               <ListItemText primary={text} />
             </ListItem>
           ))} */}
+          <ListItem dense className={classes.l} button>
+            <ListItemIcon>
+              <AccountTreeIcon />
+            </ListItemIcon>
+            <ListItemText
+              primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
+              dense="true"
+              primary={"Project"}
+            />
+          </ListItem>
           <Link className={classes.routerlink} to="/bugs">
-            <ListItem dense className={classes.l} button>
-              <ListItemIcon>
-                <BugReportIcon />
-              </ListItemIcon>
-              <ListItemText
-                primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
-                dense="true"
-                primary={"Bugs"}
-              />
-            </ListItem>
-            <ListItem dense className={classes.l} button>
-              <ListItemIcon>
-                <BugReportIcon />
-              </ListItemIcon>
-              <ListItemText
-                primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
-                dense="true"
-                primary={"Bugs"}
-              />
-            </ListItem>
             <ListItem dense className={classes.l} button>
               <ListItemIcon>
                 <BugReportIcon />

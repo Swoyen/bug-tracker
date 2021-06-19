@@ -3,6 +3,7 @@ import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Bug from "./components/Bug";
 import Nav from "./components/Main/Nav";
+import Project from "./components/Project";
 import { BrowserRouter, Redirect, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -11,7 +12,7 @@ import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "./api";
 import SideBar from "./components/Main/SideBar";
 import { makeStyles } from "@material-ui/core";
 import Home from "./pages/Home";
-import { UserProvider } from "./context/UserContext";
+import { UserProvider } from "./context/BugContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -79,6 +80,7 @@ const App = () => {
               component={() => <Bug {...{ isLoggedIn }} />}
             ></Route>
             {/* </Container> */}
+            <Route path="/projects" component={() => <Project />} />
           </main>
         </BrowserRouter>
       </UserProvider>
