@@ -1,3 +1,6 @@
+import React, { useContext } from "react";
+import { Link, useRouteMatch } from "react-router-dom";
+
 import {
   Drawer,
   makeStyles,
@@ -9,16 +12,16 @@ import {
   Divider,
 } from "@material-ui/core";
 import { Inbox as InboxIcon, Mail as MailIcon } from "@material-ui/icons";
-import React from "react";
 import BugReportIcon from "@material-ui/icons/BugReport";
-import { Link } from "react-router-dom";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
-import { ProjectContext } from "../../context/BugContext";
+
+import { ProjectContext } from "../../context/ProjectContext";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    background: "yellow",
     width: drawerWidth,
     flexShrink: 0,
   },
@@ -31,10 +34,18 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     color: "inherit",
   },
+  headingIcon: {
+    paddingRight: theme.spacing(0),
+  },
+  listContent: {
+    paddingLeft: theme.spacing(4),
+  },
 }));
 
-const SideBar = () => {
+const ProjectSideBar = () => {
+  const { url, path } = useRouteMatch();
   const classes = useStyles();
+  const { projectName, setProjectName } = useContext(ProjectContext);
 
   return (
     <Drawer
@@ -53,18 +64,18 @@ const SideBar = () => {
               <ListItemText primary={text} />
             </ListItem>
           ))} */}
-          <ListItem dense className={classes.l} button>
-            <ListItemIcon>
+          <ListItem disabled className={classes.l} button>
+            <ListItemIcon className={classes.headingIcon}>
               <AccountTreeIcon />
             </ListItemIcon>
             <ListItemText
-              primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
-              dense="true"
-              primary={"Project"}
+              primaryTypographyProps={{ style: { fontSize: "1em" } }}
+              primary={projectName}
+              secondary={"sad"}
             />
           </ListItem>
-          <Link className={classes.routerlink} to="/bugs">
-            <ListItem dense className={classes.l} button>
+          <Link className={classes.routerlink} to={`${url}/bugs`}>
+            <ListItem className={classes.listContent} dense button>
               <ListItemIcon>
                 <BugReportIcon />
               </ListItemIcon>
@@ -81,4 +92,4 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
+export default ProjectSideBar;

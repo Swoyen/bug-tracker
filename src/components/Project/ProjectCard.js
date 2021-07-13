@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createProjectApiEndPoint } from "../../api";
+import { createProjectAPIEndPoint } from "../../api";
 import {
   Card,
   Typography,
@@ -30,6 +30,7 @@ const ProjectCard = (props) => {
         <Typography variant="h5" color="initial">
           {props.name}
         </Typography>
+        {props.children}
       </CardContent>
     </Card>
   );

@@ -14,7 +14,7 @@ import Input from "../controls/Input";
 import Button from "../controls/Button";
 import Form from "../layouts/Form";
 import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "../api";
-import { UserContext } from "../context/BugContext";
+import { UserContext } from "../context/UserContext";
 
 function Copyright() {
   return (
@@ -61,13 +61,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = (props) => {
-  const [userName, setUserName] = useContext(UserContext);
+  const { userName, setUserName, isLoggedIn, setIsLoggedIn, login } =
+    useContext(UserContext);
 
-  const { isLoggedIn, setIsLoggedIn } = props;
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    login();
+  }, []);
 
   useEffect(() => {
     return () => {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/api/";
+export const BASE_URL = "http://localhost:5000/api/";
 
 export const ENDPOINTS = {
   BUG: "Bug",
@@ -8,7 +8,7 @@ export const ENDPOINTS = {
   STATUS: "Status",
   SEVERITY: "Severity",
   REGISTER: "Register",
-  PROJECT: "Project",
+  IMAGE: "Image",
 };
 
 export const AUTHENTICATIONENDPOINTS = {
@@ -29,10 +29,12 @@ export const createAPIEndPoint = (endPoint) => {
   };
 };
 
-export const createProjectApiEndPoint = () => {
-  let url = BASE_URL + ENDPOINTS.PROJECT + "/";
+export const createProjectAPIEndPoint = () => {
+  let url = BASE_URL + "Project" + "/";
   return {
     fetchAll: () => axios.get(url, { withCredentials: true }),
+    create: (newRecord) =>
+      axios.post(url, newRecord, { withCredentials: true }),
   };
 };
 

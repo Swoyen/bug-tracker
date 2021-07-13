@@ -1,18 +1,39 @@
-import "./App.css";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
+import { createMuiTheme, makeStyles } from "@material-ui/core";
+import { green, purple } from "@material-ui/core/colors";
+import { ThemeProvider } from "@material-ui/styles";
+
+import { UserContext, UserProvider } from "./context/UserContext";
+import { ProjectProvider } from "./context/ProjectContext";
+
 import Bug from "./components/Bug";
 import Nav from "./components/Main/Nav";
-import Project from "./components/Project";
-import { BrowserRouter, Redirect, Route } from "react-router-dom";
+import Projects from "./components/Project/Projects";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import React, { useState, useEffect } from "react";
-import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "./api";
-import SideBar from "./components/Main/SideBar";
-import { makeStyles } from "@material-ui/core";
 import Home from "./pages/Home";
-import { UserProvider } from "./context/BugContext";
+import ProjectSideBar from "./components/Main/ProjectSideBar";
+import Dashboard from "./components/Dashboard";
+import ProjectCreate from "./components/Project/ProjectCreate";
+
+import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "./api";
+import Project from "./components/Project/Project";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#FFFFFF",
+    },
+
+    secondary: {
+      main: "#000000",
+    },
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,70 +41,49 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
-  content: {
-    flexGrow: 100,
-    padding: theme.spacing(3),
-    alignContent: "center",
-    textAlign: "center",
-    paddingTop: "75px",
-  },
+  content: { paddingTop: "100px", flexGrow: 1 },
 }));
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const classes = useStyles();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await createAuthenticationEndPoint(
-          AUTHENTICATIONENDPOINTS.JWTLOGIN
-        ).fetch();
-
-        if (response.status === 200) {
-          setIsLoggedIn(true);
-        }
-      } catch (err) {
-        setIsLoggedIn(false);
-      }
-    })();
-  }, []);
+  const routes = [
+    { path: "/login", element: <Login /> },
+    { path: "/register", element: <Register /> },
+    { path: "/", element: <Home /> },
+    { path: "/bugs", element: <Bug /> },
+    { path: "/projects", element: <Projects /> },
+  ];
 
   return (
     <div className={classes.root}>
-      <UserProvider>
-        <BrowserRouter>
-          {isLoggedIn ? (
-            <>
-              <Nav setIsLoggedIn={setIsLoggedIn}></Nav> <SideBar />
-            </>
-          ) : (
-            ""
-          )}
-
-          <main className={classes.content}>
-            <Route
-              path="/login"
-              component={() => <Login {...{ isLoggedIn, setIsLoggedIn }} />}
-            ></Route>
-            <Route path="/register" component={() => <Register />}></Route>
-
-            {/* <Container maxWidth="md"> */}
-            <Route
-              path="/"
-              exact
-              component={() => <Home {...{ isLoggedIn }} />}
-            ></Route>
-            <Route
-              path="/bugs"
-              exact
-              component={() => <Bug {...{ isLoggedIn }} />}
-            ></Route>
-            {/* </Container> */}
-            <Route path="/projects" component={() => <Project />} />
-          </main>
-        </BrowserRouter>
-      </UserProvider>
+      <ThemeProvider theme={theme}>
+        <UserProvider isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}>
+          <ProjectProvider>
+            <BrowserRouter>
+              {/* {isLoggedIn ? <Nav></Nav> : ""} */};
+              {isLoggedIn ? <Nav></Nav> : ""}
+              <main className={classes.content}>
+                <Route path="/login" component={() => <Login />}></Route>
+                <Route path="/register" component={() => <Register />}></Route>
+                <Route path="/" exact component={() => <Home />}></Route>
+                {/* <Route path="/bugs" exact component={() => <Bug />}></Route> */}
+                {/* <Route path="/projects" component={() => <Projects />} /> */}
+                <Route
+                  path="/projects/:id"
+                  component={() => <Project />}
+                ></Route>
+                <Route
+                  path="/dashboard"
+                  component={() => <Dashboard />}
+                ></Route>
+              </main>
+            </BrowserRouter>
+            <ProjectCreate></ProjectCreate>
+          </ProjectProvider>
+        </UserProvider>
+      </ThemeProvider>
     </div>
   );
 };

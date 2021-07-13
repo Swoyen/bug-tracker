@@ -4,12 +4,13 @@ import BugCreate from "./BugCreate";
 import useBug from "../../hooks/useBug";
 import { ENDPOINTS, createAPIEndPoint } from "../../api";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "../../controls/Button";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 import { cleanup } from "@testing-library/react";
+import { UserContext } from "../../context/UserContext";
 
 // const getFreshModelObject = () => ({
 //   bugId: -1,
@@ -27,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Bug = (props) => {
-  const { isLoggedIn } = props;
+  const { userName, setUserName, isLoggedIn, setIsLoggedIn } =
+    useContext(UserContext);
 
   const {
     bugList,

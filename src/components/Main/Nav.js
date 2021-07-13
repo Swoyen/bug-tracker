@@ -5,7 +5,7 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { AccountCircle, Menu as MenuIcon } from "@material-ui/icons";
 import Button from "../../controls/Button";
 import { Link, Redirect } from "react-router-dom";
@@ -13,16 +13,26 @@ import {
   AUTHENTICATIONENDPOINTS,
   createAuthenticationEndPoint,
 } from "../../api";
+import { UserContext } from "../../context/UserContext";
+import BugReportTwoToneIcon from "@material-ui/icons/BugReportTwoTone";
+import ProjectList from "./ProjectListComposition";
 
 const useStyles = makeStyles((theme) => ({
-  root: { flexGrow: 1, zIndex: 10002 },
+  root: {
+    flexGrow: 1,
+    zIndex: 10002,
+    position: "fixed",
+    display: "flex",
+    flexWrap: "nowrap",
+  },
   menuButton: { marginRight: theme.spacing(2) },
-  title: { flexGrow: 1 },
-  link: { textDecoration: "none", color: "white" },
+  links: { flexGrow: 1, background: "yellow" },
+  link: { textDecoration: "none", background: "blue" },
 }));
 
 const Nav = (props) => {
-  const { setIsLoggedIn } = props;
+  const { userName, setUserName, isLoggedIn, setIsLoggedIn } =
+    useContext(UserContext);
   const classes = useStyles();
 
   const logout = async () => {
@@ -45,11 +55,8 @@ const Nav = (props) => {
             color="inherit"
             aria-label="menu"
           >
-            <MenuIcon />
+            <BugReportTwoToneIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            BugTracker
-          </Typography>
           {/* <Button variant="filled">
             <Link>Register</Link>
           </Button>
@@ -66,20 +73,24 @@ const Nav = (props) => {
               </Link>
             </>
           ) : ( */}
-          <>
-            <Link className={classes.link} to="/projects">
+          <div className={classes.links}>
+            <ProjectList className={classes.link}></ProjectList>
+            {/* <Link className={classes.link} to="/projects">
               <Button variant="text">Projects</Button>
+            </Link> */}
+
+            <Link className={classes.link} to="/dashboard">
+              <Button variant="text">Dashboard</Button>
             </Link>
-            <IconButton>
-              <AccountCircle></AccountCircle>
-            </IconButton>
-            <Link className={classes.link} to="/login">
-              <Button onClick={() => logout()} variant="text">
-                Logout
-              </Button>
-            </Link>
-          </>
-          {/* )} */}
+          </div>
+          <Link className={classes.link} to="/login">
+            <Button onClick={() => logout()} variant="text">
+              Logout
+            </Button>
+          </Link>{" "}
+          <IconButton>
+            <AccountCircle></AccountCircle>
+          </IconButton>
         </Toolbar>
       </AppBar>
     </div>
