@@ -6,7 +6,9 @@ export const ProjectContext = createContext();
 
 export const ProjectProvider = (props) => {
   const [projectList, setProjectList] = useState([]);
+  const [projectIdToModify, setProjectIdToModify] = useState("-1");
   const [openProjectCreate, setOpenProjectCreate] = useState(false);
+  const [openProjectSettings, setOpenProjectSettings] = useState(false);
 
   useEffect(() => {
     loadProjectList();
@@ -24,6 +26,10 @@ export const ProjectProvider = (props) => {
         loadProjectList,
         openProjectCreate,
         setOpenProjectCreate,
+        openProjectSettings,
+        setOpenProjectSettings,
+        projectIdToModify,
+        setProjectIdToModify,
       }}
     >
       {props.children}

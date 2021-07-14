@@ -52,6 +52,7 @@ const Popup = (props) => {
     editTitle = false,
     titleVariant = "h4",
     center = false,
+    maxWidth = "md",
     topMargin,
   } = props;
   const classes = useStyles(props);
@@ -64,7 +65,7 @@ const Popup = (props) => {
         }`,
       }}
       open={openPopup}
-      maxWidth="md"
+      maxWidth={maxWidth}
       aria-labelledby=""
     >
       <DialogTitle

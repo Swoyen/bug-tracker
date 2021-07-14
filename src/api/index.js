@@ -33,8 +33,12 @@ export const createProjectAPIEndPoint = () => {
   let url = BASE_URL + "Project" + "/";
   return {
     fetchAll: () => axios.get(url, { withCredentials: true }),
+    fetchById: (id) => axios.get(url + id, { withCredentials: true }),
     create: (newRecord) =>
       axios.post(url, newRecord, { withCredentials: true }),
+    update: (id, updatedRecord) =>
+      axios.put(url + id, updatedRecord, { withCredentials: true }),
+    delete: (id) => axios.delete(url + id, { withCredentials: true }),
   };
 };
 

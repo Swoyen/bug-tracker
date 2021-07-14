@@ -22,6 +22,7 @@ import ProjectCreate from "./components/Project/ProjectCreate";
 
 import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "./api";
 import Project from "./components/Project/Project";
+import ProjectSettings from "./components/Project/ProjectSettings";
 
 const theme = createMuiTheme({
   palette: {
@@ -69,7 +70,7 @@ const App = () => {
                 <Route path="/register" component={() => <Register />}></Route>
                 <Route path="/" exact component={() => <Home />}></Route>
                 {/* <Route path="/bugs" exact component={() => <Bug />}></Route> */}
-                {/* <Route path="/projects" component={() => <Projects />} /> */}
+                <Route exact path="/projects" component={() => <Projects />} />
                 <Route
                   path="/projects/:id"
                   component={() => <Project />}
@@ -81,6 +82,7 @@ const App = () => {
               </main>
             </BrowserRouter>
             <ProjectCreate></ProjectCreate>
+            <ProjectSettings></ProjectSettings>
           </ProjectProvider>
         </UserProvider>
       </ThemeProvider>

@@ -8,6 +8,7 @@ import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
+import { Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 
@@ -41,7 +42,6 @@ const ProjectList = () => {
   const { url, path } = useRouteMatch();
   const { projectList, openProjectCreate, setOpenProjectCreate } =
     useContext(ProjectContext);
-
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -110,30 +110,45 @@ const ProjectList = () => {
                     id="menu-list-grow"
                     onKeyDown={handleListKeyDown}
                   >
+                    <MenuItem disabled>
+                      <Typography variant="subtitle2">Recent</Typography>
+                    </MenuItem>
                     {projectList.map((menuItem) => (
-                      <MenuItem onClick={handleClose} key={menuItem.projectId}>
-                        <img
-                          src={`${BASE_URL}Image/${menuItem.imageName}`}
-                          alt=""
-                          style={{
-                            width: "2em",
-                            height: "2em",
-                            marginRight: ".5em",
-                            borderRadius: "50%",
-                          }}
-                        />
-                        <Link
-                          className={classes.link}
-                          to={`/projects/${menuItem.projectId}`}
-                        >
+                      <Link
+                        className={classes.link}
+                        to={`/projects/${menuItem.projectId}`}
+                        key={menuItem.projectId}
+                      >
+                        <MenuItem onClick={handleClose}>
+                          <img
+                            src={`${BASE_URL}Image/${menuItem.imageName}`}
+                            alt=""
+                            style={{
+                              width: "2em",
+                              height: "2em",
+                              marginRight: ".5em",
+                              borderRadius: "50%",
+                            }}
+                          />
+
                           <Typography variant="subtitle2">
                             {menuItem.title}
                           </Typography>
-                        </Link>
-                      </MenuItem>
+                        </MenuItem>
+                      </Link>
                     ))}
+                    <Divider></Divider>
+                    <Link className={classes.link} to="/projects">
+                      <MenuItem onClick={handleClose}>
+                        <Typography variant="subtitle2">
+                          All Projects
+                        </Typography>
+                      </MenuItem>
+                    </Link>
                     <MenuItem onClick={() => showProjectCreate()}>
-                      <Typography variant="subtitle2">Create</Typography>
+                      <Typography variant="subtitle2">
+                        Create Project
+                      </Typography>
                     </MenuItem>
                   </MenuList>
                 </ClickAwayListener>

@@ -9,13 +9,18 @@ import ProjectSideBar from "../Main/ProjectSideBar";
 import Bug from "../Bug";
 import { UserContext } from "../../context/UserContext";
 import { createProjectAPIEndPoint } from "../../api";
+import ProjectTable from "./ProjectTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
+    alignItems: "center",
+    alignContent: "center",
   },
   sideBar: {},
   content: {
+    maxWidth: "800px",
+    margin: "auto",
     padding: theme.spacing(3),
     alignContent: "center",
     textAlign: "center",
@@ -34,10 +39,10 @@ const Projects = (props) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <ProjectSideBar className={classes.sidebar} />
       <div className={classes.content}>
-        <ProjectList></ProjectList>
-        <ProjectCreate></ProjectCreate>
+        {/* <ProjectList></ProjectList>
+        <ProjectCreate></ProjectCreate> */}
+        <ProjectTable />
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ const Input = (props) => {
 
   return (
     <TextField
-      variant={variant ? variant : "outined"}
+      variant={variant ? variant : "outlined"}
       label={label}
       name={name}
       value={value}
