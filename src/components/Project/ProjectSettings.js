@@ -1,18 +1,33 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useRef } from "react";
 
-import { Paper, Grid, Typography } from "@material-ui/core";
+import {
+  Paper,
+  Grid,
+  Typography,
+  responsiveFontSizes,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import EditIcon from "@material-ui/icons/Edit";
 import { Button as MuiButton, IconButton } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { TextField } from "@material-ui/core";
+import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 
 import Popup from "../../layouts/Popup";
 import { ProjectContext } from "../../context/ProjectContext";
-import { BASE_URL, createProjectAPIEndPoint } from "../../api";
+import {
+  BASE_URL,
+  createAPIEndPoint,
+  createProjectAPIEndPoint,
+  ENDPOINTS,
+} from "../../api";
 import Button from "../../controls/Button";
 import Input from "../../controls/Input";
 import Form from "../../layouts/Form";
 import Dialog from "../../layouts/Dialog";
+import ProjectAccessTag from "./ProjectCreate/ProjectAccessTag";
+import { UserContext } from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -26,7 +41,16 @@ const useStyles = makeStyles((theme) => ({
   input: {
     background: "#c1c1c1",
   },
+  addedUsers: {},
 }));
+
+const emptyUser = {
+  userId: "",
+  userName: "Select",
+  firstName: "",
+  lastName: "",
+  email: "",
+};
 
 const ProjectSettings = () => {
   const classes = useStyles();
@@ -47,6 +71,12 @@ const ProjectSettings = () => {
   const fileInput = useRef(null);
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
+  const [users, setUsers] = useState([]);
+  const [userToAdd, setUserToAdd] = useState(emptyUser);
+  const [userToAddInput, setUserToAddInput] = useState("Select");
+  const [addedUsers, setAddedUsers] = useState([]);
+  const { userDetails } = useContext(UserContext);
+
   useEffect(() => {
     if (openProjectSettings) {
       createProjectAPIEndPoint()
@@ -58,14 +88,92 @@ const ProjectSettings = () => {
           let imgSrc = BASE_URL + "Image/" + data.imageName;
           setDefaultImgSrc(imgSrc);
           setNewSelectedImgSrc(imgSrc);
-          console.log(data);
-        });
+        })
+        .catch((err) => console.log(err));
+
+      createAPIEndPoint(ENDPOINTS.USER)
+        .fetchAll()
+        .then((res) => {
+          let data = res.data;
+          let index = data.findIndex(
+            (user) => user.userId === userDetails.userId
+          );
+          if (index > -1) data.splice(index, 1);
+
+          var users = [emptyUser, ...data];
+          setUsers(users);
+        })
+        .catch((err) => console.log(err));
     }
     return () => {
-      setProjectDetails(null);
+      setProjectDetails({});
       setOpenDeleteConfirmDialog(false);
+      setUsers([]);
+      setUserToAdd(emptyUser);
+      setAddedUsers([]);
+      setUserToAddInput("Select");
     };
   }, [openProjectSettings]);
+
+  useEffect(() => {
+    (async () => {
+      if (projectDetails != null) {
+        //add user tags from project access api
+        var assignedUserIds = projectDetails.assignedUsers;
+        const usersToLoad = assignedUserIds;
+        if (usersToLoad) {
+          const responses = await loadUsersFromId(usersToLoad);
+
+          let usersFromApi = [];
+          for (var i = 0; i < responses.length; i++) {
+            if (responses[i].data.userId !== userDetails.userId)
+              usersFromApi.push(responses[i].data);
+          }
+          setAddedUsers(usersFromApi);
+        }
+        //remove name of project created from other user from searchlist
+
+        if (users.length > 0) {
+          if (projectDetails != null) {
+            var creatorId = projectDetails.creator.userId;
+            if (creatorId !== userDetails.userId) {
+              let temp = users;
+
+              let result = temp.find((user) => user.userId === creatorId);
+              let index = temp.indexOf(result);
+              if (index > -1) {
+                temp.splice(index, 1);
+              }
+            }
+          }
+        }
+      }
+    })();
+  }, [projectDetails]);
+
+  useEffect(() => {
+    if (addedUsers) {
+      let temp = users;
+      temp = temp.filter((user) => {
+        return !addedUsers.some((u) => u.userId === user.userId);
+      });
+
+      setUsers(temp);
+    }
+  }, [addedUsers]);
+
+  const loadUsersFromId = async (assignedUserIds) => {
+    var responses = [];
+    for (var i = 0; i < assignedUserIds.length; i++) {
+      var response = await loadUserFromId(assignedUserIds[i]);
+      responses.push(response);
+    }
+    return responses;
+  };
+
+  const loadUserFromId = async (assignedUserId) => {
+    return await createAPIEndPoint(ENDPOINTS.USER).fetchById(assignedUserId);
+  };
 
   const previewImg = (event) => {
     if (event.target.files && event.target.files[0]) {
@@ -82,27 +190,54 @@ const ProjectSettings = () => {
     }
   };
 
+  const addUsers = () => {
+    if (userToAdd.userId !== "" && users.includes(userToAdd)) {
+      let temp = users;
+      const index = temp.indexOf(userToAdd);
+      if (index > -1) {
+        temp.splice(index, 1);
+      }
+      //remove added user from searchlist
+      setUsers(temp);
+      setAddedUsers([...addedUsers, userToAdd]);
+
+      //setting autocomplete to default
+      setUserToAdd(users[0]);
+      setUserToAddInput("Select");
+    }
+  };
+
+  const removeAddedUser = (user) => {
+    let tempAddedUsers = addedUsers;
+
+    const index = tempAddedUsers.indexOf(user);
+    if (index > -1) tempAddedUsers.splice(index, 1);
+
+    setAddedUsers([...tempAddedUsers]);
+    setUsers([...users, user]);
+  };
+
   const submitChanges = (event) => {
     event.preventDefault();
 
     if (
       newProjectTitle !== projectDetails.title ||
-      (newSelectedImg && newSelectedImg.name !== projectDetails.imageName)
+      (newSelectedImg && newSelectedImg.name !== projectDetails.imageName) ||
+      !compareAccessUsers()
     ) {
       const formData = new FormData();
       formData.append("projectId", projectDetails.projectId);
-      newProjectTitle !== projectDetails.title
-        ? formData.append("title", newProjectTitle)
-        : console.log("Hello");
-      newSelectedImg.name !== projectDetails.imageName
-        ? formData.append("imageFile", newSelectedImg, newSelectedImg.name)
-        : console.log("Hello");
-
-      // let newProject = {
-      //   projectId: projectDetails.projectId,
-      //   title: newProjectTitle,
-      // };
-
+      if (newProjectTitle !== projectDetails.title)
+        formData.append("title", newProjectTitle);
+      if (newSelectedImg && newSelectedImg.name !== projectDetails.imageName)
+        formData.append("imageFile", newSelectedImg, newSelectedImg.name);
+      if (!compareAccessUsers()) {
+        let currentAccessUserIds = [];
+        addedUsers.forEach((user) => currentAccessUserIds.push(user.userId));
+        for (var i = 0; i < currentAccessUserIds.length; i++) {
+          formData.append("assignedUsers[]", currentAccessUserIds[i]);
+        }
+      }
       createProjectAPIEndPoint()
         .update(projectIdToModify, formData)
         .then((res) => {
@@ -113,6 +248,26 @@ const ProjectSettings = () => {
     }
 
     setOpenProjectSettings(false);
+  };
+
+  const compareAccessUsers = () => {
+    const prevAccessUserIds = projectDetails.assignedUsers;
+    const prevAccessUserIdsWithoutCurrentUser = prevAccessUserIds.filter(
+      (userId) => userId != userDetails.userId
+    );
+
+    let currentAccessUserIds = [];
+    addedUsers.forEach((user) => currentAccessUserIds.push(user.userId));
+
+    let cond1 = currentAccessUserIds.every((userId) =>
+      prevAccessUserIdsWithoutCurrentUser.includes(userId)
+    );
+    let cond2 = prevAccessUserIdsWithoutCurrentUser.every((userId) =>
+      currentAccessUserIds.includes(userId)
+    );
+
+    let cond = cond1 && cond2;
+    return cond;
   };
 
   const deleteProject = (event) => {
@@ -157,12 +312,12 @@ const ProjectSettings = () => {
                   </Button>
                 </Grid>
                 <Grid item container xs={12}>
-                  <Grid item xs={6}>
+                  <Grid item xs={4}>
                     <Typography variant="subtitle1" color="initial">
                       Project Title
                     </Typography>
                   </Grid>
-                  <Grid item container xs={6}>
+                  <Grid item container xs={8}>
                     <Grid item xs={10}>
                       {editProjectTitle ? (
                         <Input
@@ -185,6 +340,74 @@ const ProjectSettings = () => {
                       >
                         <EditIcon />
                       </IconButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item justifyContent="center" container xs={12}>
+                  <Grid item xs={4}>
+                    Project Access
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Autocomplete
+                      options={users}
+                      value={userToAdd}
+                      onChange={(event, newValue) => setUserToAdd(newValue)}
+                      inputValue={userToAddInput}
+                      onInputChange={(event, newInputValue) =>
+                        setUserToAddInput(newInputValue)
+                      }
+                      getOptionLabel={(option) =>
+                        option ? option.userName : ""
+                      }
+                      getOptionSelected={(option, value) => {
+                        return option.userId === value.userId;
+                      }}
+                      getOptionDisabled={(option) => option === emptyUser}
+                      id="clear-on-escape"
+                      clearOnEscape
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select User"
+                          margin="normal"
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <IconButton
+                      onClick={() => addUsers()}
+                      size="small"
+                      style={{ marginLeft: "25px" }}
+                    >
+                      <AddCircleRoundedIcon
+                        style={{ fontSize: "35" }}
+                      ></AddCircleRoundedIcon>
+                    </IconButton>
+                  </Grid>
+                </Grid>
+                <Grid item container xs={12}>
+                  <Grid item xs={4}></Grid>
+                  <Grid item xs={8}>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      className={classes.addedUsers}
+                      justifyContent="flex-start"
+                      spacing={3}
+                    >
+                      {addedUsers.map((user) => {
+                        return (
+                          <ProjectAccessTag
+                            xs={12}
+                            sm={6}
+                            key={user.userId}
+                            user={user}
+                            removeAddedUser={removeAddedUser}
+                          ></ProjectAccessTag>
+                        );
+                      })}
                     </Grid>
                   </Grid>
                 </Grid>

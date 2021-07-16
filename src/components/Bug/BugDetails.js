@@ -195,7 +195,7 @@ const BugDetails = (props) => {
                   xs={12}
                   alignItems="flex-end"
                   direction="row-reverse"
-                  justify="flex-start"
+                  justifyContent="flex-start"
                 >
                   <Grid item xs={2}>
                     <ButtonGroup
@@ -376,7 +376,7 @@ const BugDetails = (props) => {
             xs={12}
             alignItems="flex-end"
             direction="row-reverse"
-            justify="flex-start"
+            justifyContent="flex-start"
           >
             <Grid item>
               <ButtonGroup>

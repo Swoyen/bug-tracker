@@ -122,7 +122,7 @@ const Bug = (props) => {
       <Typography gutterBottom variant="h2" color="initial">
         Bug Tracker
       </Typography>
-      <Grid className={classes.buttons} container justify="flex-end">
+      <Grid className={classes.buttons} container justifyContent="flex-end">
         <Button
           startIcon={<AddOutlinedIcon />}
           onClick={(e) => showCreateDialog()}

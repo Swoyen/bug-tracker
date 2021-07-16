@@ -1,6 +1,7 @@
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, createContext, useEffect, useContext } from "react";
 
 import { createProjectAPIEndPoint } from "../api";
+import { UserContext } from "./UserContext";
 
 export const ProjectContext = createContext();
 
@@ -10,9 +11,11 @@ export const ProjectProvider = (props) => {
   const [openProjectCreate, setOpenProjectCreate] = useState(false);
   const [openProjectSettings, setOpenProjectSettings] = useState(false);
 
+  const { isLoggedIn } = useContext(UserContext);
+
   useEffect(() => {
-    loadProjectList();
-  }, []);
+    if (isLoggedIn) loadProjectList();
+  }, [isLoggedIn]);
 
   const loadProjectList = async () => {
     const response = await createProjectAPIEndPoint().fetchAll();

@@ -205,7 +205,7 @@ const Register = () => {
           >
             Sign Up
           </Button>
-          <Grid container justify="flex-end">
+          <Grid container justifyContent="flex-end">
             <Grid item>
               <RouterLink
                 className={classes.routerlink}

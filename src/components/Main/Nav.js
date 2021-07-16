@@ -20,7 +20,7 @@ import ProjectList from "./ProjectListComposition";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    zIndex: 10002,
+    zIndex: 11,
     position: "fixed",
     display: "flex",
     flexWrap: "nowrap",

@@ -2,13 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import { Card, Typography, CardContent, makeStyles } from "@material-ui/core";
-import ProjectList from "./ProjectList";
-import ProjectCreate from "./ProjectCreate";
-import ProjectSideBar from "../Main/ProjectSideBar";
 
-import Bug from "../Bug";
 import { UserContext } from "../../context/UserContext";
-import { createProjectAPIEndPoint } from "../../api";
 import ProjectTable from "./ProjectTable";
 
 const useStyles = makeStyles((theme) => ({

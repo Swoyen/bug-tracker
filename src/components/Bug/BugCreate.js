@@ -137,7 +137,7 @@ const BugCreate = (props) => {
     >
       <Form onSubmit={(e) => submitBug(e)}>
         <div className={classes.grid}>
-          <Grid container spacing={1} justify="center">
+          <Grid container spacing={1} justifyContent="center">
             <Grid item container xs={10} spacing={1} alignItems="center">
               <Grid item xs={5}>
                 <Typography variant="subtitle2">Name</Typography>
@@ -225,7 +225,7 @@ const BugCreate = (props) => {
             className={classes.createButton}
             container
             spacing={1}
-            justify="center"
+            justifyContent="center"
           >
             <Button type="submit">Submit</Button>
           </Grid>

@@ -17,6 +17,7 @@ import { ProjectContext } from "../../context/ProjectContext";
 import Button from "../../controls/Button";
 import { BASE_URL } from "../../api";
 import Grid from "@material-ui/core/Grid";
+import ProjectAccessTag from "./ProjectCreate/ProjectAccessTag";
 
 const useStyles = makeStyles({
   table: {
@@ -41,7 +42,7 @@ const ProjectTable = () => {
   return (
     <TableContainer component={Paper}>
       <Table
-        padding="default"
+        padding="normal"
         className={classes.table}
         aria-label="simple table"
       >
@@ -50,6 +51,9 @@ const ProjectTable = () => {
             <TableCell>Project ID</TableCell>
             <TableCell align="left">Title</TableCell>
             <TableCell align="left">Created Date</TableCell>
+            <TableCell size="medium" align="left">
+              Created By
+            </TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -86,6 +90,7 @@ const ProjectTable = () => {
                 </Link>
               </TableCell>
               <TableCell align="left">{project.createdTime}</TableCell>
+              <TableCell align="left">{project.creator.userName}</TableCell>
               <TableCell align="center">
                 <IconButton
                   size="small"

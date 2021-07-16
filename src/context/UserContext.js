@@ -4,7 +4,7 @@ import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "../api";
 export const UserContext = createContext();
 
 export const UserProvider = (props) => {
-  const [userName, setUserName] = useState("");
+  const [userDetails, setUserDetails] = useState({});
   const { isLoggedIn, setIsLoggedIn } = props;
   const login = () => {
     if (!isLoggedIn) {
@@ -15,6 +15,7 @@ export const UserProvider = (props) => {
           ).fetch();
 
           if (response.status === 200) {
+            setUserDetails(response.data);
             setIsLoggedIn(true);
           }
         } catch (err) {
@@ -25,7 +26,12 @@ export const UserProvider = (props) => {
   };
   return (
     <UserContext.Provider
-      value={{ userName, setUserName, isLoggedIn, setIsLoggedIn, login }}
+      value={{
+        isLoggedIn,
+        setIsLoggedIn,
+        userDetails,
+        login,
+      }}
     >
       {props.children}
     </UserContext.Provider>

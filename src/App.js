@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-import { createMuiTheme, makeStyles } from "@material-ui/core";
+import { createTheme as createMuiTheme, makeStyles } from "@material-ui/core";
 import { green, purple } from "@material-ui/core/colors";
 import { ThemeProvider } from "@material-ui/styles";
 
@@ -18,7 +18,7 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import ProjectSideBar from "./components/Main/ProjectSideBar";
 import Dashboard from "./components/Dashboard";
-import ProjectCreate from "./components/Project/ProjectCreate";
+import ProjectCreate from "./components/Project/ProjectCreate/ProjectCreate";
 
 import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "./api";
 import Project from "./components/Project/Project";
