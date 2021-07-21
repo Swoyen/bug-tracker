@@ -19,8 +19,9 @@ import Form from "../../../layouts/Form";
 import Input from "../../../controls/Input";
 import {
   createAPIEndPoint,
-  createProjectAPIEndPoint,
+  createRestrictedAPIEndPoint,
   ENDPOINTS,
+  RESTRICTEDENDPOINTS,
 } from "../../../api";
 import ProjectCreateDetails from "./ProjectCreateDetails";
 import ProjectCreateAccess from "./ProjectCreateAccess";
@@ -106,7 +107,7 @@ const ProjectCreate = () => {
         }
         // formData.append("assignedUsers", JSON.stringify(assignedUsers));
       }
-      createProjectAPIEndPoint()
+      createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
         .create(formData)
         .then((res) => {
           setOpenProjectCreate(false);

@@ -12,7 +12,12 @@ import { Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 
-import { BASE_URL, createProjectAPIEndPoint } from "../../api";
+import {
+  BASE_URL,
+  createProjectAPIEndPoint,
+  createRestrictedAPIEndPoint,
+  RESTRICTEDENDPOINTS,
+} from "../../api";
 import { ProjectContext } from "../../context/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -40,6 +45,7 @@ const ProjectList = () => {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
   const { url, path } = useRouteMatch();
+  const [recentProjectList, setRecentProjectList] = useState([]);
   const { projectList, openProjectCreate, setOpenProjectCreate } =
     useContext(ProjectContext);
   const handleToggle = () => {
@@ -74,6 +80,14 @@ const ProjectList = () => {
     }
 
     prevOpen.current = open;
+
+    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.RECENTPROJECTS)
+      .fetchAll()
+      .then((res) => {
+        console.log(res.data);
+        setRecentProjectList(res.data);
+      })
+      .catch((err) => console.log(err));
   }, [open]);
 
   return (
@@ -113,15 +127,15 @@ const ProjectList = () => {
                     <MenuItem disabled>
                       <Typography variant="subtitle2">Recent</Typography>
                     </MenuItem>
-                    {projectList.map((menuItem) => (
+                    {recentProjectList.map((menuItem) => (
                       <Link
                         className={classes.link}
-                        to={`/projects/${menuItem.projectId}`}
-                        key={menuItem.projectId}
+                        to={`/projects/${menuItem.openedProjectId}`}
+                        key={menuItem.openedProjectId}
                       >
                         <MenuItem onClick={handleClose}>
                           <img
-                            src={`${BASE_URL}Image/${menuItem.imageName}`}
+                            src={`${BASE_URL}Image/${menuItem.openedProject.imageName}`}
                             alt=""
                             style={{
                               width: "2em",
@@ -132,7 +146,7 @@ const ProjectList = () => {
                           />
 
                           <Typography variant="subtitle2">
-                            {menuItem.title}
+                            {menuItem.openedProject.title}
                           </Typography>
                         </MenuItem>
                       </Link>

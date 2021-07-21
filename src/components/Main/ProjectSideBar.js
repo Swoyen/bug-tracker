@@ -46,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
 const ProjectSideBar = () => {
   const { url, path } = useRouteMatch();
   const classes = useStyles();
-  const { projectName, setProjectName } = useContext(ProjectContext);
 
   return (
     <Drawer
@@ -71,7 +70,7 @@ const ProjectSideBar = () => {
             </ListItemIcon>
             <ListItemText
               primaryTypographyProps={{ style: { fontSize: "1em" } }}
-              primary={projectName}
+              primary={"hello"}
               secondary={"sad"}
             />
           </ListItem>

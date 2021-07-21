@@ -19,8 +19,9 @@ import { ProjectContext } from "../../context/ProjectContext";
 import {
   BASE_URL,
   createAPIEndPoint,
-  createProjectAPIEndPoint,
+  createRestrictedAPIEndPoint,
   ENDPOINTS,
+  RESTRICTEDENDPOINTS,
 } from "../../api";
 import Button from "../../controls/Button";
 import Input from "../../controls/Input";
@@ -79,7 +80,7 @@ const ProjectSettings = () => {
 
   useEffect(() => {
     if (openProjectSettings) {
-      createProjectAPIEndPoint()
+      createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
         .fetchById(projectIdToModify)
         .then((res) => {
           let data = res.data;
@@ -238,7 +239,7 @@ const ProjectSettings = () => {
           formData.append("assignedUsers[]", currentAccessUserIds[i]);
         }
       }
-      createProjectAPIEndPoint()
+      createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
         .update(projectIdToModify, formData)
         .then((res) => {
           console.log("updated");
@@ -271,7 +272,7 @@ const ProjectSettings = () => {
   };
 
   const deleteProject = (event) => {
-    createProjectAPIEndPoint()
+    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
       .delete(projectDetails.projectId)
       .then((res) => loadProjectList());
 

@@ -18,6 +18,11 @@ export const AUTHENTICATIONENDPOINTS = {
   LOGOUT: "Logout",
 };
 
+export const RESTRICTEDENDPOINTS = {
+  PROJECT: "Project",
+  RECENTPROJECTS: "RecentProject",
+};
+
 export const createAPIEndPoint = (endPoint) => {
   let url = BASE_URL + endPoint + "/";
   return {
@@ -29,8 +34,8 @@ export const createAPIEndPoint = (endPoint) => {
   };
 };
 
-export const createProjectAPIEndPoint = () => {
-  let url = BASE_URL + "Project" + "/";
+export const createRestrictedAPIEndPoint = (endPoint) => {
+  let url = BASE_URL + endPoint + "/";
   return {
     fetchAll: () => axios.get(url, { withCredentials: true }),
     fetchById: (id) => axios.get(url + id, { withCredentials: true }),

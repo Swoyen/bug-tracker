@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect, useContext } from "react";
 
-import { createProjectAPIEndPoint } from "../api";
+import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../api";
 import { UserContext } from "./UserContext";
 
 export const ProjectContext = createContext();
@@ -18,7 +18,9 @@ export const ProjectProvider = (props) => {
   }, [isLoggedIn]);
 
   const loadProjectList = async () => {
-    const response = await createProjectAPIEndPoint().fetchAll();
+    const response = await createRestrictedAPIEndPoint(
+      RESTRICTEDENDPOINTS.PROJECT
+    ).fetchAll();
     setProjectList(response.data);
   };
 

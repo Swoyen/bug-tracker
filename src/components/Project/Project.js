@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, Route } from "react-router";
 
 import { makeStyles } from "@material-ui/core";
@@ -7,6 +7,7 @@ import ProjectSideBar from "../Main/ProjectSideBar";
 import Bug from "../Bug";
 import { UserContext } from "../../context/UserContext";
 import { useRouteMatch } from "react-router-dom";
+import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,14 +26,28 @@ const Project = () => {
   const classes = useStyles();
   const { url, path } = useRouteMatch();
   const { id } = useParams();
+  // const [currentProject, setCurrentProject] = useState({});
 
-  const { userName, setUserName, isLoggedIn, setIsLoggedIn, loginJwt } =
-    useContext(UserContext);
+  const { userDetails, isLoggedIn, loginJwt } = useContext(UserContext);
 
   useEffect(() => {
-    console.log("id");
     if (!isLoggedIn) loginJwt();
-  }, []);
+    // createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
+    //   .fetchById(id)
+    //   .then((res) => {
+    //     setCurrentProject(res.data);
+    //   })
+    //   .catch((err) => console.log(err));
+
+    const recentProject = {
+      openedProjectId: id,
+      openedByUserId: userDetails.userId,
+    };
+    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.RECENTPROJECTS)
+      .create(recentProject)
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err.data));
+  }, [id]);
 
   return (
     <div className={classes.root}>
