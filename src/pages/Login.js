@@ -61,8 +61,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = (props) => {
-  const { userName, setUserName, isLoggedIn, setIsLoggedIn, login } =
-    useContext(UserContext);
+  const { isLoggedIn, loginJwt, login } = useContext(UserContext);
 
   const classes = useStyles();
   const [email, setEmail] = useState("");
@@ -70,7 +69,7 @@ const Login = (props) => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    login();
+    loginJwt();
   }, []);
 
   useEffect(() => {
@@ -86,20 +85,9 @@ const Login = (props) => {
     let user = { email: email, password: password };
 
     try {
-      let response = await createAuthenticationEndPoint(
-        AUTHENTICATIONENDPOINTS.LOGIN
-      ).post(user, true);
-
-      if (response.status === 200) {
-        setIsLoggedIn(true);
-        setUserName(response.data.userName);
-        setError(false);
-      } else {
-        setError(true);
-      }
-    } catch (err) {
-      setError(true);
-    }
+      login(user, setError);
+      console.log("Here");
+    } catch (err) {}
   };
 
   if (isLoggedIn) {

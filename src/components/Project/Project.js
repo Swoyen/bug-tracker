@@ -26,11 +26,12 @@ const Project = () => {
   const { url, path } = useRouteMatch();
   const { id } = useParams();
 
-  const { userName, setUserName, isLoggedIn, setIsLoggedIn, login } =
+  const { userName, setUserName, isLoggedIn, setIsLoggedIn, loginJwt } =
     useContext(UserContext);
 
   useEffect(() => {
-    login();
+    console.log("id");
+    if (!isLoggedIn) loginJwt();
   }, []);
 
   return (

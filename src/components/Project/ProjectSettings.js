@@ -126,13 +126,13 @@ const ProjectSettings = () => {
 
           let usersFromApi = [];
           for (var i = 0; i < responses.length; i++) {
+            console.log(userDetails);
             if (responses[i].data.userId !== userDetails.userId)
               usersFromApi.push(responses[i].data);
           }
           setAddedUsers(usersFromApi);
         }
         //remove name of project created from other user from searchlist
-
         if (users.length > 0) {
           if (projectDetails != null) {
             var creatorId = projectDetails.creator.userId;
