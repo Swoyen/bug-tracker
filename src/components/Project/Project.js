@@ -8,6 +8,7 @@ import Bug from "../Bug";
 import { UserContext } from "../../context/UserContext";
 import { useRouteMatch } from "react-router-dom";
 import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../api";
+import { BugProvider } from "../../context/BugContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,7 +46,7 @@ const Project = () => {
     };
     createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.RECENTPROJECTS)
       .create(recentProject)
-      .then((res) => console.log(res.data))
+      .then()
       .catch((err) => console.log(err.data));
   }, [id]);
 
@@ -53,7 +54,14 @@ const Project = () => {
     <div className={classes.root}>
       <ProjectSideBar className={classes.sidebar} />
       <div className={classes.content}>
-        <Route path={`${url}/bugs`} component={Bug}></Route>
+        <Route
+          path={`${url}/bugs`}
+          component={() => (
+            <BugProvider>
+              <Bug />
+            </BugProvider>
+          )}
+        ></Route>
       </div>
     </div>
   );

@@ -11,16 +11,7 @@ import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 import { cleanup } from "@testing-library/react";
 import { UserContext } from "../../context/UserContext";
-
-// const getFreshModelObject = () => ({
-//   bugId: -1,
-//   bugName: "",
-//   reporter: "",
-//   created: "",
-//   status: "",
-//   assignee: "",
-//   severity: "",
-// });
+import { BugContext } from "../../context/BugContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -32,6 +23,20 @@ const Bug = (props) => {
     useContext(UserContext);
 
   const {
+    openBugDetails,
+    setOpenBugDetails,
+    openBugCreate,
+    setOpenBugCreate,
+    users,
+    setUsers,
+    severities,
+    setSeverities,
+    statuses,
+    setStatuses,
+    selectedBugComponent,
+    setSelectedBugComponent,
+    prevSelectedBugComponent,
+    setPrevSelectedBugComponent,
     bugList,
     setBugList,
     selectedBugId,
@@ -39,15 +44,7 @@ const Bug = (props) => {
     handleInputChange,
     resetFormControls,
     resetList,
-  } = useBug();
-
-  const [openBugDetails, setOpenBugDetails] = useState(false);
-  const [openBugCreate, setOpenBugCreate] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [severities, setSeverities] = useState([]);
-  const [statuses, setStatuses] = useState([]);
-  const [selectedBugComponent, setSelectedBugComponent] = useState({});
-  const [prevSelectedBugComponent, setPrevSelectedBugComponent] = useState({});
+  } = useContext(BugContext);
 
   const classes = useStyles();
 
@@ -108,12 +105,6 @@ const Bug = (props) => {
     setOpenBugCreate(true);
   };
 
-  const removeBugFromList = (bugId) => {
-    let newList = bugList;
-    let filtered = newList.filter((bug) => bug.bugId !== bugId);
-    setBugList(filtered);
-  };
-
   if (!isLoggedIn) {
     return <Redirect to="/login" />;
   }
@@ -143,22 +134,7 @@ const Bug = (props) => {
           handleInputChange,
         }}
       ></BugList>
-      <BugDetails
-        {...{
-          openBugDetails,
-          setOpenBugDetails,
-          users,
-          statuses,
-          severities,
-          selectedBugId,
-          setSelectedBugId,
-          selectedBugComponent,
-          setSelectedBugComponent,
-          removeBugFromList,
-          handleInputChange,
-          resetList,
-        }}
-      ></BugDetails>
+      <BugDetails></BugDetails>
       <BugCreate
         {...{
           bugList,

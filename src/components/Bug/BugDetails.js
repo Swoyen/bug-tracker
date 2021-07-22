@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useContext } from "react";
+
 import {
   Grid,
   makeStyles,
@@ -5,19 +7,27 @@ import {
   ButtonGroup,
   useTheme,
   Fade,
+  TextField,
 } from "@material-ui/core";
-import { ErrorSharp } from "@material-ui/icons";
-import { ENDPOINTS, createAPIEndPoint } from "../../api";
-import React, { useState, useEffect } from "react";
-import Select from "../../controls/Select";
-import Popup from "../../layouts/Popup";
-import Button from "../../controls/Button";
-import Input from "../../controls/Input";
 import { cleanup } from "@testing-library/react";
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import DoneTwoToneIcon from "@material-ui/icons/DoneTwoTone";
 import Grow from "@material-ui/core/Grow";
+
+import Select from "../../controls/Select";
+import Popup from "../../layouts/Popup";
+import Button from "../../controls/Button";
+import Input from "../../controls/Input";
+import {
+  ENDPOINTS,
+  createAPIEndPoint,
+  createRestrictedAPIEndPoint,
+  RESTRICTEDENDPOINTS,
+} from "../../api";
+import BugComment from "./Comment/BugComment";
+import { BugContext } from "../../context/BugContext";
+import Dialog from "../../layouts/Dialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -26,7 +36,11 @@ const useStyles = makeStyles((theme) => ({
   doneButton: { background: "#06D6A0" },
   deleteButton: { background: "#C05746" },
   deleteDialogButtonGroup: { position: "absolute" },
-  gridPropertiesParent: { padding: "20px" },
+  gridPropertiesParent: {
+    padding: "20px",
+    maxHeight: "300px",
+  },
+  desc: { paddingLeft: "10px", height: "120px" },
 }));
 
 const BugDetails = (props) => {
@@ -43,13 +57,22 @@ const BugDetails = (props) => {
     removeBugFromList,
     handleInputChange,
     resetList,
-  } = props;
-  const [selectedBug, setSelectedBug] = useState({});
-  const [prevBugId, setPrevBugId] = useState(-1);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [isEditable, setIsEditable] = useState(false);
-  const [bugDescription, setBugDescription] = useState("");
-  const [bugName, setSelectedBugName] = useState();
+    selectedBug,
+    setSelectedBug,
+    prevBugId,
+    setPrevBugId,
+    openRecordConfirmDeleteDialog,
+    setOpenRecordConfirmDeleteDialog,
+    openCommentConfirmDeleteDialog,
+    setOpenCommentConfirmDeleteDialog,
+    isEditable,
+    setIsEditable,
+    bugDescription,
+    setBugDescription,
+    bugName,
+    setSelectedBugName,
+    commentToDeleteId,
+  } = useContext(BugContext);
 
   const classes = useStyles();
   const theme = useTheme();
@@ -120,9 +143,9 @@ const BugDetails = (props) => {
     setBugDescription(event.target.value);
   };
 
-  const confirmDelete = () => {
-    setOpenConfirmDialog(true);
-  };
+  // const confirmDelete = () => {
+  //   setOpenConfirmDialog(true);
+  // };
 
   const toggleEdit = () => {
     if (isEditable) {
@@ -143,7 +166,7 @@ const BugDetails = (props) => {
 
     removeBugFromList(selectedBugId);
 
-    setOpenConfirmDialog(false);
+    // setOpenConfirmDialog(false);
     setOpenBugDetails(false);
   };
 
@@ -161,25 +184,31 @@ const BugDetails = (props) => {
       >
         {selectedBugId !== -1 ? (
           <Grid container spacing={0}>
-            <Grid item xs={7}>
-              <Typography>Description:</Typography>
-
-              {isEditable ? (
-                <Grow in style={{ transformOrigin: "0 0 0" }}>
-                  <Input
-                    fullWidth
-                    multiline
-                    rows="5"
-                    name="description"
-                    label=""
-                    variant="filled"
-                    value={bugDescription}
-                    onChange={(e) => changeDescription(e)}
-                  ></Input>
-                </Grow>
-              ) : (
-                <p>{selectedBug.bugDescription}</p>
-              )}
+            <Grid item container xs={7}>
+              <Grid className={classes.desc} item xs={12}>
+                <Typography gutterBottom>Description:</Typography>
+                {isEditable ? (
+                  <Grow in style={{ transformOrigin: "0 0 0" }}>
+                    <Input
+                      fullWidth
+                      multiline
+                      rows="5"
+                      name="description"
+                      label=""
+                      variant="filled"
+                      value={bugDescription}
+                      onChange={(e) => changeDescription(e)}
+                    ></Input>
+                  </Grow>
+                ) : (
+                  <Typography variant="body2">
+                    {selectedBug.bugDescription}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid className={classes.comments} item xs={12}>
+                <BugComment bugId={selectedBugId}></BugComment>
+              </Grid>
             </Grid>
             <Grid
               className={classes.gridPropertiesParent}
@@ -187,6 +216,8 @@ const BugDetails = (props) => {
               container
               xs={5}
               spacing={2}
+              alignItems="flex-start"
+              justifyContent="flex-start"
             >
               <Grid item container xs={12}>
                 <Grid
@@ -222,13 +253,16 @@ const BugDetails = (props) => {
 
                       <Button
                         className={classes.deleteButton}
-                        onClick={() => confirmDelete()}
+                        onClick={() => setOpenRecordConfirmDeleteDialog(true)}
                       >
                         <DeleteTwoToneIcon />
                       </Button>
                     </ButtonGroup>
                   </Grid>
                 </Grid>
+              </Grid>
+
+              <Grid item container xs={12}>
                 <Grid item xs={6}>
                   <Typography variant="subtitle2">Created at:</Typography>
                 </Grid>
@@ -353,51 +387,22 @@ const BugDetails = (props) => {
         ) : (
           ""
         )}
-      </Popup>
-      <Popup
-        title="Confirm Delete"
-        titleVariant="h5"
-        openPopup={openConfirmDialog}
-        setOpenPopup={setOpenConfirmDialog}
-        topMargin={theme.spacing(15)}
-        center={false}
-      >
-        <Grid container spacing={1}>
-          <Grid container item xs={12}>
-            <Grid item>
-              <Typography gutterBottom>
-                Are you sure you want to delete?
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid
-            item
-            container
-            xs={12}
-            alignItems="flex-end"
-            direction="row-reverse"
-            justifyContent="flex-start"
-          >
-            <Grid item>
-              <ButtonGroup>
-                <Button
-                  variant="text"
-                  color="primary"
-                  onClick={() => deleteRecord()}
-                >
-                  Confirm
-                </Button>
-                <Button
-                  variant="text"
-                  color="primary"
-                  onClick={() => setOpenConfirmDialog(false)}
-                >
-                  Cancel
-                </Button>
-              </ButtonGroup>
-            </Grid>
-          </Grid>
-        </Grid>
+        <Dialog
+          title="Confirm Delete"
+          openDialog={openRecordConfirmDeleteDialog}
+          setOpenDialog={setOpenRecordConfirmDeleteDialog}
+          onConfirm={() => deleteRecord()}
+        >
+          Are you sure you want to delete this record?
+        </Dialog>
+        {/* <Dialog
+          title="Confirm Delete"
+          openDialog={openCommentConfirmDeleteDialog}
+          setOpenDialog={setOpenCommentConfirmDeleteDialog}
+          onConfirm={() => deleteComment()}
+        >
+          Are you sure you want to delete this comment?
+        </Dialog> */}
       </Popup>
     </>
   );

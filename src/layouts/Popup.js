@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
   dialogWrapper: {
     padding: theme.spacing(1),
     position: "absolute",
+    zIndex: 1234,
   },
   top: {
     top: (props) => props.topMargin,

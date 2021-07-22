@@ -21,6 +21,7 @@ export const AUTHENTICATIONENDPOINTS = {
 export const RESTRICTEDENDPOINTS = {
   PROJECT: "Project",
   RECENTPROJECTS: "RecentProject",
+  COMMENT: "Comment",
 };
 
 export const createAPIEndPoint = (endPoint) => {

@@ -18,7 +18,6 @@ const useBug = () => {
       .fetchAll()
       .then((res) => console.log())
       .catch((err) => console.log(err));
-    console.log("sadas");
   };
 
   const resetFormControls = () => {

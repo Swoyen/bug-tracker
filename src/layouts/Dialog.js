@@ -1,11 +1,23 @@
 import React from "react";
 import Button from "../controls/Button";
-import { Dialog as MuiDialog } from "@material-ui/core/";
+import { Dialog as MuiDialog, makeStyles } from "@material-ui/core/";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
+import { CallMissedSharp } from "@material-ui/icons";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    zIndex: 12345,
+  },
+  wrapper: {
+    position: "absolute",
+    margin: theme.spacing(1),
+    top: (props) => props.top,
+  },
+}));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -19,6 +31,8 @@ const Dialog = (props) => {
     setOpenDialog,
     onConfirm,
   } = props;
+
+  const classes = useStyles(props);
 
   const handleClickOpen = () => {
     setOpenDialog(true);
@@ -36,6 +50,8 @@ const Dialog = (props) => {
   return (
     <div>
       <MuiDialog
+        className={classes.root}
+        classes={{ paper: classes.wrapper }}
         open={openDialog}
         TransitionComponent={Transition}
         keepMounted
