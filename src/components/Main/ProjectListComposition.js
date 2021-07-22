@@ -84,8 +84,9 @@ const ProjectList = () => {
     createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.RECENTPROJECTS)
       .fetchAll()
       .then((res) => {
-        console.log(res.data);
-        setRecentProjectList(res.data);
+        let data = res.data;
+        data.sort((a, b) => b.recentOrder - a.recentOrder);
+        setRecentProjectList(data);
       })
       .catch((err) => console.log(err));
   }, [open]);
