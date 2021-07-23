@@ -22,6 +22,8 @@ export const BugProvider = (props) => {
   const [bugDescription, setBugDescription] = useState("");
   const [bugName, setSelectedBugName] = useState();
   const [commentToDeleteId, setCommentToDeleteId] = useState(false);
+  const [commentToEdit, setCommentToEdit] = useState({});
+  const [comments, setComments] = useState([]);
 
   // selectedBug, setSelectedBug,
   // prevBugId, setPrevBugId,
@@ -89,6 +91,10 @@ export const BugProvider = (props) => {
         removeBugFromList,
         commentToDeleteId,
         setCommentToDeleteId,
+        commentToEdit,
+        setCommentToEdit,
+        comments,
+        setComments,
       }}
     >
       {props.children}

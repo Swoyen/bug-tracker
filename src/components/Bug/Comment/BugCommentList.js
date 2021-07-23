@@ -6,16 +6,27 @@ import BugUserComment from "./BugUserComment";
 import { Grid } from "@material-ui/core";
 
 import Dialog from "../../../layouts/Dialog";
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    background: "yellow",
+    maxHeight: "500px",
+    overflow: "auto",
+  },
+}));
 
 const BugCommentList = () => {
+  const classes = useStyles();
   const {
     selectedBug,
     setSelectedBug,
     openCommentConfirmDeleteDialog,
     setOpenCommentConfirmDeleteDialog,
     commentToDeleteId,
+    comments,
+    setComments,
   } = useContext(BugContext);
-  const [comments, setComments] = useState([]);
 
   useEffect(() => {
     if (selectedBug.comments !== null) {
@@ -42,10 +53,15 @@ const BugCommentList = () => {
   };
 
   return (
-    <Grid container justifyContent="center" spacing={1}>
+    <Grid
+      className={classes.root}
+      container
+      justifyContent="center"
+      spacing={1}
+    >
       {comments
         ? comments.map((comment) => (
-            <Grid item xs={10} key={comment.commentId}>
+            <Grid item xs={11} key={comment.commentId}>
               <BugUserComment comment={comment}>
                 {comment.content}
               </BugUserComment>

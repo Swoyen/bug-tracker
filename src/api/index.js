@@ -22,6 +22,7 @@ export const RESTRICTEDENDPOINTS = {
   PROJECT: "Project",
   RECENTPROJECTS: "RecentProject",
   COMMENT: "Comment",
+  LIKE: "Comment" + "/" + "Like",
 };
 
 export const createAPIEndPoint = (endPoint) => {

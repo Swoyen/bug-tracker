@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
 import {
   Typography,
@@ -7,6 +7,7 @@ import {
   makeStyles,
   Tooltip,
   Paper,
+  IconButton,
 } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
@@ -16,25 +17,61 @@ import { useState } from "react";
 import { UserContext } from "../../../context/UserContext";
 import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import { BugContext } from "../../../context/BugContext";
+import { useRef } from "react";
 
 const maxCommentLength = 300;
 const minCommentLength = 4;
 
 const useStyles = makeStyles((theme) => ({
   root: { padding: "10px" },
+  submitButton: { marginLeft: "10px" },
 }));
 
 const BugPostComment = (props) => {
   const classes = useStyles();
 
-  const { selectedBugId, selectedBug, setSelectedBug } = useContext(BugContext);
+  const {
+    selectedBugId,
+    selectedBug,
+    setSelectedBug,
+    commentToEdit,
+    setCommentToEdit,
+  } = useContext(BugContext);
   const { userDetails } = useContext(UserContext);
   const [commentBody, setCommentBody] = useState("");
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const [isEditingComment, setIsEditingComment] = useState(false);
+  const [editCommentBody, setEditCommentBody] = useState("");
+  const ref = useRef();
+
+  useEffect(() => {
+    const onBodyClick = (event) => {
+      if (ref.current.contains(event.target)) {
+        return;
+      }
+      setInputFocused(false);
+    };
+    document.body.addEventListener("click", onBodyClick, { capture: true });
+    return () => {
+      document.body.removeEventListener("click", onBodyClick, {
+        capture: true,
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    if (commentToEdit.commentId !== undefined) {
+      console.log("COMment edit", commentToEdit);
+      setIsEditingComment(true);
+      setInputFocused(true);
+      setEditCommentBody(commentToEdit.content);
+    }
+  }, [commentToEdit]);
 
   const changeComment = (e) => {
     var newComment = e.target.value;
-    if (newComment.length < maxCommentLength) {
+    if (newComment.length <= maxCommentLength) {
       setCommentBody(newComment);
       setTooltipVisible(false);
     } else {
@@ -42,80 +79,142 @@ const BugPostComment = (props) => {
     }
   };
 
+  const changeEditComment = (e) => {
+    var newEditComment = e.target.value;
+    if (newEditComment.length <= maxCommentLength) {
+      setEditCommentBody(newEditComment);
+      setTooltipVisible(false);
+    } else {
+      setTooltipVisible(true);
+    }
+  };
+
+  const cancelEdit = () => {
+    setCommentToEdit({});
+    setIsEditingComment(false);
+  };
+
   const validate = () => {
-    if (
-      commentBody.length >= minCommentLength &&
-      commentBody.length <= maxCommentLength
-    )
+    var cb = commentBody;
+    if (isEditingComment) cb = editCommentBody;
+    if (cb.length >= minCommentLength && cb.length <= maxCommentLength)
       return true;
+    setTooltipVisible(true);
     return false;
   };
 
   const submitComment = (e) => {
     e.preventDefault();
     if (validate()) {
-      let comment = {
-        commentId: "0",
-        content: commentBody,
-        commentedByUserId: userDetails.userId,
-        commentedOnBugId: selectedBugId,
-      };
-      console.log(comment);
-      createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.COMMENT)
-        .create(comment)
-        .then((res) => {
-          let data = res.data;
-          let prevComments = selectedBug.comments;
-          let newComment = data;
-          newComment.commentedByUser = userDetails;
-          if (prevComments === null) {
-            let newComments = [newComment];
+      let comment = {};
+      if (isEditingComment) {
+        comment = {
+          commentId: commentToEdit.commentId,
+          content: editCommentBody,
+          commentedByUserId: userDetails.userId,
+          commentedOnBugId: selectedBugId,
+        };
+
+        createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.COMMENT)
+          .update(comment.commentId, comment)
+          .then((res) => {
+            setCommentToEdit({});
+            setIsEditingComment(false);
+            setEditCommentBody("");
+            let index = selectedBug.comments.findIndex(
+              (comm) => comm.userId == comment.userId
+            );
+            let newComments = selectedBug.comments;
+            newComments[index].content = editCommentBody;
             setSelectedBug({ ...selectedBug, comments: newComments });
-          } else {
-            let newComments = [...selectedBug.comments, newComment];
-            setSelectedBug({ ...selectedBug, comments: newComments });
-          }
-        })
-        .catch((err) => console.log(err));
+          })
+          .catch((err) => console.log(err));
+      } else {
+        //Non edited comment
+        comment = {
+          commentId: "0",
+          content: commentBody,
+          commentedByUserId: userDetails.userId,
+          commentedOnBugId: selectedBugId,
+        };
+        console.log(comment);
+        createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.COMMENT)
+          .create(comment)
+          .then((res) => {
+            let data = res.data;
+            let prevComments = selectedBug.comments;
+            let newComment = data;
+            newComment.commentedByUser = userDetails;
+            if (prevComments === null) {
+              let newComments = [newComment];
+              setSelectedBug({ ...selectedBug, comments: newComments });
+            } else {
+              let newComments = [...selectedBug.comments, newComment];
+              setSelectedBug({ ...selectedBug, comments: newComments });
+            }
+            setCommentBody("");
+          })
+          .catch((err) => console.log(err));
+      }
     }
   };
 
   return (
-    <Form className={classes.root} onSubmit={(e) => submitComment(e)}>
+    <Form
+      onFocus={() => setInputFocused(true)}
+      className={classes.root}
+      onSubmit={(e) => submitComment(e)}
+    >
       <Typography gutterBottom>Comments:</Typography>
-      <Paper>
+      <Paper ref={ref}>
         <Tooltip
-          title="Max Length of 300 exceeded"
+          title="Character length should be within 4-300"
           placement="top"
-          open={tooltipVisible}
+          open={tooltipVisible && inputFocused}
         >
           <TextField
             id="comment"
-            label="Enter Your Comment"
+            label={
+              isEditingComment
+                ? "Edit Your Comment"
+                : commentBody
+                ? "Unsaved changes"
+                : "Enter Your Comment"
+            }
             variant="filled"
             color="primary"
             margin="none"
             size="small"
-            value={commentBody}
-            onChange={(e) => changeComment(e)}
+            value={isEditingComment ? editCommentBody : commentBody}
+            onFocus={() => setInputFocused(true)}
+            onChange={(e) =>
+              isEditingComment ? changeEditComment(e) : changeComment(e)
+            }
             multiline
-            rows={2}
+            rows={1}
             fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment
-                  className={classes.accountCircle}
-                  position="start"
-                >
-                  <AccountCircle />
-                </InputAdornment>
-              ),
-            }}
           />
         </Tooltip>
-        <Button variant="text" type="submit">
-          Post
-        </Button>
+        {inputFocused ? (
+          <>
+            <Button
+              className={classes.submitButton}
+              variant="text"
+              type="submit"
+            >
+              {isEditingComment ? "Update" : "Post"}
+            </Button>
+            {isEditingComment ? (
+              <Button onClick={() => cancelEdit()} variant="text" type="submit">
+                Cancel
+              </Button>
+            ) : (
+              ""
+            )}
+          </>
+        ) : (
+          ""
+        )}
       </Paper>
     </Form>
   );
