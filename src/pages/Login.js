@@ -9,7 +9,12 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Redirect, Link as RouterLink } from "react-router-dom";
+import {
+  Redirect,
+  Link as RouterLink,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import Input from "../controls/Input";
 import Button from "../controls/Button";
 import Form from "../layouts/Form";
@@ -62,14 +67,21 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = (props) => {
   const { isLoggedIn, loginJwt, login } = useContext(UserContext);
-
+  let location = useLocation();
+  let history = useHistory();
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
+  let { from } = location.state || { from: { pathname: "/" } };
+
   useEffect(() => {
-    loginJwt();
+    // loginJwt(() => history.replace(from));
+    loginJwt(
+      () => history.replace(from),
+      () => {}
+    );
   }, []);
 
   useEffect(() => {
@@ -85,14 +97,13 @@ const Login = (props) => {
     let user = { email: email, password: password };
 
     try {
-      login(user, setError);
+      login(user, setError, () => history.replace(from));
       console.log("Here");
     } catch (err) {}
   };
-
-  if (isLoggedIn) {
-    return <Redirect to="/" />;
-  }
+  // if (isLoggedIn) {
+  //   return <Redirect to="/" />;
+  // }
 
   return (
     <Container maxWidth="xs">

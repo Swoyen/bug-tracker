@@ -23,6 +23,7 @@ import ProjectCreate from "./components/Project/ProjectCreate/ProjectCreate";
 import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "./api";
 import Project from "./components/Project/Project";
 import ProjectSettings from "./components/Project/ProjectSettings";
+import PrivateRoute from "./components/Route/PrivateRoute";
 
 const theme = createMuiTheme({
   palette: {
@@ -72,17 +73,20 @@ const App = () => {
               <main className={classes.content}>
                 <Route path="/login" component={() => <Login />}></Route>
                 <Route path="/register" component={() => <Register />}></Route>
+
                 <Route path="/" exact component={() => <Home />}></Route>
                 {/* <Route path="/bugs" exact component={() => <Bug />}></Route> */}
-                <Route exact path="/projects" component={() => <Projects />} />
-                <Route
-                  path="/projects/:id"
-                  component={() => <Project />}
-                ></Route>
-                <Route
+                {/* <Route exact path="/projects" component={() => <Projects />} /> */}
+                <PrivateRoute exact path="/projects">
+                  <Projects />
+                </PrivateRoute>
+                <PrivateRoute path="/projects/:id">
+                  <Project />
+                </PrivateRoute>
+                <PrivateRoute
                   path="/dashboard"
                   component={() => <Dashboard />}
-                ></Route>
+                ></PrivateRoute>
               </main>
             </BrowserRouter>
             <ProjectCreate></ProjectCreate>

@@ -70,11 +70,13 @@ const Select = (props) => {
           input={<Input className={classes.input} />}
           inputProps={{ "aria-label": "Without label" }}
         >
-          {options.map((item) => (
-            <MenuItem dense key={item[first]} value={item[second]}>
-              {item[second]}
-            </MenuItem>
-          ))}
+          {options
+            ? options.map((item) => (
+                <MenuItem dense key={item[first]} value={item[second]}>
+                  {item[second]}
+                </MenuItem>
+              ))
+            : ""}
         </MuiSelect>
         {error && <FormHelperText>{error}</FormHelperText>}
       </FormControl>

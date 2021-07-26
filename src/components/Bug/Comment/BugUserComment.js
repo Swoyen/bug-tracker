@@ -40,7 +40,7 @@ const BugUserComment = (props) => {
   const { userDetails } = useContext(UserContext);
   const [] = useState(false);
   useEffect(() => {
-    console.log(comment);
+    //console.log(comment);
     if (
       comment.likedUsers.length !== 0 &&
       comment.likedUsers.some((id) => id === userDetails.userId)

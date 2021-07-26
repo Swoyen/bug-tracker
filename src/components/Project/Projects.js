@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 
 import { Card, Typography, CardContent, makeStyles } from "@material-ui/core";
 
@@ -24,11 +24,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Projects = (props) => {
-  const { userName, setUserName, isLoggedIn, setIsLoggedIn, login } =
+  const { userName, setUserName, isLoggedIn, setIsLoggedIn, loginJwt } =
     useContext(UserContext);
 
   useEffect(() => {
-    login();
+    if (!isLoggedIn) loginJwt();
   }, []);
 
   const classes = useStyles();

@@ -1,4 +1,5 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "../api";
 
 export const UserContext = createContext();
@@ -7,7 +8,7 @@ export const UserProvider = (props) => {
   const [userDetails, setUserDetails] = useState({});
   const { isLoggedIn, setIsLoggedIn } = props;
 
-  const loginJwt = () => {
+  const loginJwt = (callback, failcallback) => {
     if (!isLoggedIn) {
       (async () => {
         try {
@@ -18,15 +19,19 @@ export const UserProvider = (props) => {
           if (response.status === 200) {
             setUserDetails(response.data);
             setIsLoggedIn(true);
+            callback();
+            return true;
           }
         } catch (err) {
           setIsLoggedIn(false);
+          failcallback();
+          return false;
         }
       })();
     }
   };
 
-  const login = async (user, setError) => {
+  const login = async (user, setError, cb) => {
     if (!isLoggedIn) {
       try {
         let response = await createAuthenticationEndPoint(
@@ -37,6 +42,7 @@ export const UserProvider = (props) => {
           setIsLoggedIn(true);
           setUserDetails(response.data);
           setError(false);
+          cb();
         } else {
           setError(true);
         }

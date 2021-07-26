@@ -134,7 +134,6 @@ const Bug = (props) => {
           handleInputChange,
         }}
       ></BugList>
-      <BugDetails></BugDetails>
       <BugCreate
         {...{
           bugList,

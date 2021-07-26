@@ -14,14 +14,15 @@ import {
 import { Inbox as InboxIcon, Mail as MailIcon } from "@material-ui/icons";
 import BugReportIcon from "@material-ui/icons/BugReport";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
-
+import WebAssetTwoToneIcon from "@material-ui/icons/WebAssetTwoTone";
+import TimerRoundedIcon from "@material-ui/icons/TimerRounded";
 import { ProjectContext } from "../../context/ProjectContext";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    background: "yellow",
+    background: "",
     width: drawerWidth,
     flexShrink: 0,
     zIndex: 10,
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth - 40,
     paddingLeft: "10px",
     paddingRight: "10px",
+    background: "#f2f2f2",
   },
   routerlink: {
     textDecoration: "none",
@@ -82,7 +84,31 @@ const ProjectSideBar = () => {
               <ListItemText
                 primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
                 dense="true"
-                primary={"Bugs"}
+                primary={"Issues"}
+              />
+            </ListItem>
+          </Link>
+          <Link className={classes.routerlink} to={`${url}/board`}>
+            <ListItem className={classes.listContent} dense button>
+              <ListItemIcon>
+                <WebAssetTwoToneIcon />
+              </ListItemIcon>
+              <ListItemText
+                primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
+                dense="true"
+                primary="Board"
+              />
+            </ListItem>
+          </Link>
+          <Link className={classes.routerlink} to={`${url}/time`}>
+            <ListItem className={classes.listContent} dense button>
+              <ListItemIcon>
+                <TimerRoundedIcon />
+              </ListItemIcon>
+              <ListItemText
+                primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
+                dense="true"
+                primary={"Timer"}
               />
             </ListItem>
           </Link>

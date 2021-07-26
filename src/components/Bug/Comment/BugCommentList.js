@@ -31,7 +31,6 @@ const BugCommentList = () => {
   useEffect(() => {
     if (selectedBug.comments !== null) {
       setComments(selectedBug.comments);
-      console.log("loadedComments", selectedBug.comments);
     }
     return () => {
       setComments([]);

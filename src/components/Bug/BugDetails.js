@@ -83,6 +83,7 @@ const BugDetails = (props) => {
         .fetchById(selectedBugId)
         .then((res) => {
           setIsEditable(false);
+          console.log("Bd", res.data);
           let data = res.data;
           setSelectedBug(data);
           setBugDescription(data.bugDescription);

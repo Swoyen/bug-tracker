@@ -29,15 +29,8 @@ const BugCreate = (props) => {
   const [severityId, setSeverityId] = useState("");
   const [errors, setErrors] = useState({});
 
-  const {
-    bugs,
-    setBugs,
-    users,
-    severities,
-    openBugCreate,
-    setOpenBugCreate,
-    resetList,
-  } = props;
+  const { users, severities, openBugCreate, setOpenBugCreate, resetList } =
+    props;
   const classes = useStyles();
 
   const refactorArray = (array, first, second) => {
