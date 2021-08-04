@@ -15,9 +15,14 @@ import Button from "../../../controls/Button";
 import Form from "../../../layouts/Form";
 import { useState } from "react";
 import { UserContext } from "../../../context/UserContext";
-import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
+import {
+  createAuthenticatedEndPoint,
+  createRestrictedAPIEndPoint,
+  RESTRICTEDENDPOINTS,
+} from "../../../api";
 import { BugContext } from "../../../context/BugContext";
 import { useRef } from "react";
+import { useMsal } from "@azure/msal-react";
 
 const maxCommentLength = 300;
 const minCommentLength = 4;
@@ -37,12 +42,13 @@ const BugPostComment = (props) => {
     commentToEdit,
     setCommentToEdit,
   } = useContext(BugContext);
-  const { userDetails } = useContext(UserContext);
+  const { userDetails, currentUser } = useContext(UserContext);
   const [commentBody, setCommentBody] = useState("");
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [isEditingComment, setIsEditingComment] = useState(false);
   const [editCommentBody, setEditCommentBody] = useState("");
+  const { instance, accounts } = useMsal();
   const ref = useRef();
 
   useEffect(() => {
@@ -62,7 +68,7 @@ const BugPostComment = (props) => {
 
   useEffect(() => {
     if (commentToEdit.commentId !== undefined) {
-      console.log("COMment edit", commentToEdit);
+      console.log("Comment edit", commentToEdit);
       setIsEditingComment(true);
       setInputFocused(true);
       setEditCommentBody(commentToEdit.content);
@@ -103,7 +109,7 @@ const BugPostComment = (props) => {
     return false;
   };
 
-  const submitComment = (e) => {
+  const submitComment = async (e) => {
     e.preventDefault();
     if (validate()) {
       let comment = {};
@@ -111,18 +117,23 @@ const BugPostComment = (props) => {
         comment = {
           commentId: commentToEdit.commentId,
           content: editCommentBody,
-          commentedByUserId: userDetails.userId,
+          commentedByUserId: userDetails.idTokenClaims.oid,
           commentedOnBugId: selectedBugId,
         };
-
-        createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.COMMENT)
-          .update(comment.commentId, comment)
+        console.log("updated", comment);
+        const apiObj = await createAuthenticatedEndPoint(
+          instance,
+          accounts,
+          RESTRICTEDENDPOINTS.COMMENT
+        );
+        let result = apiObj.update(comment.commentId, comment);
+        result
           .then((res) => {
             setCommentToEdit({});
             setIsEditingComment(false);
             setEditCommentBody("");
             let index = selectedBug.comments.findIndex(
-              (comm) => comm.userId == comment.userId
+              (comm) => comm.commentId == comment.commentId
             );
             let newComments = selectedBug.comments;
             newComments[index].content = editCommentBody;
@@ -134,17 +145,21 @@ const BugPostComment = (props) => {
         comment = {
           commentId: "0",
           content: commentBody,
-          commentedByUserId: userDetails.userId,
+          commentedByUserId: userDetails.idTokenClaims.oid,
           commentedOnBugId: selectedBugId,
         };
-        console.log(comment);
-        createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.COMMENT)
-          .create(comment)
+        const apiObj = await createAuthenticatedEndPoint(
+          instance,
+          accounts,
+          RESTRICTEDENDPOINTS.COMMENT
+        );
+        let result = apiObj.create(comment);
+        result
           .then((res) => {
             let data = res.data;
             let prevComments = selectedBug.comments;
             let newComment = data;
-            newComment.commentedByUser = userDetails;
+            newComment.commentedByUser = currentUser;
             if (prevComments === null) {
               let newComments = [newComment];
               setSelectedBug({ ...selectedBug, comments: newComments });

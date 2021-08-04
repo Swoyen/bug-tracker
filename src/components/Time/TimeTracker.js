@@ -16,12 +16,17 @@ import {
 } from "@material-ui/core";
 import {
   createAPIEndPoint,
+  createAuthenticatedEndPoint,
   createRestrictedAPIEndPoint,
   ENDPOINTS,
   RESTRICTEDENDPOINTS,
 } from "../../api";
 import Form from "../../layouts/Form";
 import { UserContext } from "../../context/UserContext";
+import RichTextFieldEditor from "../../controls/RichTextFieldEditor";
+import { TrendingUpOutlined } from "@material-ui/icons";
+import { TimeContext } from "../../context/TimeContext";
+import { useMsal } from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,24 +35,51 @@ const useStyles = makeStyles((theme) => ({
   iconButton: {
     background: "yellow",
   },
+  textEditorGrid: {},
+  textEditorContainer: {
+    padding: "10px",
+    height: "200px",
+    maxHeight: "500px",
+    overflow: "auto",
+    border: "1px solid " + theme.palette.primary.light,
+    borderRadius: "10px",
+  },
+  textEditor: {
+    margin: theme.spacing(2),
+  },
 }));
 
 let emptyBug = { bugId: "-1", bugName: "Select a bug" };
+let defaultElapsedTime = "00:00:00";
+let emptyTimeTrackId = -1;
+let emptyBugId = -1;
+
 const TimeTracker = (props) => {
   const classes = useStyles();
-  const { timeList } = props;
+  const { timeList, setTimeList } = useContext(TimeContext);
   const [startTimeInSeconds, setStartTimeinSeconds] = useState(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(null);
 
-  const [timeTrackId, setTimeTrackId] = useState("-1");
+  const [timeTrackId, setTimeTrackId] = useState(emptyTimeTrackId);
   const [isTimerStarted, setIsTimerStarted] = useState(false);
   const [timerVariable, setTimerVariable] = useState(null);
-  const [formattedElapsedTime, setFormattedElapsedTime] = useState("00:00:00");
+  const [formattedElapsedTime, setFormattedElapsedTime] =
+    useState(defaultElapsedTime);
 
-  const [selectedBugId, setSelectedBugId] = useState(-1);
-  const { userDetails } = useContext(UserContext);
+  const [formattedJsonDescription, setFormattedJsonDescription] = useState({});
+  const [loadedJsonDescription, setLoadedJsonDescription] = useState(null);
+  const [formattedJsonDefaultValue, setFormattedJsonDefaultValue] =
+    useState(null);
+  const [toolbarVisible, setToolbarVisible] = useState(false);
+  const [clearDesc, setClearDesc] = useState(false);
+
+  const [selectedBugId, setSelectedBugId] = useState(emptyBugId);
+  const { currentUser } = useContext(UserContext);
   const { bugList, setBugList } = useContext(BugContext);
   const [bugListWithEmptyBug, setBugListWithEmptyBug] = useState([emptyBug]);
+  const [isLoadedTimer, setIsLoadedTimer] = useState(false);
+
+  const { instance, accounts } = useMsal();
 
   let t = new Date(1970, 0, 1);
   let epoch = new Date(1970, 0, 1);
@@ -56,27 +88,31 @@ const TimeTracker = (props) => {
     if (timeList) {
       let timers = timeList;
       var startedTimer = timers.find((timer) => timer.stop === false);
+
       if (startedTimer) {
+        setIsLoadedTimer(true);
         setStartTimeinSeconds(startedTimer.startSeconds);
-        setSelectedBugId(startedTimer.bugId);
+        console.log(startedTimer);
+        let bugId = startedTimer.bugId === null ? "-1" : startedTimer.bugId;
+        setSelectedBugId(bugId);
         setTimeTrackId(startedTimer.timeTrackId);
         setIsTimerStarted(true);
+        // console.log(startedTimer.description);
+        setLoadedJsonDescription(startedTimer.description);
       }
     }
   }, [timeList]);
 
   useEffect(() => {
-    if (bugList.length === 0) {
-      createAPIEndPoint(ENDPOINTS.BUG)
-        .fetchAll()
-        .then((res) => {
-          let data = res.data;
-          setBugList(data);
-        })
-        .catch((err) => console.log(err));
-    } else {
-      setBugListWithEmptyBug([emptyBug, ...bugList]);
+    if (loadedJsonDescription) {
+      // console.log(loadedJsonDescription);
+      setFormattedJsonDefaultValue(loadedJsonDescription);
     }
+  }, [loadedJsonDescription]);
+
+  useEffect(() => {
+    setBugListWithEmptyBug([emptyBug, ...bugList]);
+
     return () => {
       setBugListWithEmptyBug([emptyBug]);
     };
@@ -119,7 +155,7 @@ const TimeTracker = (props) => {
     return t.toLocaleTimeString();
   };
 
-  const startTimer = () => {
+  const startTimer = async () => {
     let currentTimeinSeconds = Date.now();
     let currentTime = new Date(currentTimeinSeconds);
     let currentTimeIso = currentTime.toISOString();
@@ -131,11 +167,18 @@ const TimeTracker = (props) => {
       startTime: currentTimeIso,
       // stopTime: currentTimeIso
       startSeconds: currentTimeinSeconds,
-      userId: userDetails.userId,
-      bugId: selectedBugId,
+      userId: currentUser.userId,
+      description: formattedJsonDescription,
+      bugId: selectedBugId === emptyBugId ? null : selectedBugId,
     };
-    console.log(timeTrack);
-    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.TIMER)
+
+    (
+      await createAuthenticatedEndPoint(
+        instance,
+        accounts,
+        RESTRICTEDENDPOINTS.TIMER
+      )
+    )
       .create(timeTrack)
       .then((res) => {
         setTimeTrackId(res.data.timeTrackId);
@@ -144,7 +187,7 @@ const TimeTracker = (props) => {
       .catch((err) => console.log(err));
   };
 
-  const stopTimer = () => {
+  const stopTimer = async () => {
     let currentTimeInSeconds = Date.now();
     let currentTime = new Date(currentTimeInSeconds);
     let stopTimeIso = currentTime.toISOString();
@@ -154,16 +197,49 @@ const TimeTracker = (props) => {
       timeTrackId: timeTrackId,
       startTime: startTimeIso,
       stopTime: stopTimeIso,
-      bugId: selectedBugId,
-      userId: userDetails.userId,
+      bugId: selectedBugId == -1 ? null : selectedBugId,
+      userId: currentUser.userId,
+      description: formattedJsonDescription,
       stop: true,
     };
 
-    console.log(timeTrack);
-    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.TIMER)
+    (
+      await createAuthenticatedEndPoint(
+        instance,
+        accounts,
+        RESTRICTEDENDPOINTS.TIMER
+      )
+    )
       .update(timeTrackId, timeTrack)
-      .then((res) => console.log(res));
+      .then((res) => {
+        setFormattedElapsedTime(defaultElapsedTime);
+        setClearDesc(true);
+        setSelectedBugId(emptyBugId);
+        setToolbarVisible(false);
+        if (!isLoadedTimer) {
+          setTimeList([...timeList, timeTrack]);
+        } else {
+          setIsLoadedTimer(false);
+          let index = timeList.findIndex(
+            (time) => time.timeTrackId === timeTrack.timeTrackId
+          );
+          var temp = timeList;
+          temp[index] = timeTrack;
+          setTimeList([...temp]);
+        }
+      });
     setIsTimerStarted(false);
+
+    // createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.TIMER)
+    //   .update(timeTrackId, timeTrack)
+    //   .then((res) => {
+    //     setFormattedElapsedTime(defaultElapsedTime);
+    //     setClearDesc(true);
+    //     setSelectedBugId(emptyBugId);
+    //     setToolbarVisible(false);
+    //     setTimeList([...timeList, timeTrack]);
+    //   });
+    // setIsTimerStarted(false);
   };
 
   return (
@@ -172,47 +248,80 @@ const TimeTracker = (props) => {
         Track Time
       </Typography>
       <Form>
-        <Grid alignItems="center" container spacing={1}>
-          <Grid item xs={6}>
-            <InputLabel id="bug">Bug</InputLabel>
-            <Select labelId="label" id="bug" value={selectedBugId}>
-              {bugListWithEmptyBug.map((bug) => {
-                return (
-                  <MenuItem
-                    disabled={bug.bugId === "-1" ? true : false}
-                    key={bug.bugId}
-                    value={bug.bugId}
-                    onClick={() => setSelectedBugId(bug.bugId)}
-                  >
-                    {bug.bugName}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </Grid>
-          <Grid item xs={5}>
-            <Typography align="right" variant="h6">
-              {formattedElapsedTime}
-            </Typography>
-          </Grid>
-          <Grid item xs={1}>
-            {isTimerStarted ? (
-              <IconButton
-                onClick={() => stopTimer()}
-                className={classes.iconButton}
-                fontSize="small"
+        <Grid
+          alignItems="flex-start"
+          justifyContent="space-between"
+          container
+          spacing={1}
+        >
+          <Grid item container xs={8} spacing={1}>
+            <Grid item xs={12}>
+              <InputLabel id="bug">Bug</InputLabel>
+              <Select labelId="label" id="bug" value={selectedBugId}>
+                {bugListWithEmptyBug.map((bug) => {
+                  return (
+                    <MenuItem
+                      disabled={bug.bugId === "-1" ? true : false}
+                      key={bug.bugId}
+                      value={bug.bugId}
+                      onClick={() => setSelectedBugId(bug.bugId)}
+                    >
+                      {bug.bugName}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </Grid>
+            <Grid item xs={12} className={classes.textEditorGrid}>
+              <div
+                style={{
+                  height: toolbarVisible ? "200px" : "100px",
+                  background: "yellow",
+                }}
+                onFocus={() => setToolbarVisible(true)}
+                className={classes.textEditorContainer}
               >
-                <StopRoundedIcon fontSize="medium"></StopRoundedIcon>
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={() => startTimer()}
-                className={classes.iconButton}
-                fontSize="small"
-              >
-                <PlayRoundedIcon fontSize="medium"></PlayRoundedIcon>
-              </IconButton>
-            )}
+                <RichTextFieldEditor
+                  setContent={setFormattedJsonDescription}
+                  clear={clearDesc}
+                  setClear={setClearDesc}
+                  defaultValue={formattedJsonDefaultValue}
+                ></RichTextFieldEditor>
+              </div>
+            </Grid>
+          </Grid>
+
+          <Grid
+            item
+            justifyContent="flex-end"
+            alignItems="center"
+            container
+            xs={4}
+          >
+            <Grid item xs={10}>
+              <Typography align="right" variant="h6">
+                {formattedElapsedTime}
+              </Typography>
+            </Grid>
+            <Grid item xs={2}>
+              {isTimerStarted ? (
+                <IconButton
+                  onClick={() => stopTimer()}
+                  className={classes.iconButton}
+                  fontSize="small"
+                >
+                  <StopRoundedIcon fontSize="medium"></StopRoundedIcon>
+                </IconButton>
+              ) : (
+                <IconButton
+                  onClick={() => startTimer()}
+                  className={classes.iconButton}
+                  fontSize="small"
+                >
+                  <PlayRoundedIcon fontSize="medium"></PlayRoundedIcon>
+                </IconButton>
+              )}
+            </Grid>
           </Grid>
           <Grid item xs={12}></Grid>
         </Grid>

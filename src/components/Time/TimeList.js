@@ -3,46 +3,47 @@ import TimePaper from "./TimePaper";
 import Dialog from "../../layouts/Dialog";
 import React, { useEffect, useState } from "react";
 import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../api";
+import { useContext } from "react";
+import { TimeContext } from "../../context/TimeContext";
+import TimeGroup from "./TimeGroup.js";
 
 const useStyles = makeStyles((theme) => ({
   root: { textAlign: "left" },
 }));
 
 const TimeList = (props) => {
-  const { timeList, setTimeList } = props;
-  const [openConfirmation, setOpenConfirmation] = useState(false);
-  const [timeTrackIdToDelete, setTimeTrackIdToDelete] = useState(-1);
-  const [actionsShownId, setActionsShownId] = useState(-1);
+  const {
+    openConfirmation,
+    setOpenConfirmation,
+    deleteTimeRecord,
+    timeListGroupedByDate,
+  } = useContext(TimeContext);
   const classes = useStyles();
-
-  const deleteTimeRecord = () => {
-    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.TIMER)
-      .delete(timeTrackIdToDelete)
-      .then((res) => {
-        let temp = timeList;
-        temp = temp.filter((time) => time.timeTrackId !== timeTrackIdToDelete);
-        console.log(temp);
-        setTimeList(temp);
-      })
-      .catch((err) => console.log(err));
-  };
 
   useEffect(() => {}, []);
   return (
-    <Grid container className={classes.root}>
-      {timeList.map((time) => {
+    <Grid container className={classes.root} spacing={2}>
+      {timeListGroupedByDate.map((timeList) => {
+        var dateStr =
+          timeList.date.date +
+          "/" +
+          timeList.date.month +
+          "/" +
+          timeList.date.year;
+
         return (
-          <Grid item xs={12} key={time.timeTrackId}>
-            <TimePaper
-              time={time}
-              setOpenConfirmation={setOpenConfirmation}
-              setTimeTrackIdToDelete={setTimeTrackIdToDelete}
-              actionsShownId={actionsShownId}
-              setActionsShownId={setActionsShownId}
-            ></TimePaper>
+          <Grid item key={dateStr} xs={12}>
+            <TimeGroup timeList={timeList}></TimeGroup>
           </Grid>
         );
       })}
+      {/* {timeList.map((time) => {
+        return (
+          <Grid item xs={12} key={time.timeTrackId}>
+            <TimePaper time={time}></TimePaper>
+          </Grid>
+        );
+      })} */}
       <Dialog
         title="Confirm Delete"
         openDialog={openConfirmation}

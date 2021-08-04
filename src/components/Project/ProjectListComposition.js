@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useRouteMatch } from "react-router-dom";
+import { useMsal } from "@azure/msal-react";
 
 import Button from "@material-ui/core/Button";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -15,7 +16,7 @@ import { Typography } from "@material-ui/core";
 import {
   BASE_URL,
   createProjectAPIEndPoint,
-  createRestrictedAPIEndPoint,
+  createAuthenticatedEndPoint,
   RESTRICTEDENDPOINTS,
 } from "../../api";
 import { ProjectContext } from "../../context/ProjectContext";
@@ -40,11 +41,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProjectList = () => {
+const ProjectListComposition = () => {
   const classes = useStyles();
+  const { instance, accounts } = useMsal();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
   const { url, path } = useRouteMatch();
+
   const [recentProjectList, setRecentProjectList] = useState([]);
   const { projectList, openProjectCreate, setOpenProjectCreate } =
     useContext(ProjectContext);
@@ -78,23 +81,45 @@ const ProjectList = () => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
-
     prevOpen.current = open;
-
-    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.RECENTPROJECTS)
-      .fetchAll()
-      .then((res) => {
-        let data = res.data;
-        data.sort((a, b) => b.recentOrder - a.recentOrder);
-        setRecentProjectList(data);
-      })
-      .catch((err) => console.log(err));
   }, [open]);
 
+  useEffect(() => {
+    if (open) {
+      (async () => {
+        if (instance !== undefined && accounts !== undefined) {
+          var obj = await createAuthenticatedEndPoint(
+            instance,
+            accounts,
+            RESTRICTEDENDPOINTS.RECENTPROJECTS
+          );
+          if (obj) {
+            var result = obj.fetchAll();
+            result
+              .then((res) => {
+                console.log(res.data);
+                let data = res.data;
+                data.sort((a, b) => b.recentOrder - a.recentOrder);
+                setRecentProjectList(data);
+              })
+              .catch((err) => console.log(err));
+          }
+          // .fetchAll()
+          // .then((res) => {
+          //   let data = res.data;
+          //   data.sort((a, b) => b.recentOrder - a.recentOrder);
+          //   setRecentProjectList(data);
+          // })
+          // .catch((err) => console.log(err));
+        }
+      })();
+    }
+  }, [open, instance, accounts]);
   return (
     <div className={classes.root}>
       <div>
         <Button
+          color="secondary"
           ref={anchorRef}
           aria-controls={open ? "menu-list-grow" : undefined}
           aria-haspopup="true"
@@ -176,4 +201,4 @@ const ProjectList = () => {
   );
 };
 
-export default ProjectList;
+export default ProjectListComposition;

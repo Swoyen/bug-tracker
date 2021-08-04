@@ -15,7 +15,8 @@ import {
 } from "../../api";
 import { UserContext } from "../../context/UserContext";
 import BugReportTwoToneIcon from "@material-ui/icons/BugReportTwoTone";
-import ProjectList from "./ProjectListComposition";
+import ProjectListComposition from "../Project/ProjectListComposition";
+import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,15 +26,28 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexWrap: "nowrap",
   },
+  appBar: { background: theme.palette.primary.dark },
   menuButton: { marginRight: theme.spacing(2) },
-  links: { flexGrow: 1, background: "yellow" },
-  link: { textDecoration: "none", background: "blue" },
+  links: { flexGrow: 1 },
+  link: { textDecoration: "none" },
 }));
 
 const Nav = (props) => {
   const { userName, setUserName, isLoggedIn, setIsLoggedIn } =
     useContext(UserContext);
   const classes = useStyles();
+  const { instance } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
+
+  function handleLogout(instance) {
+    instance
+      .logoutPopup()
+      .then()
+      .catch((e) => {
+        console.error(e);
+      });
+  }
+  if (!isAuthenticated) return <Redirect to="/signin"></Redirect>;
 
   const logout = async () => {
     const response = await createAuthenticationEndPoint(
@@ -47,7 +61,7 @@ const Nav = (props) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed" color="primary">
+      <AppBar className={classes.appBar} position="fixed">
         <Toolbar>
           <IconButton
             edge="start"
@@ -74,20 +88,28 @@ const Nav = (props) => {
             </>
           ) : ( */}
           <div className={classes.links}>
-            <ProjectList className={classes.link}></ProjectList>
+            <ProjectListComposition
+              className={classes.link}
+            ></ProjectListComposition>
             {/* <Link className={classes.link} to="/projects">
               <Button variant="text">Projects</Button>
             </Link> */}
 
             <Link className={classes.link} to="/dashboard">
-              <Button variant="text">Dashboard</Button>
+              <Button color="secondary" variant="text">
+                Dashboard
+              </Button>
             </Link>
           </div>
-          <Link className={classes.link} to="/login">
-            <Button onClick={() => logout()} variant="text">
-              Logout
-            </Button>
-          </Link>{" "}
+          {/* <Link className={classes.link}  to="/signin"> */}
+          <Button
+            color="secondary"
+            onClick={() => handleLogout(instance)}
+            variant="text"
+          >
+            Logout
+          </Button>
+          {/* </Link>{" "} */}
           <IconButton>
             <AccountCircle></AccountCircle>
           </IconButton>

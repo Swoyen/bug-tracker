@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Popup from "../../layouts/Popup";
 import Grid from "@material-ui/core/Grid";
-import { ENDPOINTS, createAPIEndPoint } from "../../api";
+import {
+  ENDPOINTS,
+  createAPIEndPoint,
+  createAuthenticatedEndPoint,
+  RESTRICTEDENDPOINTS,
+} from "../../api";
 import { InputBase, makeStyles, Typography } from "@material-ui/core";
 import Button from "../../controls/Button";
 import Input from "../../controls/Input";
 import Form from "../../layouts/Form";
 import Select from "../../controls/Select";
+import { useMsal } from "@azure/msal-react";
+import { useContext } from "react";
+import { BugContext } from "../../context/BugContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -19,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BugCreate = (props) => {
+  const { instance, accounts } = useMsal();
   const [bugName, setBugName] = useState("");
   const [bugDetails, setBugDetails] = useState("");
   const [reporter, setReporter] = useState("");
@@ -29,8 +38,9 @@ const BugCreate = (props) => {
   const [severityId, setSeverityId] = useState("");
   const [errors, setErrors] = useState({});
 
-  const { users, severities, openBugCreate, setOpenBugCreate, resetList } =
-    props;
+  const { users, severities, openBugCreate, setOpenBugCreate } = props;
+  const { resetList } = useContext(BugContext);
+
   const classes = useStyles();
 
   const refactorArray = (array, first, second) => {
@@ -53,7 +63,7 @@ const BugCreate = (props) => {
     return Object.values(temp).every((x) => x === "");
   };
 
-  const AddBug = () => {
+  const AddBug = async () => {
     let newBug = {};
     newBug.bugID = 0;
     newBug.bugName = bugName;
@@ -64,9 +74,14 @@ const BugCreate = (props) => {
     newBug.statusId = 1;
     newBug.severityId = severityId;
 
-    createAPIEndPoint(ENDPOINTS.BUG)
-      .create(newBug)
-      .then((res) => resetList())
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.BUG
+    );
+    const result = apiObj.create(newBug);
+    result
+      .then((res) => resetList(instance, accounts))
       .catch((err) => console.log(err));
   };
 
@@ -168,6 +183,7 @@ const BugCreate = (props) => {
               </Grid>
               <Grid item xs={7}>
                 <Select
+                  variant="outlined"
                   name="reporter"
                   label="Reporter"
                   value={reporter}

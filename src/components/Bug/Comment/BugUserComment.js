@@ -15,7 +15,12 @@ import Dialog from "../../../layouts/Dialog";
 import { BugContext } from "../../../context/BugContext";
 import { Badge } from "@material-ui/core";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
-import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
+import {
+  createAuthenticatedEndPoint,
+  createRestrictedAPIEndPoint,
+  RESTRICTEDENDPOINTS,
+} from "../../../api";
+import { useMsal } from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +33,7 @@ const BugUserComment = (props) => {
   const { comment } = props;
   const [liked, setLiked] = useState(false);
   const [totalLikes, setTotalLikes] = useState(0);
+  const { instance, accounts } = useMsal();
 
   const {
     openCommentConfirmDeleteDialog,
@@ -61,9 +67,14 @@ const BugUserComment = (props) => {
     setOpenCommentConfirmDeleteDialog(true);
   };
 
-  const likeComment = () => {
-    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.LIKE)
-      .fetchById(comment.commentId)
+  const likeComment = async () => {
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.LIKE
+    );
+    let result = apiObj.fetchById(comment.commentId);
+    result
       .then((res) => {
         setLiked(!liked);
         let temp = selectedBug;
@@ -94,7 +105,9 @@ const BugUserComment = (props) => {
           <Grid item container xs={10} spacing={1}>
             <Grid item xs={12}>
               <Typography variant="subtitle2" color="initial">
-                {comment.commentedByUser.userName}
+                {comment.commentedByUser
+                  ? comment.commentedByUser.userName
+                  : ""}
               </Typography>
             </Grid>
             <Grid
@@ -111,7 +124,9 @@ const BugUserComment = (props) => {
                 </Typography>
               </Grid>
 
-              {comment.commentedByUser.userId === userDetails.userId ? (
+              {comment.commentedByUser &&
+              comment.commentedByUser.userId ===
+                userDetails.idTokenClaims.oid ? (
                 <Grid style={{ marginLeft: "-8px" }} item xs={5}>
                   <Button
                     onClick={() => deleteComment()}

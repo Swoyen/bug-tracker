@@ -24,10 +24,12 @@ import {
   createAPIEndPoint,
   createRestrictedAPIEndPoint,
   RESTRICTEDENDPOINTS,
+  createAuthenticatedEndPoint,
 } from "../../api";
 import BugComment from "./Comment/BugComment";
 import { BugContext } from "../../context/BugContext";
 import Dialog from "../../layouts/Dialog";
+import { useMsal } from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -73,48 +75,61 @@ const BugDetails = (props) => {
     setSelectedBugName,
     commentToDeleteId,
   } = useContext(BugContext);
+  const { instance, accounts } = useMsal();
 
   const classes = useStyles();
   const theme = useTheme();
 
   useEffect(() => {
-    if (selectedBugId != -1) {
-      createAPIEndPoint(ENDPOINTS.BUG)
-        .fetchById(selectedBugId)
-        .then((res) => {
-          setIsEditable(false);
-          console.log("Bd", res.data);
-          let data = res.data;
-          setSelectedBug(data);
-          setBugDescription(data.bugDescription);
-          setSelectedBugName(data.bugName);
-        })
-        .catch((err) => console.log(err));
-    }
+    (async () => {
+      if (selectedBugId != -1) {
+        const apiObj = await createAuthenticatedEndPoint(
+          instance,
+          accounts,
+          RESTRICTEDENDPOINTS.BUG
+        );
+        let result = apiObj.fetchById(selectedBugId);
+        result
+          .then((res) => {
+            setIsEditable(false);
+            let data = res.data;
+            setSelectedBug(data);
+            setBugDescription(data.bugDescription);
+            setSelectedBugName(data.bugName);
+          })
+          .catch((err) => console.log(err));
+      }
+    })();
     return function cleanup() {
       setPrevBugId(selectedBugId);
     };
   }, [selectedBugId]);
 
   useEffect(() => {
-    if (selectedBug && prevBugId === selectedBug.bugId) {
-      let updatedBug = {};
-      updatedBug.bugId = selectedBug.bugId;
-      updatedBug.bugName = selectedBug.bugName;
-      updatedBug.bugDescription = selectedBug.bugDescription;
-      updatedBug.reporterUserId = selectedBug.reporter.userId;
-      updatedBug.assigneeUserId = selectedBug.assignee.userId;
-      updatedBug.createdDate = selectedBug.createdDate;
-      updatedBug.severityId = selectedBug.severity.severityId;
-      updatedBug.statusId = selectedBug.status.statusId;
+    (async () => {
+      if (selectedBug && prevBugId === selectedBug.bugId) {
+        let updatedBug = {};
+        updatedBug.bugId = selectedBug.bugId;
+        updatedBug.bugName = selectedBug.bugName;
+        updatedBug.bugDescription = selectedBug.bugDescription;
+        updatedBug.reporterUserId = selectedBug.reporter.userId;
+        updatedBug.assigneeUserId = selectedBug.assignee.userId;
+        updatedBug.createdDate = selectedBug.createdDate;
+        updatedBug.severityId = selectedBug.severity.severityId;
+        updatedBug.statusId = selectedBug.status.statusId;
 
-      createAPIEndPoint(ENDPOINTS.BUG)
-        .update(selectedBugId, updatedBug)
-        .then((res) => {})
-        .catch((err) => console.log(err));
-      setSelectedBugComponent(selectedBug);
-    }
-    setPrevBugId(selectedBugId);
+        const apiObj = await createAuthenticatedEndPoint(
+          instance,
+          accounts,
+          RESTRICTEDENDPOINTS.BUG
+        );
+        let result = apiObj.update(selectedBugId, updatedBug);
+        result.then((res) => {}).catch((err) => console.log(err));
+
+        setSelectedBugComponent(selectedBug);
+      }
+      setPrevBugId(selectedBugId);
+    })();
   }, [
     selectedBug.severity,
     selectedBug.status,
@@ -159,13 +174,16 @@ const BugDetails = (props) => {
     setIsEditable(!isEditable);
   };
 
-  const deleteRecord = () => {
-    createAPIEndPoint(ENDPOINTS.BUG)
-      .delete(selectedBugId)
-      .then((res) => console.log(res))
+  const deleteRecord = async () => {
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.BUG
+    );
+    let result = apiObj.delete(selectedBugId);
+    result
+      .then((res) => removeBugFromList(selectedBugId))
       .catch((err) => console.log(err));
-
-    removeBugFromList(selectedBugId);
 
     // setOpenConfirmDialog(false);
     setOpenBugDetails(false);

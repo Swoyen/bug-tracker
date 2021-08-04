@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useMsal } from "@azure/msal-react";
 
 import {
   Typography,
@@ -15,7 +16,12 @@ import DeleteIcon from "@material-ui/icons/Close";
 import Input from "../../../controls/Input";
 import Form from "../../../layouts/Form";
 import Button from "../../../controls/Button";
-import { createAPIEndPoint, ENDPOINTS } from "../../../api";
+import {
+  createAPIEndPoint,
+  createAuthenticatedEndPoint,
+  ENDPOINTS,
+  RESTRICTEDENDPOINTS,
+} from "../../../api";
 import ProjectAccessTag from "./ProjectAccessTag";
 import { UserContext } from "../../../context/UserContext";
 
@@ -55,6 +61,7 @@ const emptyUser = {
 const ProjectCreateAccess = (props) => {
   const classes = useStyles();
   const [users, setUsers] = useState([]);
+  const { instance, accounts } = useMsal();
   const [addedUsers, setAddedUsers] = useState([]);
   const [userToAdd, setUserToAdd] = useState(emptyUser);
   const [userToAddInput, setUserToAddInput] = useState("");
@@ -63,19 +70,42 @@ const ProjectCreateAccess = (props) => {
   const { userDetails } = useContext(UserContext);
 
   useEffect(() => {
-    if (openProjectCreate)
-      createAPIEndPoint(ENDPOINTS.USER)
-        .fetchAll()
-        .then((res) => {
-          let data = res.data;
-          let index = data.findIndex(
-            (user) => user.userId === userDetails.userId
-          );
-          if (index > -1) data.splice(index, 1);
-          var users = [emptyUser, ...data];
-          setUsers(users);
-        })
-        .catch((err) => console.log(err));
+    (async () => {
+      if (openProjectCreate)
+        var apiObj = await createAuthenticatedEndPoint(
+          instance,
+          accounts,
+          RESTRICTEDENDPOINTS.USER
+        );
+      if (apiObj) {
+        var result = apiObj.fetchAll();
+        result
+          .then((res) => {
+            let data = res.data;
+            console.log(userDetails);
+            console.log(data);
+            let index = data.findIndex(
+              (user) => user.userId === userDetails.idTokenClaims.oid
+            );
+            if (index > -1) data.splice(index, 1);
+            var users = [emptyUser, ...data];
+            setUsers(users);
+          })
+          .catch((err) => console.log(err));
+      }
+      // createAPIEndPoint(ENDPOINTS.USER)
+      //   .fetchAll()
+      //   .then((res) => {
+      //     let data = res.data;
+      //     let index = data.findIndex(
+      //       (user) => user.userId === userDetails.userId
+      //     );
+      //     if (index > -1) data.splice(index, 1);
+      //     var users = [emptyUser, ...data];
+      //     setUsers(users);
+      //   })
+      //   .catch((err) => console.log(err));
+    })();
   }, [openProjectCreate]);
 
   useEffect(() => {
@@ -99,7 +129,6 @@ const ProjectCreateAccess = (props) => {
 
       //remove added user from searchlist
       setUsers(temp);
-
       setAddedUsers([...addedUsers, userToAdd]);
 
       //setting autocomplete to default

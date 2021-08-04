@@ -79,35 +79,10 @@ const Bug = (props) => {
     setPrevSelectedBugComponent(selectedBugComponent);
   }, [selectedBugComponent]);
 
-  useEffect(() => {
-    createAPIEndPoint(ENDPOINTS.USER)
-      .fetchAll()
-      .then((res) => setUsers(res.data))
-      .catch((err) => console.log(err));
-
-    createAPIEndPoint(ENDPOINTS.SEVERITY)
-      .fetchAll()
-      .then((res) => setSeverities(res.data))
-      .catch((err) => console.log(err));
-
-    createAPIEndPoint(ENDPOINTS.STATUS)
-      .fetchAll()
-      .then((res) => setStatuses(res.data))
-      .catch((err) => console.log(err));
-
-    createAPIEndPoint(ENDPOINTS.BUG)
-      .fetchAll()
-      .then((res) => setBugList(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-
   const showCreateDialog = () => {
     setOpenBugCreate(true);
   };
 
-  if (!isLoggedIn) {
-    return <Redirect to="/login" />;
-  }
   return (
     <>
       <Typography gutterBottom variant="h2" color="initial">

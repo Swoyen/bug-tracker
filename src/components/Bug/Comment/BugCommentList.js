@@ -1,16 +1,20 @@
 import React, { useEffect, useContext, useState } from "react";
 
 import { BugContext } from "../../../context/BugContext";
-import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
+import {
+  createAuthenticatedEndPoint,
+  createRestrictedAPIEndPoint,
+  RESTRICTEDENDPOINTS,
+} from "../../../api";
 import BugUserComment from "./BugUserComment";
 import { Grid } from "@material-ui/core";
 
 import Dialog from "../../../layouts/Dialog";
 import { makeStyles } from "@material-ui/core";
+import { useMsal } from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    background: "yellow",
     maxHeight: "500px",
     overflow: "auto",
   },
@@ -27,6 +31,7 @@ const BugCommentList = () => {
     comments,
     setComments,
   } = useContext(BugContext);
+  const { instance, accounts } = useMsal();
 
   useEffect(() => {
     if (selectedBug.comments !== null) {
@@ -37,15 +42,19 @@ const BugCommentList = () => {
     };
   }, [selectedBug.comments]);
 
-  const deleteComment = () => {
-    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.COMMENT)
-      .delete(commentToDeleteId)
+  const deleteComment = async () => {
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.COMMENT
+    );
+    let result = apiObj.delete(commentToDeleteId);
+    result
       .then((res) => {
         let comments = selectedBug.comments.filter(
           (comment) => comment.commentId !== commentToDeleteId
         );
 
-        console.log(comments);
         setSelectedBug({ ...selectedBug, comments: comments });
       })
       .catch((err) => console.log(err));

@@ -20,7 +20,6 @@ const Input = (props) => {
       name={name}
       value={value}
       onChange={onChange}
-      autoComplete="false"
       {...other}
       {...(error && { error: true, helperText: error })}
     />

@@ -7,9 +7,12 @@ import {
   Grid,
   Typography,
   Grow,
+  Tooltip,
 } from "@material-ui/core";
 import DeleteSweepRoundedIcon from "@material-ui/icons/DeleteSweepRounded";
 import EditAttributesRoundedIcon from "@material-ui/icons/EditAttributesRounded";
+import { useContext } from "react";
+import { TimeContext } from "../../context/TimeContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,13 +35,15 @@ const useStyles = makeStyles((theme) => ({
 
 const TimePaper = (props) => {
   const classes = useStyles();
+  const { time } = props;
+
   const {
-    time,
     setOpenConfirmation,
     setTimeTrackIdToDelete,
     actionsShownId,
     setActionsShownId,
-  } = props;
+  } = useContext(TimeContext);
+
   const [timeDuration, setTimeDuration] = useState("00:00");
   const [actionsShown, setActionsShown] = useState(false);
 
@@ -52,6 +57,7 @@ const TimePaper = (props) => {
   useEffect(() => {
     if (actionsShownId === time.timeTrackId) {
       setActionsShown(true);
+      console.log(time);
     } else {
       setActionsShown(false);
     }
@@ -125,19 +131,23 @@ const TimePaper = (props) => {
                 alignItems="center"
               >
                 <Grid item>
-                  <IconButton
-                    variant="filled"
-                    size="medium"
-                    className={classes.actionButton}
-                    onClick={() => deleteTimeRecord(time.timeTrackId)}
-                  >
-                    <DeleteSweepRoundedIcon></DeleteSweepRoundedIcon>
-                  </IconButton>
+                  <Tooltip title="Delete Time Record">
+                    <IconButton
+                      variant="filled"
+                      size="medium"
+                      className={classes.actionButton}
+                      onClick={() => deleteTimeRecord(time.timeTrackId)}
+                    >
+                      <DeleteSweepRoundedIcon></DeleteSweepRoundedIcon>
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
                 <Grid item>
-                  <IconButton size="medium" className={classes.actionButton}>
-                    <EditAttributesRoundedIcon></EditAttributesRoundedIcon>
-                  </IconButton>
+                  <Tooltip title="Edit Time Record">
+                    <IconButton size="medium" className={classes.actionButton}>
+                      <EditAttributesRoundedIcon></EditAttributesRoundedIcon>
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
               </Grid>
             </Grow>

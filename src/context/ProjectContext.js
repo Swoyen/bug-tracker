@@ -1,27 +1,41 @@
+import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 import React, { useState, createContext, useEffect, useContext } from "react";
 
-import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../api";
+import {
+  createAuthenticatedEndPoint,
+  createRestrictedAPIEndPoint,
+  RESTRICTEDENDPOINTS,
+} from "../api";
 import { UserContext } from "./UserContext";
 
 export const ProjectContext = createContext();
 
 export const ProjectProvider = (props) => {
   const [projectList, setProjectList] = useState([]);
+  const { instance, accounts } = useMsal();
   const [projectIdToModify, setProjectIdToModify] = useState("-1");
   const [openProjectCreate, setOpenProjectCreate] = useState(false);
   const [openProjectSettings, setOpenProjectSettings] = useState(false);
-
-  const { isLoggedIn } = useContext(UserContext);
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (isLoggedIn) loadProjectList();
-  }, [isLoggedIn]);
+    (async () => {
+      if (isAuthenticated) await loadProjectList();
+    })();
+  }, [isAuthenticated]);
 
   const loadProjectList = async () => {
-    const response = await createRestrictedAPIEndPoint(
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
       RESTRICTEDENDPOINTS.PROJECT
-    ).fetchAll();
-    setProjectList(response.data);
+    );
+
+    if (apiObj) {
+      var result = apiObj.fetchAll();
+
+      result.then((response) => setProjectList(response.data));
+    }
   };
 
   return (

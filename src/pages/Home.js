@@ -7,9 +7,9 @@ const Home = (props) => {
   const { userName, setUserName, isLoggedIn, setIsLoggedIn } =
     useContext(UserContext);
 
-  if (!isLoggedIn) {
-    return <Redirect to="/login" />;
-  }
+  // if (!isLoggedIn) {
+  //   return <Redirect to="/login" />;
+  // }
   return (
     <div>
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt incidunt

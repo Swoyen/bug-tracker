@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
 import TimeTracker from "./TimeTracker";
 import TimeList from "./TimeList";
-import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../api";
+import { useContext } from "react";
+import { TimeContext } from "../../context/TimeContext";
 
 const Time = () => {
-  const [timeList, setTimeList] = useState([]);
-
-  useEffect(() => {
-    createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.TIMER)
-      .fetchAll()
-      .then((res) => setTimeList(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-
   return (
     <>
-      <TimeTracker timeList={timeList}></TimeTracker>
-      <TimeList timeList={timeList} setTimeList={setTimeList}></TimeList>
+      <TimeTracker></TimeTracker>
+      <TimeList></TimeList>
     </>
   );
 };

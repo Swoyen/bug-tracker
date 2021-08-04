@@ -1,25 +1,23 @@
+import { useIsAuthenticated } from "@azure/msal-react";
 import React, { useContext, useEffect } from "react";
 import { Redirect, Route } from "react-router";
 import { UserContext } from "../../context/UserContext";
 
 const PrivateRoute = ({ children, ...rest }) => {
   const { isLoggedIn, loginJwt } = useContext(UserContext);
-  useEffect(() => {
-    loginJwt(
-      () => {},
-      () => {}
-    );
-  }, []);
+
+  const isAuthenticated = useIsAuthenticated();
+
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        isLoggedIn ? (
+        isAuthenticated ? (
           children
         ) : (
           <>
             <Redirect
-              to={{ pathname: "/login", state: { from: location } }}
+              to={{ pathname: "/signin", state: { from: location } }}
             ></Redirect>
           </>
         )

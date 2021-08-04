@@ -1,8 +1,15 @@
 import { makeStyles, Paper, Typography, Grid } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ProjectBoardGrid from "./ProjectBoardGrid";
 import Draggable from "react-draggable";
-import { createAPIEndPoint, ENDPOINTS } from "../../../api";
+import {
+  createAPIEndPoint,
+  createAuthenticatedEndPoint,
+  ENDPOINTS,
+  RESTRICTEDENDPOINTS,
+} from "../../../api";
+import { useMsal } from "@azure/msal-react";
+import { BugContext } from "../../../context/BugContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,10 +36,12 @@ const useStyles = makeStyles((theme) => ({
 const ProjectBoard = () => {
   const classes = useStyles();
   const [statuses, setStatuses] = useState([]);
-  const [bugList, setBugList] = useState([]);
+  const [bugListWithStatus, setBugListWithStatus] = useState([]);
+  const { bugList, setBugList, resetList } = useContext(BugContext);
+  const { instance, accounts } = useMsal();
 
   const modifyStatus = (bugId, steps, setCurrentStatus) => {
-    let bug = bugList.find(
+    let bug = bugListWithStatus.find(
       (bugWithStatus) => bugWithStatus.bug.bugId === bugId
     );
     var currentIndex = statuses.findIndex(
@@ -47,38 +56,57 @@ const ProjectBoard = () => {
   };
 
   useEffect(() => {
-    if (statuses.length > 0)
-      createAPIEndPoint(ENDPOINTS.BUG)
-        .fetchAll()
-        .then((res) => {
-          let data = res.data;
-          let bugsWithStatus = [];
-          data.forEach((bug) => {
-            bugsWithStatus.push({ status: bug.status, bug: bug });
-          });
+    (async () => {
+      if (statuses.length > 0) {
+        const apiObj = await createAuthenticatedEndPoint(
+          instance,
+          accounts,
+          RESTRICTEDENDPOINTS.BUG
+        );
+        let result = apiObj.fetchAll();
+        result
+          .then((res) => {
+            let data = res.data;
+            let bugsWithStatus = [];
+            data.forEach((bug) => {
+              bugsWithStatus.push({ status: bug.status, bug: bug });
+            });
 
-          setBugList(bugsWithStatus);
-        })
-        .catch((err) => console.log(err));
+            setBugListWithStatus(bugsWithStatus);
+          })
+          .catch((err) => console.log(err));
+      }
+    })();
 
     return () => {
-      setBugList();
+      setBugListWithStatus();
     };
   }, [statuses]);
 
   useEffect(() => {
-    createAPIEndPoint(ENDPOINTS.STATUS)
-      .fetchAll()
-      .then((res) => {
-        let data = res.data;
-        setStatuses(data);
-      })
-      .catch((err) => console.log(err));
+    (async () => {
+      const apiObj = await createAuthenticatedEndPoint(
+        instance,
+        accounts,
+        RESTRICTEDENDPOINTS.STATUS
+      );
+      let result = apiObj.fetchAll();
+      result
+        .then((res) => {
+          let data = res.data;
+          setStatuses(data);
+        })
+        .catch((err) => console.log(err));
+    })();
 
     return () => {
       setStatuses([]);
     };
   }, []);
+
+  useEffect(() => {
+    if (bugListWithStatus) resetList();
+  }, [bugListWithStatus]);
 
   return (
     <div className={classes.root}>
@@ -94,8 +122,8 @@ const ProjectBoard = () => {
                 end={index === statuses.length - 1 ? true : false}
                 status={status}
                 modifyStatus={modifyStatus}
-                bugsWithStatus={bugList}
-                setBugsWithStatus={setBugList}
+                bugsWithStatus={bugListWithStatus}
+                setBugsWithStatus={setBugListWithStatus}
                 key={status.statusId}
                 title={status.statusName}
               ></ProjectBoardGrid>

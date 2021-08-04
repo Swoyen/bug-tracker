@@ -27,10 +27,6 @@ const Projects = (props) => {
   const { userName, setUserName, isLoggedIn, setIsLoggedIn, loginJwt } =
     useContext(UserContext);
 
-  useEffect(() => {
-    if (!isLoggedIn) loginJwt();
-  }, []);
-
   const classes = useStyles();
   return (
     <div className={classes.root}>

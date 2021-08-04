@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { ENDPOINTS, createAPIEndPoint } from "../api";
+import {
+  ENDPOINTS,
+  createAPIEndPoint,
+  createAuthenticatedEndPoint,
+  RESTRICTEDENDPOINTS,
+} from "../api";
 
 const useBug = () => {
   const [selectedBugId, setSelectedBugId] = useState(-1);
@@ -13,7 +18,7 @@ const useBug = () => {
     // });
   };
 
-  const resetList = () => {
+  const resetList = async (instance, accounts) => {
     createAPIEndPoint(ENDPOINTS.BUG)
       .fetchAll()
       .then((res) => console.log())
