@@ -1,6 +1,6 @@
 import React from "react";
 import MUIRichTextEditor from "mui-rte";
-import { EditorState, convertToRaw } from "draft-js";
+import { /*EditorState,*/ convertToRaw } from "draft-js";
 import { useState, useEffect } from "react";
 
 let emptyContent =

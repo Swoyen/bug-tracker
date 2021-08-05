@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import React from "react";
 
-import { Card, Typography, CardContent, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 
-import { UserContext } from "../../context/UserContext";
 import ProjectTable from "./ProjectTable";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,9 +22,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Projects = (props) => {
-  const { userName, setUserName, isLoggedIn, setIsLoggedIn, loginJwt } =
-    useContext(UserContext);
-
   const classes = useStyles();
   return (
     <div className={classes.root}>

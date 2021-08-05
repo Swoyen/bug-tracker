@@ -1,10 +1,6 @@
 import { useMsal } from "@azure/msal-react";
-import React, { useState, createContext, useEffect, useContext } from "react";
-import {
-  createAuthenticatedEndPoint,
-  createRestrictedAPIEndPoint,
-  RESTRICTEDENDPOINTS,
-} from "../api";
+import React, { useState, createContext, useEffect } from "react";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../api";
 
 export const TimeContext = createContext();
 

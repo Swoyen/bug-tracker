@@ -7,19 +7,14 @@ import {
   Typography,
   IconButton,
 } from "@material-ui/core";
-import { AccountCircle, Delete } from "@material-ui/icons";
+import { AccountCircle } from "@material-ui/icons";
 
 import { UserContext } from "../../../context/UserContext";
 import Button from "../../../controls/Button";
-import Dialog from "../../../layouts/Dialog";
 import { BugContext } from "../../../context/BugContext";
 import { Badge } from "@material-ui/core";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
-import {
-  createAuthenticatedEndPoint,
-  createRestrictedAPIEndPoint,
-  RESTRICTEDENDPOINTS,
-} from "../../../api";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import { useMsal } from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
@@ -36,20 +31,19 @@ const BugUserComment = (props) => {
   const { instance, accounts } = useMsal();
 
   const {
-    openCommentConfirmDeleteDialog,
     setOpenCommentConfirmDeleteDialog,
     setCommentToDeleteId,
     setCommentToEdit,
     selectedBug,
     setSelectedBug,
   } = useContext(BugContext);
-  const { userDetails } = useContext(UserContext);
-  const [] = useState(false);
+  const { currentUser } = useContext(UserContext);
+
   useEffect(() => {
     //console.log(comment);
     if (
       comment.likedUsers.length !== 0 &&
-      comment.likedUsers.some((id) => id === userDetails.userId)
+      comment.likedUsers.some((id) => id === currentUser.userId)
     ) {
       setLiked(true);
       setTotalLikes(comment.likedUsers.length);
@@ -59,9 +53,9 @@ const BugUserComment = (props) => {
         ? setTotalLikes(comment.likedUsers.length)
         : setTotalLikes(0);
     }
-
     return () => {};
   }, [comment]);
+
   const deleteComment = () => {
     setCommentToDeleteId(comment.commentId);
     setOpenCommentConfirmDeleteDialog(true);
@@ -80,10 +74,10 @@ const BugUserComment = (props) => {
         let temp = selectedBug;
         let likedUsersArr = comment.likedUsers;
 
-        if (likedUsersArr.some((l) => l === userDetails.userId)) {
-          var index = likedUsersArr.indexOf(userDetails.userId);
+        if (likedUsersArr.some((l) => l === currentUser.userId)) {
+          var index = likedUsersArr.indexOf(currentUser.userId);
           likedUsersArr.splice(index, 1);
-        } else likedUsersArr.push(userDetails.userId);
+        } else likedUsersArr.push(currentUser.userId);
 
         let commentIndex = selectedBug.comments.findIndex(
           (com) => com.commentId === comment.commentId
@@ -125,8 +119,7 @@ const BugUserComment = (props) => {
               </Grid>
 
               {comment.commentedByUser &&
-              comment.commentedByUser.userId ===
-                userDetails.idTokenClaims.oid ? (
+              comment.commentedByUser.userId === currentUser.userId ? (
                 <Grid style={{ marginLeft: "-8px" }} item xs={5}>
                   <Button
                     onClick={() => deleteComment()}

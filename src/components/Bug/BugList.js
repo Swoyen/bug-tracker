@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   makeStyles,
   Table,
@@ -8,7 +8,6 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import BugDetails from "./BugDetails";
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -22,13 +21,10 @@ const useStyles = makeStyles((theme) => ({
 const BugList = (props) => {
   const {
     bugList,
-    openBugDetails,
     setOpenBugDetails,
     selectedBugId,
     setSelectedBugId,
-    selectedBugComponent,
     setSelectedBugComponent,
-    handleInputChange,
   } = props;
 
   const classes = useStyles();

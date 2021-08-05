@@ -2,15 +2,9 @@ import React, { useEffect, useState, useContext } from "react";
 import { Grid, Typography, Paper, Chip, Avatar } from "@material-ui/core";
 import Draggable from "react-draggable";
 import { makeStyles } from "@material-ui/core";
-import {
-  createAPIEndPoint,
-  createAuthenticatedEndPoint,
-  ENDPOINTS,
-  RESTRICTEDENDPOINTS,
-} from "../../../api";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import { BugContext } from "../../../context/BugContext";
 import { useMsal } from "@azure/msal-react";
-import { UserContext } from "../../../context/UserContext";
 const useStyles = makeStyles((theme) => ({
   root: {},
   bugPaper: {
@@ -35,14 +29,9 @@ const ProjectBoardCard = (props) => {
   const { instance, accounts } = useMsal();
   const { bug, bugName, bugId, modifyStatus, status, bugList, setBugList } =
     props;
-  const { setBugList: setGlobalBugList } = useContext(UserContext);
 
-  const {
-    openBugDetails,
-    setOpenBugDetails,
-    setSelectedBugId,
-    setSelectedBugComponent,
-  } = useContext(BugContext);
+  const { setOpenBugDetails, setSelectedBugId, setSelectedBugComponent } =
+    useContext(BugContext);
 
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
@@ -62,11 +51,12 @@ const ProjectBoardCard = (props) => {
   const dragEnd = (e, bugId) => {
     setIsDragging(false);
     let offsetX = startX - e.screenX;
+    var steps;
     if (offsetX > 100) {
-      var steps = -Math.round(offsetX / 200);
+      steps = -Math.round(offsetX / 200);
       modifyStatus(bugId, steps, setCurrentStatus);
     } else if (offsetX < -100) {
-      var steps = -Math.round(offsetX / 200);
+      steps = -Math.round(offsetX / 200);
       modifyStatus(bugId, steps, setCurrentStatus);
     }
   };

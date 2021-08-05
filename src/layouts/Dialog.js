@@ -6,7 +6,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
-import { CallMissedSharp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,9 +33,9 @@ const Dialog = (props) => {
 
   const classes = useStyles(props);
 
-  const handleClickOpen = () => {
-    setOpenDialog(true);
-  };
+  // const handleClickOpen = () => {
+  //   setOpenDialog(true);
+  // };
 
   const handleClose = () => {
     setOpenDialog(false);
@@ -55,6 +54,7 @@ const Dialog = (props) => {
         open={openDialog}
         TransitionComponent={Transition}
         keepMounted
+        variant={variant}
         onClose={handleClose}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"

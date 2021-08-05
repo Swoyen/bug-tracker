@@ -1,27 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useMsal } from "@azure/msal-react";
 
-import {
-  Typography,
-  Grid,
-  makeStyles,
-  Avatar,
-  TextField,
-  MenuItem,
-  IconButton,
-} from "@material-ui/core";
+import { Typography, Grid, makeStyles, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import DeleteIcon from "@material-ui/icons/Close";
 
-import Input from "../../../controls/Input";
 import Form from "../../../layouts/Form";
 import Button from "../../../controls/Button";
-import {
-  createAPIEndPoint,
-  createAuthenticatedEndPoint,
-  ENDPOINTS,
-  RESTRICTEDENDPOINTS,
-} from "../../../api";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import ProjectAccessTag from "./ProjectAccessTag";
 import { UserContext } from "../../../context/UserContext";
 
@@ -65,8 +50,7 @@ const ProjectCreateAccess = (props) => {
   const [addedUsers, setAddedUsers] = useState([]);
   const [userToAdd, setUserToAdd] = useState(emptyUser);
   const [userToAddInput, setUserToAddInput] = useState("");
-  const { openProjectCreate, uploadProject, assignedUsers, setAssignedUsers } =
-    props;
+  const { openProjectCreate, uploadProject, setAssignedUsers } = props;
   const { userDetails } = useContext(UserContext);
 
   useEffect(() => {

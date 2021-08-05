@@ -40,7 +40,6 @@ const defaultImgSrc = "/img/default.jpg";
 const ProjectCreateDetails = (props) => {
   const classes = useStyles();
   const {
-    selectedImg,
     setSelectedImg,
     selectedImgSrc,
     setSelectedImgSrc,

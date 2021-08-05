@@ -1,30 +1,15 @@
-import { makeStyles, Grid, Typography } from "@material-ui/core";
-import React, {
-  useState,
-  useContext,
-  createRef,
-  useRef,
-  useEffect,
-} from "react";
+import { makeStyles } from "@material-ui/core";
+import React, { useState, useContext, useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
 
 import CloseIcon from "@material-ui/icons/Close";
-import { Fade, Collapse } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { TextField } from "@material-ui/core";
+import { Fade } from "@material-ui/core";
 
 import { ProjectContext } from "../../../context/ProjectContext";
-import Popup from "../../../layouts/Popup";
+
 import Button from "../../../controls/Button";
-import Form from "../../../layouts/Form";
-import Input from "../../../controls/Input";
-import {
-  createAPIEndPoint,
-  createAuthenticatedEndPoint,
-  createRestrictedAPIEndPoint,
-  ENDPOINTS,
-  RESTRICTEDENDPOINTS,
-} from "../../../api";
+
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import ProjectCreateDetails from "./ProjectCreateDetails";
 import ProjectCreateAccess from "./ProjectCreateAccess";
 
@@ -73,18 +58,14 @@ const defaultImgSrc = "/img/default.jpg";
 
 const ProjectCreate = () => {
   const classes = useStyles();
-  const {
-    projectList,
-    loadProjectList,
-    openProjectCreate,
-    setOpenProjectCreate,
-  } = useContext(ProjectContext);
+  const { loadProjectList, openProjectCreate, setOpenProjectCreate } =
+    useContext(ProjectContext);
 
   const { instance, accounts } = useMsal();
   const [selectedImg, setSelectedImg] = useState();
   const [selectedImgSrc, setSelectedImgSrc] = useState(defaultImgSrc);
   const [projectTitle, setProjectTitle] = useState("");
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
   const [stage, setStage] = useState(1);
   const [assignedUsers, setAssignedUsers] = useState([]);
 
@@ -96,44 +77,42 @@ const ProjectCreate = () => {
   }, [openProjectCreate]);
 
   const uploadProject = async () => {
-    {
-      const formData = new FormData();
-      formData.append("title", projectTitle);
-      formData.append("createdTime", "2021-07-12T02:29:54.605Z");
-      if (selectedImg) {
-        formData.append("imageFile", selectedImg, selectedImg.name);
-      }
-
-      if (assignedUsers) {
-        for (var i = 0; i < assignedUsers.length; i++) {
-          formData.append("assignedUsers[]", assignedUsers[i]);
-        }
-      }
-      var apiObj = await createAuthenticatedEndPoint(
-        instance,
-        accounts,
-        RESTRICTEDENDPOINTS.PROJECT
-      );
-      if (apiObj) {
-        var result = apiObj.create(formData);
-        result
-          .then((res) => {
-            setOpenProjectCreate(false);
-            console.log("Project uploaded");
-            loadProjectList();
-          })
-          .catch((err) => console.log(err));
-      }
-
-      // createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
-      //   .create(formData)
-      //   .then((res) => {
-      //     setOpenProjectCreate(false);
-      //     console.log("Project upploaded");
-      //     loadProjectList();
-      //   })
-      //   .catch((err) => console.log(err));
+    const formData = new FormData();
+    formData.append("title", projectTitle);
+    formData.append("createdTime", "2021-07-12T02:29:54.605Z");
+    if (selectedImg) {
+      formData.append("imageFile", selectedImg, selectedImg.name);
     }
+
+    if (assignedUsers) {
+      for (var i = 0; i < assignedUsers.length; i++) {
+        formData.append("assignedUsers[]", assignedUsers[i]);
+      }
+    }
+    var apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.PROJECT
+    );
+    if (apiObj) {
+      var result = apiObj.create(formData);
+      result
+        .then((res) => {
+          setOpenProjectCreate(false);
+          console.log("Project uploaded");
+          loadProjectList();
+        })
+        .catch((err) => console.log(err));
+    }
+
+    // createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
+    //   .create(formData)
+    //   .then((res) => {
+    //     setOpenProjectCreate(false);
+    //     console.log("Project upploaded");
+    //     loadProjectList();
+    //   })
+    //   .catch((err) => console.log(err));
   };
 
   const showNext = () => {

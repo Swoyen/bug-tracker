@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import ProjectCard from "./ProjectCard";
 import { createProjectAPIEndPoint } from "../../api";
 import Grid from "@material-ui/core/Grid";
-import { UserContext } from "../../context/UserContext";
 import { ProjectContext } from "../../context/ProjectContext";
 import AddIcon from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core";
@@ -17,12 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ProjectList = () => {
   const [projectList, setProjectList] = useState([]);
-  const {
-    projectName,
-    setProjectName,
-    openProjectCreate,
-    setOpenProjectCreate,
-  } = useContext(ProjectContext);
+  const { setOpenProjectCreate } = useContext(ProjectContext);
   const classes = useStyles();
 
   useEffect(() => {

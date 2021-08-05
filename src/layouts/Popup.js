@@ -2,10 +2,7 @@ import React from "react";
 import Input from "../controls/Input";
 import {
   Dialog,
-  Button,
-  DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   makeStyles,
   IconButton,
@@ -54,7 +51,7 @@ const Popup = (props) => {
     titleVariant = "h4",
     center = false,
     maxWidth = "md",
-    topMargin,
+    /*  topMargin,*/
   } = props;
   const classes = useStyles(props);
 

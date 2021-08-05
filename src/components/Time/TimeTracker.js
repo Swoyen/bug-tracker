@@ -1,30 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
 import PlayRoundedIcon from "@material-ui/icons/PlayArrowRounded";
-import PauseRoundedIcon from "@material-ui/icons/PauseRounded";
+// import PauseRoundedIcon from "@material-ui/icons/PauseRounded";
 import StopRoundedIcon from "@material-ui/icons/StopRounded";
 import { IconButton, makeStyles, Grid } from "@material-ui/core";
 import { BugContext } from "../../context/BugContext";
-import {
-  InputLabel,
-  Select,
-  TextField,
-  MenuItem,
-  Typography,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-} from "@material-ui/core";
-import {
-  createAPIEndPoint,
-  createAuthenticatedEndPoint,
-  createRestrictedAPIEndPoint,
-  ENDPOINTS,
-  RESTRICTEDENDPOINTS,
-} from "../../api";
+import { InputLabel, Select, MenuItem, Typography } from "@material-ui/core";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../api";
 import Form from "../../layouts/Form";
 import { UserContext } from "../../context/UserContext";
 import RichTextFieldEditor from "../../controls/RichTextFieldEditor";
-import { TrendingUpOutlined } from "@material-ui/icons";
 import { TimeContext } from "../../context/TimeContext";
 import { useMsal } from "@azure/msal-react";
 
@@ -58,7 +42,7 @@ const TimeTracker = (props) => {
   const classes = useStyles();
   const { timeList, setTimeList } = useContext(TimeContext);
   const [startTimeInSeconds, setStartTimeinSeconds] = useState(null);
-  const [elapsedSeconds, setElapsedSeconds] = useState(null);
+  // const [elapsedSeconds, setElapsedSeconds] = useState(null);
 
   const [timeTrackId, setTimeTrackId] = useState(emptyTimeTrackId);
   const [isTimerStarted, setIsTimerStarted] = useState(false);
@@ -75,14 +59,14 @@ const TimeTracker = (props) => {
 
   const [selectedBugId, setSelectedBugId] = useState(emptyBugId);
   const { currentUser } = useContext(UserContext);
-  const { bugList, setBugList } = useContext(BugContext);
+  const { bugList } = useContext(BugContext);
   const [bugListWithEmptyBug, setBugListWithEmptyBug] = useState([emptyBug]);
   const [isLoadedTimer, setIsLoadedTimer] = useState(false);
 
   const { instance, accounts } = useMsal();
 
   let t = new Date(1970, 0, 1);
-  let epoch = new Date(1970, 0, 1);
+  // let epoch = new Date(1970, 0, 1);
 
   useEffect(() => {
     if (timeList) {
@@ -123,7 +107,7 @@ const TimeTracker = (props) => {
 
     if (mounted) {
       if (isTimerStarted) {
-        setElapsedSeconds(0);
+        // setElapsedSeconds(0);
         setFormattedElapsedTime(getFormattedTimeFromSeconds(0));
         setTimerVariable(
           setInterval(() => {
@@ -131,7 +115,7 @@ const TimeTracker = (props) => {
               let offset = Date.now() - startTimeInSeconds;
               // console.log(offset);
               let seconds = offset / 1000;
-              setElapsedSeconds(seconds);
+              //setElapsedSeconds(seconds);
               setFormattedElapsedTime(getFormattedTimeFromSeconds(seconds));
             }
           }, 1000)
@@ -197,7 +181,7 @@ const TimeTracker = (props) => {
       timeTrackId: timeTrackId,
       startTime: startTimeIso,
       stopTime: stopTimeIso,
-      bugId: selectedBugId == -1 ? null : selectedBugId,
+      bugId: selectedBugId === -1 ? null : selectedBugId,
       userId: currentUser.userId,
       description: formattedJsonDescription,
       stop: true,

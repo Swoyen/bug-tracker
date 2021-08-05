@@ -9,16 +9,10 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import {
-  Redirect,
-  Link as RouterLink,
-  useHistory,
-  useLocation,
-} from "react-router-dom";
+import { Link as RouterLink, useHistory, useLocation } from "react-router-dom";
 import Input from "../controls/Input";
 import Button from "../controls/Button";
 import Form from "../layouts/Form";
-import { AUTHENTICATIONENDPOINTS, createAuthenticationEndPoint } from "../api";
 import { UserContext } from "../context/UserContext";
 
 function Copyright() {
@@ -66,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = (props) => {
-  const { isLoggedIn, loginJwt, login } = useContext(UserContext);
+  const { loginJwt, login } = useContext(UserContext);
   let location = useLocation();
   let history = useHistory();
   const classes = useStyles();

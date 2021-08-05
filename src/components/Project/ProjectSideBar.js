@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link, useRouteMatch } from "react-router-dom";
 
 import {
@@ -9,14 +9,11 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
 } from "@material-ui/core";
-import { Inbox as InboxIcon, Mail as MailIcon } from "@material-ui/icons";
 import BugReportIcon from "@material-ui/icons/BugReport";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
 import WebAssetTwoToneIcon from "@material-ui/icons/WebAssetTwoTone";
 import TimerRoundedIcon from "@material-ui/icons/TimerRounded";
-import { ProjectContext } from "../../context/ProjectContext";
 
 const drawerWidth = 240;
 
@@ -46,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ProjectSideBar = () => {
-  const { url, path } = useRouteMatch();
+  const { url } = useRouteMatch();
   const classes = useStyles();
 
   return (

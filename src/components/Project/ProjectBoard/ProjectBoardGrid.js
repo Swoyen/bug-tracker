@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Paper } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { makeStyles, Typography } from "@material-ui/core";
-import Draggable from "react-draggable";
+
 import ProjectBoardCard from "./ProjectBoardCard";
 
 const useStyles = makeStyles((theme) => ({
@@ -26,14 +26,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ProjectBoardGrid = (props) => {
-  const {
-    status,
-    title,
-    bugListCorresponsingToStatus,
-    modifyStatus,
-    bugsWithStatus,
-    setBugsWithStatus,
-  } = props;
+  const { status, title, modifyStatus, bugsWithStatus, setBugsWithStatus } =
+    props;
   const classes = useStyles(props);
   const [bugListWithStatus, setBugListWithStatus] = useState([]);
   // const [bugList, setBugList] = useState([]);

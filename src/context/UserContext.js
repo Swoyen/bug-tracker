@@ -1,12 +1,5 @@
 import React, { useState, createContext, useEffect } from "react";
-import { Redirect } from "react-router-dom";
-import {
-  AUTHENTICATIONENDPOINTS,
-  createAuthenticatedEndPoint,
-  createAuthenticationEndPoint,
-  loginRequest,
-  RESTRICTEDENDPOINTS,
-} from "../api";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../api";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 
 export const UserContext = createContext();
@@ -14,8 +7,7 @@ export const UserContext = createContext();
 export const UserProvider = (props) => {
   const [userDetails, setUserDetails] = useState({});
   const [currentUser, setCurrentUser] = useState({});
-  const { isLoggedIn, setIsLoggedIn } = props;
-  const { instance, inProgress, accounts } = useMsal();
+  const { instance, accounts } = useMsal();
   const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {

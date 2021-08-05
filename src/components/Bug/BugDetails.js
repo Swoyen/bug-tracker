@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 
 import {
   Grid,
@@ -6,10 +6,7 @@ import {
   Typography,
   ButtonGroup,
   useTheme,
-  Fade,
-  TextField,
 } from "@material-ui/core";
-import { cleanup } from "@testing-library/react";
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import DoneTwoToneIcon from "@material-ui/icons/DoneTwoTone";
@@ -19,13 +16,7 @@ import Select from "../../controls/Select";
 import Popup from "../../layouts/Popup";
 import Button from "../../controls/Button";
 import Input from "../../controls/Input";
-import {
-  ENDPOINTS,
-  createAPIEndPoint,
-  createRestrictedAPIEndPoint,
-  RESTRICTEDENDPOINTS,
-  createAuthenticatedEndPoint,
-} from "../../api";
+import { RESTRICTEDENDPOINTS, createAuthenticatedEndPoint } from "../../api";
 import BugComment from "./Comment/BugComment";
 import { BugContext } from "../../context/BugContext";
 import Dialog from "../../layouts/Dialog";
@@ -53,27 +44,20 @@ const BugDetails = (props) => {
     statuses,
     severities,
     selectedBugId,
-    setSelectedBugId,
-    selectedBugComponent,
     setSelectedBugComponent,
     removeBugFromList,
-    handleInputChange,
-    resetList,
     selectedBug,
     setSelectedBug,
     prevBugId,
     setPrevBugId,
     openRecordConfirmDeleteDialog,
     setOpenRecordConfirmDeleteDialog,
-    openCommentConfirmDeleteDialog,
-    setOpenCommentConfirmDeleteDialog,
     isEditable,
     setIsEditable,
     bugDescription,
     setBugDescription,
     bugName,
     setSelectedBugName,
-    commentToDeleteId,
   } = useContext(BugContext);
   const { instance, accounts } = useMsal();
 
@@ -82,7 +66,7 @@ const BugDetails = (props) => {
 
   useEffect(() => {
     (async () => {
-      if (selectedBugId != -1) {
+      if (selectedBugId !== -1) {
         const apiObj = await createAuthenticatedEndPoint(
           instance,
           accounts,

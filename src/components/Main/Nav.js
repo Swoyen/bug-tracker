@@ -1,19 +1,9 @@
-import {
-  makeStyles,
-  AppBar,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
-import React, { useContext, useState } from "react";
-import { AccountCircle, Menu as MenuIcon } from "@material-ui/icons";
+import { makeStyles, AppBar, IconButton, Toolbar } from "@material-ui/core";
+import React from "react";
+import { AccountCircle } from "@material-ui/icons";
 import Button from "../../controls/Button";
 import { Link, Redirect } from "react-router-dom";
-import {
-  AUTHENTICATIONENDPOINTS,
-  createAuthenticationEndPoint,
-} from "../../api";
-import { UserContext } from "../../context/UserContext";
+
 import BugReportTwoToneIcon from "@material-ui/icons/BugReportTwoTone";
 import ProjectListComposition from "../Project/ProjectListComposition";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
@@ -33,31 +23,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Nav = (props) => {
-  const { userName, setUserName, isLoggedIn, setIsLoggedIn } =
-    useContext(UserContext);
   const classes = useStyles();
   const { instance } = useMsal();
   const isAuthenticated = useIsAuthenticated();
 
-  function handleLogout(instance) {
+  const handleLogout = (instance) => {
     instance
       .logoutPopup()
       .then()
       .catch((e) => {
         console.error(e);
       });
-  }
-  if (!isAuthenticated) return <Redirect to="/signin"></Redirect>;
-
-  const logout = async () => {
-    const response = await createAuthenticationEndPoint(
-      AUTHENTICATIONENDPOINTS.LOGOUT
-    ).postWithNoArg();
-    const status = response.status;
-    if (status === 200) {
-      setIsLoggedIn(false);
-    }
   };
+  if (!isAuthenticated) return <Redirect to="/signin"></Redirect>;
 
   return (
     <div className={classes.root}>

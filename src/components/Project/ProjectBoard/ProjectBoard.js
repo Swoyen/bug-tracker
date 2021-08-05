@@ -1,13 +1,7 @@
-import { makeStyles, Paper, Typography, Grid } from "@material-ui/core";
+import { makeStyles, Typography, Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import ProjectBoardGrid from "./ProjectBoardGrid";
-import Draggable from "react-draggable";
-import {
-  createAPIEndPoint,
-  createAuthenticatedEndPoint,
-  ENDPOINTS,
-  RESTRICTEDENDPOINTS,
-} from "../../../api";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import { useMsal } from "@azure/msal-react";
 import { BugContext } from "../../../context/BugContext";
 
@@ -37,7 +31,7 @@ const ProjectBoard = () => {
   const classes = useStyles();
   const [statuses, setStatuses] = useState([]);
   const [bugListWithStatus, setBugListWithStatus] = useState([]);
-  const { bugList, setBugList, resetList } = useContext(BugContext);
+  const { resetList } = useContext(BugContext);
   const { instance, accounts } = useMsal();
 
   const modifyStatus = (bugId, steps, setCurrentStatus) => {
@@ -45,7 +39,7 @@ const ProjectBoard = () => {
       (bugWithStatus) => bugWithStatus.bug.bugId === bugId
     );
     var currentIndex = statuses.findIndex(
-      (status) => bug.status.statusId == status.statusId
+      (status) => bug.status.statusId === status.statusId
     );
     var modifiedStatusIndex = currentIndex + steps;
     if (modifiedStatusIndex >= 0 && modifiedStatusIndex <= statuses.length) {

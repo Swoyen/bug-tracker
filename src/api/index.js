@@ -21,7 +21,7 @@ export const RESTRICTEDENDPOINTS = {
   PROJECT: "Project",
   RECENTPROJECTS: "RecentProject",
   COMMENT: "Comment",
-  LIKE: "Comment" + "/" + "Like",
+  LIKE: "Comment/Like",
   TIMER: "TimeTrack",
   BUG: "Bug",
   STATUS: "Status",

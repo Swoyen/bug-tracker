@@ -1,15 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useRef } from "react";
 
-import {
-  Paper,
-  Grid,
-  Typography,
-  responsiveFontSizes,
-} from "@material-ui/core";
+import { Paper, Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import EditIcon from "@material-ui/icons/Edit";
-import { Button as MuiButton, IconButton } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TextField } from "@material-ui/core";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";

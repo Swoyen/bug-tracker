@@ -1,10 +1,4 @@
-import React, { useState } from "react";
-import {
-  ENDPOINTS,
-  createAPIEndPoint,
-  createAuthenticatedEndPoint,
-  RESTRICTEDENDPOINTS,
-} from "../api";
+import { useState } from "react";
 
 const useBug = () => {
   const [selectedBugId, setSelectedBugId] = useState(-1);
@@ -18,13 +12,6 @@ const useBug = () => {
     // });
   };
 
-  const resetList = async (instance, accounts) => {
-    createAPIEndPoint(ENDPOINTS.BUG)
-      .fetchAll()
-      .then((res) => console.log())
-      .catch((err) => console.log(err));
-  };
-
   const resetFormControls = () => {
     setSelectedBugId(-1);
   };
@@ -36,7 +23,6 @@ const useBug = () => {
     setSelectedBugId,
     handleInputChange,
     resetFormControls,
-    resetList,
   };
 };
 

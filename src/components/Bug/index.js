@@ -1,16 +1,9 @@
 import BugList from "./BugList";
-import BugDetails from "./BugDetails";
 import BugCreate from "./BugCreate";
-import useBug from "../../hooks/useBug";
-import { ENDPOINTS, createAPIEndPoint } from "../../api";
-
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import Button from "../../controls/Button";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
-import { Redirect } from "react-router-dom";
-import { cleanup } from "@testing-library/react";
-import { UserContext } from "../../context/UserContext";
 import { BugContext } from "../../context/BugContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -18,21 +11,14 @@ const useStyles = makeStyles((theme) => ({
   buttons: { marginBottom: theme.spacing(2) },
 }));
 
-const Bug = (props) => {
-  const { userName, setUserName, isLoggedIn, setIsLoggedIn } =
-    useContext(UserContext);
-
+const Bug = () => {
   const {
     openBugDetails,
     setOpenBugDetails,
     openBugCreate,
     setOpenBugCreate,
     users,
-    setUsers,
     severities,
-    setSeverities,
-    statuses,
-    setStatuses,
     selectedBugComponent,
     setSelectedBugComponent,
     prevSelectedBugComponent,
@@ -42,7 +28,6 @@ const Bug = (props) => {
     selectedBugId,
     setSelectedBugId,
     handleInputChange,
-    resetFormControls,
     resetList,
   } = useContext(BugContext);
 

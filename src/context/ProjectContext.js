@@ -1,12 +1,7 @@
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
-import React, { useState, createContext, useEffect, useContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 
-import {
-  createAuthenticatedEndPoint,
-  createRestrictedAPIEndPoint,
-  RESTRICTEDENDPOINTS,
-} from "../api";
-import { UserContext } from "./UserContext";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../api";
 
 export const ProjectContext = createContext();
 

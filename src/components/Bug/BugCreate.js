@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Popup from "../../layouts/Popup";
 import Grid from "@material-ui/core/Grid";
-import {
-  ENDPOINTS,
-  createAPIEndPoint,
-  createAuthenticatedEndPoint,
-  RESTRICTEDENDPOINTS,
-} from "../../api";
-import { InputBase, makeStyles, Typography } from "@material-ui/core";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../api";
+import { makeStyles, Typography } from "@material-ui/core";
 import Button from "../../controls/Button";
 import Input from "../../controls/Input";
 import Form from "../../layouts/Form";
@@ -42,12 +37,6 @@ const BugCreate = (props) => {
   const { resetList } = useContext(BugContext);
 
   const classes = useStyles();
-
-  const refactorArray = (array, first, second) => {
-    return Array.from(array, (item) => {
-      return { id: item[first], value: item[second] };
-    });
-  };
 
   useEffect(() => {
     resetForm();
@@ -107,6 +96,7 @@ const BugCreate = (props) => {
     let value = target.value;
     let name = target.name;
 
+    var el;
     switch (name) {
       case "bugName":
         setBugName(value);
@@ -116,19 +106,19 @@ const BugCreate = (props) => {
         setBugDetails(value);
         break;
       case "reporter":
-        var el = users.find((user) => user.userName === value);
+        el = users.find((user) => user.userName === value);
         setReporterId(el.userId);
         setReporter(value);
         if (errors) setErrors({ ...errors, reporter: "" });
         break;
       case "assignee":
-        var el = users.find((user) => user.userName === value);
+        el = users.find((user) => user.userName === value);
         setAssigneeId(el.userId);
         setAssignee(value);
         if (errors) setErrors({ ...errors, assignee: "" });
         break;
       case "severity":
-        var el = severities.find((severity) => severity.severityName === value);
+        el = severities.find((severity) => severity.severityName === value);
         setSeverityId(el.severityId);
         setSeverity(value);
         if (errors) setErrors({ ...errors, severity: "" });

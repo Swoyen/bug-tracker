@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useParams, Route } from "react-router";
 
 import { makeStyles } from "@material-ui/core";
 
 import Bug from "../Bug";
 import { UserContext } from "../../context/UserContext";
-import { TimeContext, TimeProvider } from "../../context/TimeContext";
-import { Redirect, useRouteMatch } from "react-router-dom";
+import { TimeProvider } from "../../context/TimeContext";
+import { useRouteMatch } from "react-router-dom";
 import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../api";
 import { BugProvider } from "../../context/BugContext";
 import ProjectBoard from "./ProjectBoard/ProjectBoard";
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 const Project = () => {
   const classes = useStyles();
   const { instance, accounts } = useMsal();
-  const { url, path } = useRouteMatch();
+  const { url } = useRouteMatch();
   const { id } = useParams();
   const isAuthenticated = useIsAuthenticated;
   // const [currentProject, setCurrentProject] = useState({});

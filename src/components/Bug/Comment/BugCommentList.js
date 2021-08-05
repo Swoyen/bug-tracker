@@ -1,11 +1,7 @@
 import React, { useEffect, useContext, useState } from "react";
 
 import { BugContext } from "../../../context/BugContext";
-import {
-  createAuthenticatedEndPoint,
-  createRestrictedAPIEndPoint,
-  RESTRICTEDENDPOINTS,
-} from "../../../api";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import BugUserComment from "./BugUserComment";
 import { Grid } from "@material-ui/core";
 
@@ -35,7 +31,8 @@ const BugCommentList = () => {
 
   useEffect(() => {
     if (selectedBug.comments !== null) {
-      setComments(selectedBug.comments);
+      // setComments(selectedBug.comments);
+      setComments([...selectedBug.comments]);
     }
     return () => {
       setComments([]);

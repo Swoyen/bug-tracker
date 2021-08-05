@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { Link, useRouteMatch } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useMsal } from "@azure/msal-react";
 
 import Button from "@material-ui/core/Button";
@@ -15,7 +15,6 @@ import { Typography } from "@material-ui/core";
 
 import {
   BASE_URL,
-  createProjectAPIEndPoint,
   createAuthenticatedEndPoint,
   RESTRICTEDENDPOINTS,
 } from "../../api";
@@ -46,10 +45,9 @@ const ProjectListComposition = () => {
   const { instance, accounts } = useMsal();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
-  const { url, path } = useRouteMatch();
 
   const [recentProjectList, setRecentProjectList] = useState([]);
-  const { projectList, openProjectCreate, setOpenProjectCreate } =
+  const { openProjectCreate, setOpenProjectCreate } =
     useContext(ProjectContext);
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);

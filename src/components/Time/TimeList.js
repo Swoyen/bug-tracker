@@ -1,8 +1,6 @@
-import { makeStyles, ThemeProvider, Grid, Paper } from "@material-ui/core";
-import TimePaper from "./TimePaper";
+import { makeStyles, Grid } from "@material-ui/core";
 import Dialog from "../../layouts/Dialog";
-import React, { useEffect, useState } from "react";
-import { createRestrictedAPIEndPoint, RESTRICTEDENDPOINTS } from "../../api";
+import React, { useEffect } from "react";
 import { useContext } from "react";
 import { TimeContext } from "../../context/TimeContext";
 import TimeGroup from "./TimeGroup.js";

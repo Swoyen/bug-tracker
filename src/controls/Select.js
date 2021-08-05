@@ -1,7 +1,6 @@
 import {
   FormControl,
   FormHelperText,
-  InputLabel,
   makeStyles,
   Input,
   MenuItem,

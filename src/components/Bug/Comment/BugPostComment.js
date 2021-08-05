@@ -3,23 +3,16 @@ import React, { useContext, useEffect } from "react";
 import {
   Typography,
   TextField,
-  InputAdornment,
   makeStyles,
   Tooltip,
   Paper,
-  IconButton,
 } from "@material-ui/core";
-import { AccountCircle } from "@material-ui/icons";
 
 import Button from "../../../controls/Button";
 import Form from "../../../layouts/Form";
 import { useState } from "react";
 import { UserContext } from "../../../context/UserContext";
-import {
-  createAuthenticatedEndPoint,
-  createRestrictedAPIEndPoint,
-  RESTRICTEDENDPOINTS,
-} from "../../../api";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import { BugContext } from "../../../context/BugContext";
 import { useRef } from "react";
 import { useMsal } from "@azure/msal-react";
@@ -133,7 +126,7 @@ const BugPostComment = (props) => {
             setIsEditingComment(false);
             setEditCommentBody("");
             let index = selectedBug.comments.findIndex(
-              (comm) => comm.commentId == comment.commentId
+              (comm) => comm.commentId === comment.commentId
             );
             let newComments = selectedBug.comments;
             newComments[index].content = editCommentBody;

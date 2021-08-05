@@ -1,12 +1,6 @@
 import { useMsal } from "@azure/msal-react";
-import React, { useState, createContext, useEffect, useContext } from "react";
-import {
-  createAPIEndPoint,
-  createAuthenticatedEndPoint,
-  createAuthenticationEndPoint,
-  ENDPOINTS,
-  RESTRICTEDENDPOINTS,
-} from "../api";
+import React, { useState, createContext, useEffect } from "react";
+import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../api";
 import useBug from "../hooks/useBug";
 
 export const BugContext = createContext();

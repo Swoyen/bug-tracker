@@ -1,22 +1,15 @@
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
-import React, { useState, useEffect, useContext } from "react";
-import {
-  useIsAuthenticated,
-  useMsal,
-  useMsalAuthentication,
-} from "@azure/msal-react";
+import { BrowserRouter, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useIsAuthenticated, useMsalAuthentication } from "@azure/msal-react";
 import { InteractionType } from "@azure/msal-browser";
 
-import Container from "@material-ui/core/Container";
-import Typography from "@material-ui/core/Typography";
 import { createTheme as createMuiTheme, makeStyles } from "@material-ui/core";
-import { green, purple } from "@material-ui/core/colors";
+
 import { ThemeProvider } from "@material-ui/styles";
 
-import { UserContext, UserProvider } from "./context/UserContext";
+import { UserProvider } from "./context/UserContext";
 import { ProjectProvider } from "./context/ProjectContext";
 
-import Bug from "./components/Bug";
 import Nav from "./components/Main/Nav";
 import Projects from "./components/Project/Projects";
 import Login from "./pages/Login";
@@ -25,16 +18,11 @@ import Home from "./pages/Home";
 import Dashboard from "./components/Dashboard";
 import ProjectCreate from "./components/Project/ProjectCreate/ProjectCreate";
 
-import {
-  AUTHENTICATIONENDPOINTS,
-  createAuthenticationEndPoint,
-  loginRequest,
-} from "./api";
+import { loginRequest } from "./api";
 import Project from "./components/Project/Project";
 import ProjectSettings from "./components/Project/ProjectSettings";
 import PrivateRoute from "./components/Route/PrivateRoute";
 import SignIn from "./components/Auth/SignIn";
-import ProjectSideBar from "./components/Project/ProjectSideBar";
 
 const theme = createMuiTheme({
   palette: {
@@ -68,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
 const App = () => {
   const isAuthenticated = useIsAuthenticated();
 
-  const { instance, inProgress } = useMsal();
   const classes = useStyles();
 
   // useEffect(() => {
@@ -77,7 +64,7 @@ const App = () => {
   //     handleLogin();
   //   }
   // }, [inProgress, instance]);
-  const { login, result, error } = useMsalAuthentication(
+  const { login, error } = useMsalAuthentication(
     InteractionType.Silent,
     loginRequest
   );

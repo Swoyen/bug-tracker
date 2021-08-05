@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,10 +14,8 @@ import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import { Typography } from "@material-ui/core";
 
 import { ProjectContext } from "../../context/ProjectContext";
-import Button from "../../controls/Button";
 import { BASE_URL } from "../../api";
 import Grid from "@material-ui/core/Grid";
-import ProjectAccessTag from "./ProjectCreate/ProjectAccessTag";
 
 const useStyles = makeStyles({
   table: {
