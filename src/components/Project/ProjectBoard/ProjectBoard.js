@@ -1,23 +1,25 @@
-import { makeStyles, Typography, Grid } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import { makeStyles, Typography, Grid, Paper } from "@material-ui/core";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import ProjectBoardGrid from "./ProjectBoardGrid";
 import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import { useMsal } from "@azure/msal-react";
 import { BugContext } from "../../../context/BugContext";
+import BugDetails from "../../Bug/BugDetails";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    padding: theme.spacing(1),
     textAlign: "left",
   },
   boardGridContainer: {
     background: "green",
-    width: "1000px",
+    width: "1200px",
     overflow: "auto",
-    height: "1000px",
+    maxHeight: "1000px",
   },
   board: {
     background: "white",
-    minHeight: "1200px",
+    maxHeight: "1200px",
   },
   boardGrid: {
     background: "blue",
@@ -31,8 +33,29 @@ const ProjectBoard = () => {
   const classes = useStyles();
   const [statuses, setStatuses] = useState([]);
   const [bugListWithStatus, setBugListWithStatus] = useState([]);
+  const [addCardShownList, setAddCardShownList] = useState([]);
   const { resetList } = useContext(BugContext);
   const { instance, accounts } = useMsal();
+
+  const handleShowAddCard = (index) => {
+    var temp = addCardShownList;
+    for (var i = 0; i < temp.length; i++) {
+      if (i === index) {
+        temp[i] = true;
+      } else {
+        temp[i] = false;
+      }
+    }
+    setAddCardShownList([...temp]);
+  };
+
+  const handleHideAddCard = () => {
+    var temp = addCardShownList;
+    for (var i = 0; i < temp.length; i++) {
+      temp[i] = false;
+    }
+    setAddCardShownList([...temp]);
+  };
 
   const modifyStatus = (bugId, steps, setCurrentStatus) => {
     let bug = bugListWithStatus.find(
@@ -49,62 +72,83 @@ const ProjectBoard = () => {
     }
   };
 
+  const fetchBugsWithStatus = async () => {
+    await FetchBugsWithStatus();
+    console.log("H");
+  };
+
+  const FetchBugsWithStatus = useCallback(async () => {
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.BUG
+    );
+    let result = apiObj.fetchAll();
+    result
+      .then((res) => {
+        let data = res.data;
+        let bugsWithStatus = [];
+        data.forEach((bug) => {
+          bugsWithStatus.push({
+            status: bug.status,
+            bug: bug,
+          });
+        });
+
+        setBugListWithStatus(bugsWithStatus);
+      })
+      .catch((err) => console.log(err));
+  }, [instance, accounts]);
+
+  const FetchStatus = useCallback(async () => {
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.STATUS
+    );
+    let result = apiObj.fetchAll();
+    result
+      .then((res) => {
+        let data = res.data;
+        var temp = [];
+        data.forEach(() => temp.push(false));
+        setAddCardShownList(temp);
+        setStatuses(data);
+      })
+      .catch((err) => console.log(err));
+  }, [instance, accounts]);
+
   useEffect(() => {
     (async () => {
       if (statuses.length > 0) {
-        const apiObj = await createAuthenticatedEndPoint(
-          instance,
-          accounts,
-          RESTRICTEDENDPOINTS.BUG
-        );
-        let result = apiObj.fetchAll();
-        result
-          .then((res) => {
-            let data = res.data;
-            let bugsWithStatus = [];
-            data.forEach((bug) => {
-              bugsWithStatus.push({ status: bug.status, bug: bug });
-            });
-
-            setBugListWithStatus(bugsWithStatus);
-          })
-          .catch((err) => console.log(err));
+        await FetchBugsWithStatus();
       }
     })();
 
     return () => {
-      setBugListWithStatus();
+      setBugListWithStatus([]);
     };
-  }, [statuses]);
+  }, [statuses, FetchBugsWithStatus]);
 
   useEffect(() => {
     (async () => {
-      const apiObj = await createAuthenticatedEndPoint(
-        instance,
-        accounts,
-        RESTRICTEDENDPOINTS.STATUS
-      );
-      let result = apiObj.fetchAll();
-      result
-        .then((res) => {
-          let data = res.data;
-          setStatuses(data);
-        })
-        .catch((err) => console.log(err));
+      await FetchStatus();
     })();
 
     return () => {
       setStatuses([]);
     };
-  }, []);
+  }, [FetchStatus]);
 
+  // TODO: fix resetList() usage warning
   useEffect(() => {
     if (bugListWithStatus) resetList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bugListWithStatus]);
 
   return (
     <div className={classes.root}>
-      <Typography gutterBottom variant="h4" color="initial">
+      <Typography gutterBottom variant="h5" color="initial">
         Project Board
       </Typography>
       <div className={classes.boardGridContainer}>
@@ -112,19 +156,28 @@ const ProjectBoard = () => {
           {statuses.map((status, index) => {
             return (
               <ProjectBoardGrid
-                start={index === 0 ? true : false}
-                end={index === statuses.length - 1 ? true : false}
+                // start={index === 0 ? true : false}
+                // end={index === statuses.length - 1 ? true : false}
+                addCardShown={addCardShownList[index]}
+                showAddCard={() => handleShowAddCard(index)}
+                hideAddCard={handleHideAddCard}
                 status={status}
                 modifyStatus={modifyStatus}
                 bugsWithStatus={bugListWithStatus}
                 setBugsWithStatus={setBugListWithStatus}
                 key={status.statusId}
                 title={status.statusName}
+                index={index}
+                resetList={fetchBugsWithStatus}
               ></ProjectBoardGrid>
             );
           })}
         </Grid>
       </div>
+      <BugDetails
+        handleDelete={fetchBugsWithStatus}
+        s={() => console.log("hello")}
+      ></BugDetails>
     </div>
   );
 };

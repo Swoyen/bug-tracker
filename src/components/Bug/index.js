@@ -5,6 +5,7 @@ import Button from "../../controls/Button";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { BugContext } from "../../context/BugContext";
+import BugDetails from "./BugDetails";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -38,7 +39,7 @@ const Bug = () => {
       setSelectedBugComponent({});
       setPrevSelectedBugComponent({});
     };
-  }, []);
+  }, [setSelectedBugComponent, setPrevSelectedBugComponent]);
 
   useEffect(() => {
     if (prevSelectedBugComponent.bugId === selectedBugComponent.bugId) {
@@ -53,16 +54,18 @@ const Bug = () => {
       }
     }
     setPrevSelectedBugComponent(selectedBugComponent);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedBugComponent.severity,
     selectedBugComponent.status,
     selectedBugComponent.reporter,
     selectedBugComponent.bugName,
+    //Maybe dont need this
   ]);
 
   useEffect(() => {
     setPrevSelectedBugComponent(selectedBugComponent);
-  }, [selectedBugComponent]);
+  }, [selectedBugComponent, setPrevSelectedBugComponent]);
 
   const showCreateDialog = () => {
     setOpenBugCreate(true);
@@ -105,6 +108,7 @@ const Bug = () => {
           resetList,
         }}
       ></BugCreate>
+      <BugDetails></BugDetails>
     </>
   );
 };

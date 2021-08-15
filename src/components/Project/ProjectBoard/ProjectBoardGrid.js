@@ -3,34 +3,47 @@ import { Grid } from "@material-ui/core";
 import { makeStyles, Typography } from "@material-ui/core";
 
 import ProjectBoardCard from "./ProjectBoardCard";
+import ProjectBoardCardAdd from "./ProjectBoardCardAdd";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
   title: {
     background: "#c1c1c1",
-    borderTopLeftRadius: (props) => (props.start ? "10px" : "0px"),
-    borderTopRightRadius: (props) => (props.end ? "10px" : "0px"),
+    // borderTopLeftRadius: (props) => (props.start ? "10px" : "0px"),
+    // borderTopRightRadius: (props) => (props.end ? "10px" : "0px"),
+    borderTopLeftRadius: "5px",
+    borderTopRightRadius: "5px",
     padding: theme.spacing(1),
     marginBottom: "3px",
   },
   boardGrid: {
-    borderLeft: (props) => (props.start ? "1px solid gray" : ""),
-    borderTopLeftRadius: (props) => (props.start ? "10px" : "0px"),
-    borderBottomLeftRadius: (props) => (props.start ? "10px" : "0px"),
-    borderTopRightRadius: (props) => (props.end ? "10px" : "0px"),
-    borderBottomRightRadius: (props) => (props.end ? "10px" : "0px"),
-    borderRight: "1px solid gray",
-    maxWidth: "200px",
+    // borderLeft: (props) => (props.start ? "1px solid gray" : ""),
+    // borderTopLeftRadius: (props) => (props.start ? "10px" : "0px"),
+    // borderBottomLeftRadius: (props) => (props.start ? "10px" : "0px"),
+    // borderTopRightRadius: (props) => (props.end ? "10px" : "0px"),
+    // borderBottomRightRadius: (props) => (props.end ? "10px" : "0px"),
+    borderRadius: "10px",
+    maxWidth: "300px",
+    margin: theme.spacing(0.5),
     background: "#eae9e9",
   },
 }));
 
 const ProjectBoardGrid = (props) => {
-  const { status, title, modifyStatus, bugsWithStatus, setBugsWithStatus } =
-    props;
+  const {
+    status,
+    title,
+    modifyStatus,
+    bugsWithStatus,
+    setBugsWithStatus,
+    addBugs,
+    addCardShown,
+    showAddCard,
+    hideAddCard,
+    resetList,
+  } = props;
   const classes = useStyles(props);
   const [bugListWithStatus, setBugListWithStatus] = useState([]);
-  // const [bugList, setBugList] = useState([]);
 
   useEffect(() => {
     return () => {
@@ -83,21 +96,15 @@ const ProjectBoardGrid = (props) => {
             );
           })
         : ""}
-      {/* 
-      <Grid item>
-        <Draggable
-          axis="both"
-          onStart={(e) => dragStart(e)}
-          onStop={(e) => dragEnd(e)}
-          position={pos}
-        >
-          <Paper className={classes.bugPaper}>Test</Paper>
-        </Draggable>
-      </Grid> */}
-      {/* 
-      <Grid item>
-        <Paper className={classes.bugPaper}>Test</Paper>
-      </Grid> */}
+
+      <ProjectBoardCardAdd
+        addCardShown={addCardShown}
+        showAddCard={showAddCard}
+        hideAddCard={hideAddCard}
+        addBugs={addBugs}
+        status={status}
+        resetList={resetList}
+      ></ProjectBoardCardAdd>
     </Grid>
   );
 };

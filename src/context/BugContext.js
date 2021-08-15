@@ -1,5 +1,6 @@
 import { useMsal } from "@azure/msal-react";
 import React, { useState, createContext, useEffect } from "react";
+import { useCallback } from "react";
 import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../api";
 import useBug from "../hooks/useBug";
 
@@ -53,19 +54,55 @@ export const BugProvider = (props) => {
     result.then((res) => setBugList(res.data)).catch((err) => console.log(err));
   };
 
-  const resetBugList = async () => {
-    const bugApiObj = await createAuthenticatedEndPoint(
-      instance,
-      accounts,
-      RESTRICTEDENDPOINTS.BUG
-    );
-    var bugApiRes = bugApiObj.fetchAll();
-    bugApiRes
-      .then((res) => setBugList(res.data))
-      .catch((err) => console.log(err));
-  };
+  // const resetBugList = async () => {
+  //   const bugApiObj = await createAuthenticatedEndPoint(
+  //     instance,
+  //     accounts,
+  //     RESTRICTEDENDPOINTS.BUG
+  //   );
+  //   var bugApiRes = bugApiObj.fetchAll();
+  //   bugApiRes
+  //     .then((res) => setBugList(res.data))
+  //     .catch((err) => console.log(err));
+  // };
 
-  const resetUserList = async () => {
+  // const resetUserList = async () => {
+  //   const userApiObj = await createAuthenticatedEndPoint(
+  //     instance,
+  //     accounts,
+  //     RESTRICTEDENDPOINTS.USER
+  //   );
+  //   var userApiRes = userApiObj.fetchAll();
+  //   userApiRes
+  //     .then((res) => setUsers(res.data))
+  //     .catch((err) => console.log(err));
+  // };
+
+  // const resetSeverityList = async () => {
+  //   const severityApiObj = await createAuthenticatedEndPoint(
+  //     instance,
+  //     accounts,
+  //     RESTRICTEDENDPOINTS.SEVERITY
+  //   );
+  //   var severityApiRes = severityApiObj.fetchAll();
+  //   severityApiRes
+  //     .then((res) => setSeverities(res.data))
+  //     .catch((err) => console.log(err));
+  // };
+
+  // const resetStatusList = async () => {
+  //   const statusApiObj = await createAuthenticatedEndPoint(
+  //     instance,
+  //     accounts,
+  //     RESTRICTEDENDPOINTS.STATUS
+  //   );
+  //   var statusApiRes = statusApiObj.fetchAll();
+  //   statusApiRes
+  //     .then((res) => setStatuses(res.data))
+  //     .catch((err) => console.log(err));
+  // };
+
+  const resetUserListCallBack = useCallback(async () => {
     const userApiObj = await createAuthenticatedEndPoint(
       instance,
       accounts,
@@ -75,21 +112,21 @@ export const BugProvider = (props) => {
     userApiRes
       .then((res) => setUsers(res.data))
       .catch((err) => console.log(err));
-  };
+  }, [instance, accounts]);
 
-  const resetSeverityList = async () => {
-    const severityApiObj = await createAuthenticatedEndPoint(
+  const resetBugListCallback = useCallback(async () => {
+    const bugApiObj = await createAuthenticatedEndPoint(
       instance,
       accounts,
-      RESTRICTEDENDPOINTS.SEVERITY
+      RESTRICTEDENDPOINTS.BUG
     );
-    var severityApiRes = severityApiObj.fetchAll();
-    severityApiRes
-      .then((res) => setSeverities(res.data))
+    var bugApiRes = bugApiObj.fetchAll();
+    bugApiRes
+      .then((res) => setBugList(res.data))
       .catch((err) => console.log(err));
-  };
+  }, [instance, accounts, setBugList]);
 
-  const resetStatusList = async () => {
+  const resetStatusListCallback = useCallback(async () => {
     const statusApiObj = await createAuthenticatedEndPoint(
       instance,
       accounts,
@@ -99,19 +136,33 @@ export const BugProvider = (props) => {
     statusApiRes
       .then((res) => setStatuses(res.data))
       .catch((err) => console.log(err));
-  };
+  }, [instance, accounts]);
+
+  const resetSeverityListCallback = useCallback(async () => {
+    const severityApiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.SEVERITY
+    );
+    var severityApiRes = severityApiObj.fetchAll();
+    severityApiRes
+      .then((res) => setSeverities(res.data))
+      .catch((err) => console.log(err));
+  }, [instance, accounts]);
 
   useEffect(() => {
     (async () => {
-      await resetUserList();
-
-      await resetSeverityList();
-
-      await resetStatusList();
-
-      await resetBugList();
+      await resetUserListCallBack();
+      await resetSeverityListCallback();
+      await resetStatusListCallback();
+      await resetBugListCallback();
     })();
-  }, []);
+  }, [
+    resetUserListCallBack,
+    resetSeverityListCallback,
+    resetStatusListCallback,
+    resetBugListCallback,
+  ]);
 
   return (
     <BugContext.Provider

@@ -14,6 +14,7 @@ import { ProjectContext } from "../../context/ProjectContext";
 import {
   BASE_URL,
   createAPIEndPoint,
+  createAuthenticatedEndPoint,
   createRestrictedAPIEndPoint,
   ENDPOINTS,
   RESTRICTEDENDPOINTS,
@@ -24,6 +25,8 @@ import Form from "../../layouts/Form";
 import Dialog from "../../layouts/Dialog";
 import ProjectAccessTag from "./ProjectCreate/ProjectAccessTag";
 import { UserContext } from "../../context/UserContext";
+import { useCallback } from "react";
+import { useMsal } from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -58,6 +61,7 @@ const ProjectSettings = () => {
   } = useContext(ProjectContext);
 
   const [defaultImgSrc, setDefaultImgSrc] = useState("");
+  const { instance, accounts } = useMsal();
 
   const [newProjectTitle, setNewProjectTitle] = useState("");
   const [newSelectedImgSrc, setNewSelectedImgSrc] = useState();
@@ -71,36 +75,56 @@ const ProjectSettings = () => {
   const [userToAdd, setUserToAdd] = useState(emptyUser);
   const [userToAddInput, setUserToAddInput] = useState("Select");
   const [addedUsers, setAddedUsers] = useState([]);
-  const { userDetails } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
+
+  const ModifyProject = useCallback(async () => {
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.PROJECT
+    );
+    apiObj
+      .fetchById(projectIdToModify)
+      .then((res) => {
+        let data = res.data;
+        setProjectDetails(data);
+        setNewProjectTitle(data.title);
+        let imgSrc = BASE_URL + "Image/" + data.imageName;
+        setDefaultImgSrc(imgSrc);
+        setNewSelectedImgSrc(imgSrc);
+      })
+      .catch((err) => console.log(err));
+  }, [instance, accounts, projectIdToModify]);
+
+  const FetchUsers = useCallback(async () => {
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.USER
+    );
+    apiObj
+      .fetchAll()
+      .then((res) => {
+        let data = res.data;
+        let index = data.findIndex(
+          (user) => user.userId === currentUser.userId
+        );
+        if (index > -1) data.splice(index, 1);
+
+        var users = [emptyUser, ...data];
+        setUsers(users);
+      })
+      .catch((err) => console.log(err));
+  }, [instance, accounts, currentUser.userId]);
 
   useEffect(() => {
-    if (openProjectSettings) {
-      createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
-        .fetchById(projectIdToModify)
-        .then((res) => {
-          let data = res.data;
-          setProjectDetails(data);
-          setNewProjectTitle(data.title);
-          let imgSrc = BASE_URL + "Image/" + data.imageName;
-          setDefaultImgSrc(imgSrc);
-          setNewSelectedImgSrc(imgSrc);
-        })
-        .catch((err) => console.log(err));
+    (async () => {
+      if (openProjectSettings) {
+        await ModifyProject();
+        await FetchUsers();
+      }
+    })();
 
-      createAPIEndPoint(ENDPOINTS.USER)
-        .fetchAll()
-        .then((res) => {
-          let data = res.data;
-          let index = data.findIndex(
-            (user) => user.userId === userDetails.userId
-          );
-          if (index > -1) data.splice(index, 1);
-
-          var users = [emptyUser, ...data];
-          setUsers(users);
-        })
-        .catch((err) => console.log(err));
-    }
     return () => {
       setProjectDetails({});
       setOpenDeleteConfirmDialog(false);
@@ -109,11 +133,19 @@ const ProjectSettings = () => {
       setAddedUsers([]);
       setUserToAddInput("Select");
     };
-  }, [openProjectSettings]);
+  }, [openProjectSettings, ModifyProject, FetchUsers]);
 
   useEffect(() => {
+    const loadUsersFromId = async (assignedUserIds) => {
+      var responses = [];
+      for (var i = 0; i < assignedUserIds.length; i++) {
+        var response = await loadUserFromId(assignedUserIds[i]);
+        responses.push(response);
+      }
+      return responses;
+    };
     (async () => {
-      if (projectDetails != null) {
+      if (openProjectSettings && projectDetails != null) {
         //add user tags from project access api
         var assignedUserIds = projectDetails.assignedUsers;
         const usersToLoad = assignedUserIds;
@@ -122,50 +154,52 @@ const ProjectSettings = () => {
 
           let usersFromApi = [];
           for (var i = 0; i < responses.length; i++) {
-            console.log(userDetails);
-            if (responses[i].data.userId !== userDetails.userId)
+            if (responses[i].data.userId !== currentUser.userId)
               usersFromApi.push(responses[i].data);
           }
           setAddedUsers(usersFromApi);
         }
         //remove name of project created from other user from searchlist
-        if (users.length > 0) {
-          if (projectDetails != null) {
-            var creatorId = projectDetails.creator.userId;
-            if (creatorId !== userDetails.userId) {
+        // TODO: fix this
+        if (projectDetails != null) {
+          console.log(projectDetails);
+          console.log(currentUser.userId);
+          var creatorId = projectDetails.openedByUserId;
+          if (creatorId !== currentUser.userId) {
+            console.log("Here");
+            setUsers((users) => {
               let temp = users;
-
-              let result = temp.find((user) => user.userId === creatorId);
-              let index = temp.indexOf(result);
+              let index = temp.findIndex((user) => user.userId === creatorId);
               if (index > -1) {
-                temp.splice(index, 1);
+                temp.slice(index, 1);
               }
-            }
+              return temp;
+            });
           }
         }
       }
     })();
-  }, [projectDetails]);
+  }, [
+    openProjectSettings,
+    projectDetails,
+    currentUser.userId,
+    // TODO: check this
+  ]);
 
   useEffect(() => {
-    if (addedUsers) {
-      let temp = users;
-      temp = temp.filter((user) => {
-        return !addedUsers.some((u) => u.userId === user.userId);
-      });
+    if (addedUsers && openProjectSettings) {
+      // let temp = users;
+      // temp = temp.filter((user) => {
+      //   return !addedUsers.some((u) => u.userId === user.userId);
+      // });
 
-      setUsers(temp);
+      setUsers((users) =>
+        users.filter(
+          (user) => !addedUsers.some((u) => u.userId === user.userId)
+        )
+      );
     }
-  }, [addedUsers]);
-
-  const loadUsersFromId = async (assignedUserIds) => {
-    var responses = [];
-    for (var i = 0; i < assignedUserIds.length; i++) {
-      var response = await loadUserFromId(assignedUserIds[i]);
-      responses.push(response);
-    }
-    return responses;
-  };
+  }, [addedUsers, openProjectSettings]);
 
   const loadUserFromId = async (assignedUserId) => {
     return await createAPIEndPoint(ENDPOINTS.USER).fetchById(assignedUserId);
@@ -249,7 +283,7 @@ const ProjectSettings = () => {
   const compareAccessUsers = () => {
     const prevAccessUserIds = projectDetails.assignedUsers;
     const prevAccessUserIdsWithoutCurrentUser = prevAccessUserIds.filter(
-      (userId) => userId != userDetails.userId
+      (userId) => userId !== currentUser.userId
     );
 
     let currentAccessUserIds = [];

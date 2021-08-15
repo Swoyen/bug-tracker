@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = (props) => {
-  const { loginJwt, login } = useContext(UserContext);
+  const { login } = useContext(UserContext);
   let location = useLocation();
   let history = useHistory();
   const classes = useStyles();
@@ -70,21 +70,21 @@ const Login = (props) => {
 
   let { from } = location.state || { from: { pathname: "/" } };
 
-  useEffect(() => {
-    // loginJwt(() => history.replace(from));
-    loginJwt(
-      () => history.replace(from),
-      () => {}
-    );
-  }, []);
+  // useEffect(() => {
+  //   // loginJwt(() => history.replace(from));
+  //   loginJwt(
+  //     () => history.replace(from),
+  //     () => {}
+  //   );
+  // }, []);
 
-  useEffect(() => {
-    return () => {
-      setEmail("");
-      setPassword();
-      setError(false);
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     setEmail("");
+  //     setPassword();
+  //     setError(false);
+  //   };
+  // }, []);
 
   const submit = async (e) => {
     e.preventDefault();

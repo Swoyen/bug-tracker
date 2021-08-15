@@ -15,6 +15,9 @@ import Time from "../Time/Time";
 import ProjectSideBar from "./ProjectSideBar";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 
+import { useCallback } from "react";
+import TimeConfirmDialog from "../Time/TimeConfirmDialog";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -37,24 +40,28 @@ const Project = () => {
   const isAuthenticated = useIsAuthenticated;
   // const [currentProject, setCurrentProject] = useState({});
 
-  const { userDetails } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
+
+  const FetchRecentProjects = useCallback(async () => {
+    const recentProject = {
+      openedProjectId: id,
+      openedByUserId: currentUser.userId,
+    };
+    const apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.RECENTPROJECTS
+    );
+    apiObj.create(recentProject);
+  }, [instance, accounts, id, currentUser.userId]);
 
   useEffect(() => {
     (async () => {
-      if (isAuthenticated && userDetails.idTokenClaims) {
-        const recentProject = {
-          openedProjectId: id,
-          openedByUserId: userDetails.idTokenClaims.oid,
-        };
-        const apiObj = await createAuthenticatedEndPoint(
-          instance,
-          accounts,
-          RESTRICTEDENDPOINTS.RECENTPROJECTS
-        );
-        apiObj.create(recentProject);
+      if (isAuthenticated && currentUser.userId) {
+        FetchRecentProjects();
       }
     })();
-  }, [id, userDetails]);
+  }, [id, currentUser, isAuthenticated, FetchRecentProjects]);
 
   return (
     <div className={classes.root}>
@@ -66,10 +73,15 @@ const Project = () => {
             path={`${url}/board`}
             component={() => <ProjectBoard />}
           ></Route>
-          <TimeProvider>
-            <Route path={`${url}/time`} component={() => <Time />}></Route>
-          </TimeProvider>
-          <BugDetails></BugDetails>
+
+          <Route
+            path={`${url}/time`}
+            component={() => (
+              <TimeProvider>
+                <Time />{" "}
+              </TimeProvider>
+            )}
+          ></Route>
         </div>
       </BugProvider>
     </div>

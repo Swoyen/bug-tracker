@@ -54,7 +54,7 @@ const BugCreate = (props) => {
 
   const AddBug = async () => {
     let newBug = {};
-    newBug.bugID = 0;
+    newBug.bugId = 0;
     newBug.bugName = bugName;
     newBug.bugDescription = bugDetails;
     newBug.reporterUserId = reporterId;

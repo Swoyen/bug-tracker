@@ -22,7 +22,7 @@ const RichTextFieldEditor = (props) => {
       setDefaultVal(emptyContent);
       setClear(false);
     }
-  }, [clear]);
+  }, [clear, setClear]);
 
   useEffect(() => {
     setDefaultVal(defaultValue);

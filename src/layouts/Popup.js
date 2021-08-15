@@ -48,10 +48,10 @@ const Popup = (props) => {
     title,
     setTitle,
     editTitle = false,
-    titleVariant = "h4",
+    titleVariant = "h5",
     center = false,
     maxWidth = "md",
-    /*  topMargin,*/
+    topMargin,
   } = props;
   const classes = useStyles(props);
 

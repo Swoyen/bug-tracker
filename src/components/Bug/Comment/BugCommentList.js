@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext } from "react";
 
 import { BugContext } from "../../../context/BugContext";
 import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
@@ -31,13 +31,12 @@ const BugCommentList = () => {
 
   useEffect(() => {
     if (selectedBug.comments !== null) {
-      // setComments(selectedBug.comments);
-      setComments([...selectedBug.comments]);
+      setComments(selectedBug.comments);
     }
     return () => {
       setComments([]);
     };
-  }, [selectedBug.comments]);
+  }, [selectedBug.comments, setComments]);
 
   const deleteComment = async () => {
     const apiObj = await createAuthenticatedEndPoint(

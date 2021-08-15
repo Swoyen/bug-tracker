@@ -59,6 +59,7 @@ const BugDetails = (props) => {
     bugName,
     setSelectedBugName,
   } = useContext(BugContext);
+  const { handleDelete: handleUpdate } = props;
   const { instance, accounts } = useMsal();
 
   const classes = useStyles();
@@ -66,7 +67,7 @@ const BugDetails = (props) => {
 
   useEffect(() => {
     (async () => {
-      if (selectedBugId !== -1) {
+      if (openBugDetails) {
         const apiObj = await createAuthenticatedEndPoint(
           instance,
           accounts,
@@ -82,38 +83,47 @@ const BugDetails = (props) => {
             setSelectedBugName(data.bugName);
           })
           .catch((err) => console.log(err));
+      } else {
+        setPrevBugId(selectedBugId);
+        setSelectedBug({});
       }
     })();
     return function cleanup() {
       setPrevBugId(selectedBugId);
-    };
-  }, [selectedBugId]);
+    }; // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openBugDetails, selectedBugId]);
 
   useEffect(() => {
     (async () => {
-      if (selectedBug && prevBugId === selectedBug.bugId) {
-        let updatedBug = {};
-        updatedBug.bugId = selectedBug.bugId;
-        updatedBug.bugName = selectedBug.bugName;
-        updatedBug.bugDescription = selectedBug.bugDescription;
-        updatedBug.reporterUserId = selectedBug.reporter.userId;
-        updatedBug.assigneeUserId = selectedBug.assignee.userId;
-        updatedBug.createdDate = selectedBug.createdDate;
-        updatedBug.severityId = selectedBug.severity.severityId;
-        updatedBug.statusId = selectedBug.status.statusId;
+      if (openBugDetails) {
+        if (selectedBug && prevBugId === selectedBug.bugId) {
+          let updatedBug = {};
+          updatedBug.bugId = selectedBug.bugId;
+          updatedBug.bugName = selectedBug.bugName;
+          updatedBug.bugDescription = selectedBug.bugDescription;
+          updatedBug.reporterUserId = selectedBug.reporter.userId;
+          updatedBug.assigneeUserId = selectedBug.assignee.userId;
+          updatedBug.createdDate = selectedBug.createdDate;
+          updatedBug.severityId = selectedBug.severity.severityId;
+          updatedBug.statusId = selectedBug.status.statusId;
 
-        const apiObj = await createAuthenticatedEndPoint(
-          instance,
-          accounts,
-          RESTRICTEDENDPOINTS.BUG
-        );
-        let result = apiObj.update(selectedBugId, updatedBug);
-        result.then((res) => {}).catch((err) => console.log(err));
+          const apiObj = await createAuthenticatedEndPoint(
+            instance,
+            accounts,
+            RESTRICTEDENDPOINTS.BUG
+          );
+          let result = apiObj.update(selectedBugId, updatedBug);
+          result
+            .then((res) => {
+              if (handleUpdate) handleUpdate();
+            })
+            .catch((err) => console.log(err));
 
-        setSelectedBugComponent(selectedBug);
+          setSelectedBugComponent(selectedBug);
+        }
+        setPrevBugId(selectedBugId);
       }
-      setPrevBugId(selectedBugId);
-    })();
+    })(); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedBug.severity,
     selectedBug.status,
@@ -164,9 +174,12 @@ const BugDetails = (props) => {
       accounts,
       RESTRICTEDENDPOINTS.BUG
     );
+    console.log(selectedBugId);
     let result = apiObj.delete(selectedBugId);
     result
-      .then((res) => removeBugFromList(selectedBugId))
+      .then((res) => {
+        return handleUpdate ? handleUpdate() : removeBugFromList(selectedBugId);
+      })
       .catch((err) => console.log(err));
 
     // setOpenConfirmDialog(false);

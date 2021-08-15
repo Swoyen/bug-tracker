@@ -54,7 +54,7 @@ const BugUserComment = (props) => {
         : setTotalLikes(0);
     }
     return () => {};
-  }, [comment]);
+  }, [comment, currentUser.userId]);
 
   const deleteComment = () => {
     setCommentToDeleteId(comment.commentId);

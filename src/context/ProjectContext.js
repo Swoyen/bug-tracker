@@ -1,5 +1,5 @@
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, createContext, useEffect, useCallback } from "react";
 
 import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../api";
 
@@ -12,14 +12,7 @@ export const ProjectProvider = (props) => {
   const [openProjectCreate, setOpenProjectCreate] = useState(false);
   const [openProjectSettings, setOpenProjectSettings] = useState(false);
   const isAuthenticated = useIsAuthenticated();
-
-  useEffect(() => {
-    (async () => {
-      if (isAuthenticated) await loadProjectList();
-    })();
-  }, [isAuthenticated]);
-
-  const loadProjectList = async () => {
+  const loadProjectList = useCallback(async () => {
     const apiObj = await createAuthenticatedEndPoint(
       instance,
       accounts,
@@ -31,7 +24,11 @@ export const ProjectProvider = (props) => {
 
       result.then((response) => setProjectList(response.data));
     }
-  };
+  }, [instance, accounts]);
+
+  useEffect(() => {
+    if (isAuthenticated) loadProjectList();
+  }, [isAuthenticated, loadProjectList]);
 
   return (
     <ProjectContext.Provider

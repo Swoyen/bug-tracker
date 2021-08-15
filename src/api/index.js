@@ -30,6 +30,7 @@ export const RESTRICTEDENDPOINTS = {
   IMAGE: "Image",
   USER: "User",
   CURRENTUSER: "User/Current",
+  TAGS: "BugTag",
 };
 
 export const createAPIEndPoint = (endPoint) => {
@@ -46,7 +47,8 @@ export const createAPIEndPoint = (endPoint) => {
 export const createAuthenticatedEndPoint = async (
   instance,
   accounts,
-  endPoint
+  endPoint,
+  filters
 ) => {
   const request = { ...apiRequest, account: accounts[0] };
   var res = await instance.acquireTokenSilent(request);
@@ -56,6 +58,9 @@ export const createAuthenticatedEndPoint = async (
     headers: {
       Authorization: "Bearer " + accessToken,
       withCredentials: true,
+    },
+    params: {
+      ...filters,
     },
   };
 

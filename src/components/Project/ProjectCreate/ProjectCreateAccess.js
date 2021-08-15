@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useMsal } from "@azure/msal-react";
 
 import { Typography, Grid, makeStyles, TextField } from "@material-ui/core";
@@ -51,31 +51,35 @@ const ProjectCreateAccess = (props) => {
   const [userToAdd, setUserToAdd] = useState(emptyUser);
   const [userToAddInput, setUserToAddInput] = useState("");
   const { openProjectCreate, uploadProject, setAssignedUsers } = props;
-  const { userDetails } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
+
+  const FetchUsersToAdd = useCallback(async () => {
+    var apiObj = await createAuthenticatedEndPoint(
+      instance,
+      accounts,
+      RESTRICTEDENDPOINTS.USER
+    );
+    if (apiObj) {
+      var result = apiObj.fetchAll();
+      result
+        .then((res) => {
+          let data = res.data;
+          console.log(data);
+          let index = data.findIndex(
+            (user) => user.userId === currentUser.userId
+          );
+          if (index > -1) data.splice(index, 1);
+          var users = [emptyUser, ...data];
+          setUsers(users);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [instance, accounts, currentUser]);
 
   useEffect(() => {
     (async () => {
-      if (openProjectCreate)
-        var apiObj = await createAuthenticatedEndPoint(
-          instance,
-          accounts,
-          RESTRICTEDENDPOINTS.USER
-        );
-      if (apiObj) {
-        var result = apiObj.fetchAll();
-        result
-          .then((res) => {
-            let data = res.data;
-            console.log(userDetails);
-            console.log(data);
-            let index = data.findIndex(
-              (user) => user.userId === userDetails.idTokenClaims.oid
-            );
-            if (index > -1) data.splice(index, 1);
-            var users = [emptyUser, ...data];
-            setUsers(users);
-          })
-          .catch((err) => console.log(err));
+      if (openProjectCreate) {
+        await FetchUsersToAdd();
       }
       // createAPIEndPoint(ENDPOINTS.USER)
       //   .fetchAll()
@@ -90,7 +94,7 @@ const ProjectCreateAccess = (props) => {
       //   })
       //   .catch((err) => console.log(err));
     })();
-  }, [openProjectCreate]);
+  }, [openProjectCreate, FetchUsersToAdd]);
 
   useEffect(() => {
     let userIds = [];
@@ -98,7 +102,7 @@ const ProjectCreateAccess = (props) => {
       userIds.push(user.userId);
     });
     setAssignedUsers(userIds);
-  }, [addedUsers]);
+  }, [addedUsers, setAssignedUsers]);
 
   const addUsers = () => {
     if (userToAdd.userId !== "" && users.includes(userToAdd)) {

@@ -10,8 +10,9 @@ const useStyles = makeStyles((theme) => ({
   bugPaper: {
     padding: theme.spacing(1),
     margin: theme.spacing(1),
-    minHeight: "100px",
+    minHeight: "120px",
     zIndex: 1000,
+    borderRadius: "5px",
   },
   draggingBugPaper: {
     zIndex: 999,
@@ -34,17 +35,17 @@ const ProjectBoardCard = (props) => {
     useContext(BugContext);
 
   const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
+  // const [startY, setStartY] = useState(0);
 
   const [isDragging, setIsDragging] = useState(false);
   const [hidden, setHidden] = useState(false);
 
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+  // const [pos, setPos] = useState({ x: 0, y: 0 });
   const [currentStatus, setCurrentStatus] = useState(status);
 
   const dragStart = (e) => {
     setStartX(e.screenX);
-    setStartY(e.screenY);
+    // setStartY(e.screenY);
     setIsDragging(true);
   };
 
@@ -53,10 +54,10 @@ const ProjectBoardCard = (props) => {
     let offsetX = startX - e.screenX;
     var steps;
     if (offsetX > 100) {
-      steps = -Math.round(offsetX / 200);
+      steps = -Math.round(offsetX / 300);
       modifyStatus(bugId, steps, setCurrentStatus);
     } else if (offsetX < -100) {
-      steps = -Math.round(offsetX / 200);
+      steps = -Math.round(offsetX / 300);
       modifyStatus(bugId, steps, setCurrentStatus);
     }
   };
@@ -76,6 +77,7 @@ const ProjectBoardCard = (props) => {
       .catch((err) => console.log(err));
   };
 
+  // TODO: Refactor this
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -119,6 +121,7 @@ const ProjectBoardCard = (props) => {
       }
     })();
     return () => (mounted = false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStatus]);
 
   return (
@@ -130,7 +133,7 @@ const ProjectBoardCard = (props) => {
           axis="both"
           onStart={(e) => dragStart(e)}
           onStop={(e) => dragEnd(e, bugId, setCurrentStatus)}
-          position={pos}
+          // position={pos}
         >
           <Paper className={`${classes.bugPaper}`} square={true} elevation={3}>
             <Typography variant="subtitle2" color="initial">

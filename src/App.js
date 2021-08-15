@@ -42,6 +42,15 @@ const theme = createMuiTheme({
     contrastThreshold: 3,
     tonalOffset: 0.2,
   },
+  typography: {
+    subtitle1: {
+      fontWeight: 500,
+    },
+    h5: {
+      fontWeight: 500,
+      textTransform: "uppercase",
+    },
+  },
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -74,7 +83,7 @@ const App = () => {
         console.log(err)
       );
     }
-  }, [error]);
+  }, [error, login]);
 
   return (
     <div className={classes.root}>

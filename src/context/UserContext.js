@@ -23,12 +23,12 @@ export const UserProvider = (props) => {
         result
           .then((res) => {
             setCurrentUser(res.data);
-            console.log(res.data);
+            //console.log(res.data);
           })
           .catch((err) => console.log(err));
       }
     })();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, instance, accounts]);
 
   const loginJwt = (callback, failcallback) => {
     // if (!isLoggedIn) {
