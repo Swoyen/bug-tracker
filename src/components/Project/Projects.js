@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { makeStyles } from "@material-ui/core";
 
 import ProjectTable from "./ProjectTable";
+import { useDispatch } from "react-redux";
+import { loadProjects } from "../../store/projects";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,8 +23,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Projects = (props) => {
+const Projects = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadProjects());
+  }, []);
   return (
     <div className={classes.root}>
       <div className={classes.content}>

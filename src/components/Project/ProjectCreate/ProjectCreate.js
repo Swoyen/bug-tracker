@@ -1,17 +1,20 @@
 import { makeStyles } from "@material-ui/core";
-import React, { useState, useContext, useEffect } from "react";
-import { useMsal } from "@azure/msal-react";
+import React, { useState, useEffect } from "react";
 
 import CloseIcon from "@material-ui/icons/Close";
 import { Fade } from "@material-ui/core";
 
-import { ProjectContext } from "../../../context/ProjectContext";
-
 import Button from "../../../controls/Button";
 
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import ProjectCreateDetails from "./ProjectCreateDetails";
 import ProjectCreateAccess from "./ProjectCreateAccess";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addProject,
+  getProjectCreateShown,
+  setProjectCreateShown,
+} from "../../../store/projects";
+import { loadUsers } from "../../../store/users";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,10 +61,9 @@ const defaultImgSrc = "/img/default.jpg";
 
 const ProjectCreate = () => {
   const classes = useStyles();
-  const { loadProjectList, openProjectCreate, setOpenProjectCreate } =
-    useContext(ProjectContext);
+  const dispatch = useDispatch();
+  const open = useSelector(getProjectCreateShown);
 
-  const { instance, accounts } = useMsal();
   const [selectedImg, setSelectedImg] = useState();
   const [selectedImgSrc, setSelectedImgSrc] = useState(defaultImgSrc);
   const [projectTitle, setProjectTitle] = useState("");
@@ -70,64 +72,51 @@ const ProjectCreate = () => {
   const [assignedUsers, setAssignedUsers] = useState([]);
 
   useEffect(() => {
-    setSelectedImg(null);
-    setSelectedImgSrc(defaultImgSrc);
-    setProjectTitle("");
-    setStage(1);
-  }, [openProjectCreate]);
+    if (open) dispatch(loadUsers());
+    return () => {
+      setSelectedImg(null);
+      setSelectedImgSrc(defaultImgSrc);
+      setProjectTitle("");
+      setStage(1);
+    };
+  }, [open]);
 
-  const uploadProject = async () => {
+  const handleAddProject = async () => {
     const formData = new FormData();
     formData.append("title", projectTitle);
-    formData.append("createdTime", "2021-07-12T02:29:54.605Z");
+    formData.append("createdTime", new Date().toISOString());
     if (selectedImg) {
       formData.append("imageFile", selectedImg, selectedImg.name);
     }
-
     if (assignedUsers) {
       for (var i = 0; i < assignedUsers.length; i++) {
         formData.append("assignedUsers[]", assignedUsers[i]);
       }
     }
-    var apiObj = await createAuthenticatedEndPoint(
-      instance,
-      accounts,
-      RESTRICTEDENDPOINTS.PROJECT
-    );
-    if (apiObj) {
-      var result = apiObj.create(formData);
-      result
-        .then((res) => {
-          setOpenProjectCreate(false);
-          console.log("Project uploaded");
-          loadProjectList();
-        })
-        .catch((err) => console.log(err));
-    }
 
-    // createRestrictedAPIEndPoint(RESTRICTEDENDPOINTS.PROJECT)
-    //   .create(formData)
-    //   .then((res) => {
-    //     setOpenProjectCreate(false);
-    //     console.log("Project upploaded");
-    //     loadProjectList();
-    //   })
-    //   .catch((err) => console.log(err));
+    let result = dispatch(addProject(formData));
+    result
+      .then(() => dispatch(setProjectCreateShown(false)))
+      .catch((err) => console.log(err));
   };
 
   const showNext = () => {
     setStage(stage + 1);
   };
 
+  const handleProjectCreateHidden = () => {
+    dispatch(setProjectCreateShown(false));
+  };
+
   return (
     <>
-      {openProjectCreate ? (
-        <Fade in={openProjectCreate}>
+      {open ? (
+        <Fade in={open}>
           <div className={classes.root}>
             <Button
               className={classes.closeButton}
               variant="text"
-              onClick={() => setOpenProjectCreate(false)}
+              onClick={handleProjectCreateHidden}
             >
               <CloseIcon></CloseIcon>
             </Button>
@@ -146,8 +135,7 @@ const ProjectCreate = () => {
             ) : (
               <ProjectCreateAccess
                 {...{
-                  openProjectCreate,
-                  uploadProject,
+                  addProject: handleAddProject,
                   assignedUsers,
                   setAssignedUsers,
                 }}

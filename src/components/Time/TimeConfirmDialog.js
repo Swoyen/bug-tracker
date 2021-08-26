@@ -1,6 +1,4 @@
 import React from "react";
-import { useContext } from "react";
-import { TimeContext } from "../../context/TimeContext";
 import Dialog from "../../layouts/Dialog";
 
 const TimeConfirmDialog = (props) => {

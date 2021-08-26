@@ -13,9 +13,10 @@ import IconButton from "@material-ui/core/IconButton";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import { Typography } from "@material-ui/core";
 
-import { ProjectContext } from "../../context/ProjectContext";
 import { BASE_URL } from "../../api";
 import Grid from "@material-ui/core/Grid";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProjects, setProjectSettingsShown } from "../../store/projects";
 
 const useStyles = makeStyles({
   table: {
@@ -29,12 +30,12 @@ const useStyles = makeStyles({
 
 const ProjectTable = () => {
   const classes = useStyles();
-  const { projectList, setOpenProjectSettings, setProjectIdToModify } =
-    useContext(ProjectContext);
 
-  const showProjectSettings = (projectId) => {
-    setOpenProjectSettings(true);
-    setProjectIdToModify(projectId);
+  const dispatch = useDispatch();
+  const projects = useSelector(getAllProjects);
+
+  const handleShowProjectSettings = (projectId) => {
+    dispatch(setProjectSettingsShown(true, projectId));
   };
 
   return (
@@ -56,50 +57,51 @@ const ProjectTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {projectList.map((project) => (
-            <TableRow key={project.title}>
-              <TableCell component="th" scope="row">
-                {project.projectId}
-              </TableCell>
-              <TableCell align="left">
-                <Link
-                  className={classes.link}
-                  to={`/projects/${project.projectId}`}
-                >
-                  <Grid alignItems="center" container spacing={3}>
-                    <Grid item xs={2}>
-                      <img
-                        src={`${BASE_URL}Image/${project.imageName}`}
-                        alt=""
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          margin: "auto",
-                          borderRadius: "50%",
-                        }}
-                      />
+          {projects &&
+            projects.map((project) => (
+              <TableRow key={project.title}>
+                <TableCell component="th" scope="row">
+                  {project.projectId}
+                </TableCell>
+                <TableCell align="left">
+                  <Link
+                    className={classes.link}
+                    to={`/projects/${project.projectId}`}
+                  >
+                    <Grid alignItems="center" container spacing={3}>
+                      <Grid item xs={2}>
+                        <img
+                          src={`${BASE_URL}Image/${project.imageName}`}
+                          alt=""
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            margin: "auto",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={10}>
+                        <Typography variant="subtitle2">
+                          {project.title}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={10}>
-                      <Typography variant="subtitle2">
-                        {project.title}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Link>
-              </TableCell>
-              <TableCell align="left">{project.createdTime}</TableCell>
-              <TableCell align="left">{project.creator.userName}</TableCell>
-              <TableCell align="center">
-                <IconButton
-                  size="small"
-                  aria-label=""
-                  onClick={() => showProjectSettings(project.projectId)}
-                >
-                  <SettingsTwoToneIcon></SettingsTwoToneIcon>
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
+                  </Link>
+                </TableCell>
+                <TableCell align="left">{project.createdTime}</TableCell>
+                <TableCell align="left">{project.creator.userName}</TableCell>
+                <TableCell align="center">
+                  <IconButton
+                    size="small"
+                    aria-label=""
+                    onClick={() => handleShowProjectSettings(project.projectId)}
+                  >
+                    <SettingsTwoToneIcon></SettingsTwoToneIcon>
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

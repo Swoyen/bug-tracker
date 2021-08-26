@@ -2,9 +2,7 @@ import { useIsAuthenticated } from "@azure/msal-react";
 import React from "react";
 import { Redirect, Route } from "react-router";
 
-const PrivateRoute = ({ children, ...rest }) => {
-  const isAuthenticated = useIsAuthenticated();
-
+const PrivateRoute = ({ isAuthenticated, children, ...rest }) => {
   return (
     <Route
       {...rest}

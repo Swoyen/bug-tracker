@@ -1,20 +1,47 @@
 import { makeStyles, Grid, Button } from "@material-ui/core";
-import Dialog from "../../../layouts/Dialog";
-import React, { useEffect } from "react";
-import { useContext } from "react";
-import { TimeContext } from "../../../context/TimeContext";
+import React, { useState, useEffect } from "react";
 import TimeGroup from "./TimeGroup.js";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllTimeTracksGroupedByDate,
+  loadTimeTracks,
+  loadTimeTracksByDate,
+} from "../../../store/timeTrack";
 
 const useStyles = makeStyles((theme) => ({
   root: { textAlign: "left" },
 }));
 
-const TimeList = (props) => {
-  const { timeListGroupedByDate, fetchTimeListByDate } =
-    useContext(TimeContext);
+const TimeList = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
-  useEffect(() => {}, []);
+  const timeListGroupedByDate = useSelector(getAllTimeTracksGroupedByDate);
+
+  const [timeListDateToFetch, setTimeListDateToFetch] = useState(new Date());
+
+  useEffect(() => {
+    var result = dispatch(loadTimeTracks(timeListDateToFetch));
+    result.then(() =>
+      setTimeListDateToFetch((date) => {
+        var newDt = date;
+        newDt.setDate(date.getDate() - 3);
+        return newDt;
+      })
+    );
+  }, [dispatch]);
+
+  const handleLoadTimeTracks = async () => {
+    var result = dispatch(loadTimeTracksByDate(timeListDateToFetch));
+    result.then(() =>
+      setTimeListDateToFetch((date) => {
+        var newDt = date;
+        newDt.setDate(date.getDate() - 3);
+        return newDt;
+      })
+    );
+  };
+
   return (
     <Grid
       container
@@ -37,7 +64,7 @@ const TimeList = (props) => {
         );
       })}
       <Grid item>
-        <Button variant="contained" onClick={fetchTimeListByDate}>
+        <Button variant="contained" onClick={() => handleLoadTimeTracks()}>
           Load more
         </Button>
       </Grid>

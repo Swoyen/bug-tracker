@@ -5,18 +5,13 @@ import { makeStyles } from "@material-ui/core";
 
 import Bug from "../Bug";
 import { UserContext } from "../../context/UserContext";
-import { TimeProvider } from "../../context/TimeContext";
 import { useRouteMatch } from "react-router-dom";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../api";
-import { BugProvider } from "../../context/BugContext";
 import ProjectBoard from "./ProjectBoard/ProjectBoard";
-import BugDetails from "../Bug/BugDetails";
+
 import Time from "../Time/Time";
 import ProjectSideBar from "./ProjectSideBar";
-import { useIsAuthenticated, useMsal } from "@azure/msal-react";
-
-import { useCallback } from "react";
-import TimeConfirmDialog from "../Time/TimeConfirmDialog";
+import { useDispatch } from "react-redux";
+import { addRecentProjects } from "../../store/projects";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,56 +29,24 @@ const useStyles = makeStyles((theme) => ({
 
 const Project = () => {
   const classes = useStyles();
-  const { instance, accounts } = useMsal();
+  const dispatch = useDispatch();
   const { url } = useRouteMatch();
   const { id } = useParams();
-  const isAuthenticated = useIsAuthenticated;
-  // const [currentProject, setCurrentProject] = useState({});
 
   const { currentUser } = useContext(UserContext);
-
-  const FetchRecentProjects = useCallback(async () => {
-    const recentProject = {
-      openedProjectId: id,
-      openedByUserId: currentUser.userId,
-    };
-    const apiObj = await createAuthenticatedEndPoint(
-      instance,
-      accounts,
-      RESTRICTEDENDPOINTS.RECENTPROJECTS
-    );
-    apiObj.create(recentProject);
-  }, [instance, accounts, id, currentUser.userId]);
-
   useEffect(() => {
-    (async () => {
-      if (isAuthenticated && currentUser.userId) {
-        FetchRecentProjects();
-      }
-    })();
-  }, [id, currentUser, isAuthenticated, FetchRecentProjects]);
+    dispatch(addRecentProjects(id, currentUser.userId));
+  }, [id]);
 
   return (
     <div className={classes.root}>
       <ProjectSideBar className={classes.sidebar} />
-      <BugProvider>
-        <div className={classes.content}>
-          <Route path={`${url}/bugs`} component={() => <Bug />}></Route>
-          <Route
-            path={`${url}/board`}
-            component={() => <ProjectBoard />}
-          ></Route>
 
-          <Route
-            path={`${url}/time`}
-            component={() => (
-              <TimeProvider>
-                <Time />{" "}
-              </TimeProvider>
-            )}
-          ></Route>
-        </div>
-      </BugProvider>
+      <div className={classes.content}>
+        <Route path={`${url}/bugs`} component={() => <Bug />}></Route>
+        <Route path={`${url}/board`} component={() => <ProjectBoard />}></Route>
+        <Route path={`${url}/time`} component={() => <Time />}></Route>
+      </div>
     </div>
   );
 };

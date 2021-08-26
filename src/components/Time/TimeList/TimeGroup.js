@@ -4,14 +4,15 @@ import {
   Typography,
   makeStyles,
   IconButton,
+  Fade,
+  Collapse,
 } from "@material-ui/core";
-import TimePaper from "./TimePaper";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUpRounded";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import TimeBugGroup from "./TimeBugGroup";
-import { IsoOutlined } from "@material-ui/icons";
-import { TimeContext } from "../../../context/TimeContext";
+import moment from "moment";
+import { Grow } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,22 +31,19 @@ let defaultDate = "Sun, 12 Jan";
 let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const TimeGroup = (props) => {
   const classes = useStyles();
-  const { timeGroupVisible, setTimeGroupVisible } = useContext(TimeContext);
-  const { timeList: timeListWithDate, index } = props;
+  const { timeList: timeListWithDate } = props;
+
   const [dateStr, setDateStr] = useState(defaultDate);
-  const [timeListWithSameDate, setTimeListWithSameDate] = useState({});
   const [duration, setDuration] = useState("00:00");
   const [
     timeListWithSameDateGroupedByBug,
     setTimeListWithSameDateGroupedByBug,
   ] = useState({});
-
   const [listVisible, setListVisible] = useState(false);
-  // useEffect(() => )
 
   const getFormattedTimeFromSeconds = (totalSeconds) => {
-    let hours = totalSeconds / 3600;
-    let minutes = totalSeconds / 60;
+    let hours = parseInt(totalSeconds / 3600);
+    let minutes = Math.round(hours * 60 - totalSeconds / 60);
     let seconds = totalSeconds % 60;
     let t = new Date(1970, 0, 1);
     t.setHours(hours);
@@ -56,25 +54,34 @@ const TimeGroup = (props) => {
     var m = t.getMinutes();
     var s = t.getSeconds();
 
-    return `${h} h ${m} min`;
-
-    return t.toLocaleTimeString();
+    return `${h} hr ${m} mins`;
   };
 
   useEffect(() => {
     if (timeListWithDate) {
-      console.log("TLD", timeListWithDate);
       var totalDuration = 0;
       timeListWithDate.timeTrack.forEach((timeTrack) => {
-        var startTime = new Date(timeTrack.startTime + "Z");
-        var stopTime = new Date(timeTrack.stopTime + "Z");
-        var duration = stopTime.getTime() - startTime.getTime();
+        var startTime =
+          timeTrack.startTime.slice(-1) !== "Z"
+            ? new Date(timeTrack.startTime + "Z")
+            : new Date(timeTrack.startTime);
+
+        var stopTime =
+          timeTrack.stopTime.slice(-1) !== "Z"
+            ? new Date(timeTrack.stopTime + "Z")
+            : new Date(timeTrack.stopTime);
+
+        var a = moment(startTime);
+        var b = moment(stopTime);
+        let duration = a.diff(b);
+
+        // var duration = stopTime.getTime() - startTime.getTime();
         totalDuration += duration;
       });
+
       setDuration(getFormattedTimeFromSeconds(totalDuration / 1000));
 
       let dt = timeListWithDate.date;
-      console.log("tt", timeListWithDate);
       setListVisible(timeListWithDate.visible);
       let d = new Date(dt.year, dt.month, dt.date);
 
@@ -87,65 +94,56 @@ const TimeGroup = (props) => {
       if (d.getDate() === current.getDate()) {
         setDateStr("Today");
       } else setDateStr(dateStr);
-      setTimeListWithSameDate(timeListWithDate.timeTrack);
-
-      var startBugId = timeListWithDate.timeTrack[0].bugId;
-      var startTimeTrack = timeListWithDate.timeTrack[0];
-      var startBugName = timeListWithDate.timeTrack[0].bugName;
-      var prevTimeTrackBugId = startBugId;
+      //setTimeListWithSameDate(timeListWithDate.timeTrack);
       var timeTrackGroupedByBug = [];
-      timeTrackGroupedByBug.push({
-        bugId: startBugId,
-        timeTracks: [startTimeTrack],
-        bugName: startBugName,
-      });
-      timeListWithDate.timeTrack.forEach((element) => {
-        if (prevTimeTrackBugId !== element.bugId) {
-          timeTrackGroupedByBug.push({
-            bugId: element.bugId,
-            bugName: element.bugName,
-            timeTracks: [element],
-          });
-          prevTimeTrackBugId = element.bugId;
-        } else {
-          // var index = findLastIndex(
-          //   timeTrackGroupedByBug.timeTrack,
-          //   (timeTrackGroup) => timeTrackGroup.bugId === prevTimeTrackBugId
-          // );
+      if (timeListWithDate.timeTrack.length > 0) {
+        var startBugId = timeListWithDate.timeTrack[0].bugId;
+        var startTimeTrack = timeListWithDate.timeTrack[0];
+        var startBugName = timeListWithDate.timeTrack[0].bugName;
+        var prevTimeTrackBugId = startBugId;
 
-          var reversed = timeTrackGroupedByBug.reverse();
-          var reversedIndex = reversed.findIndex(
-            (timeTrackGroup) => timeTrackGroup.bugId === prevTimeTrackBugId
-          );
-          var index = timeTrackGroupedByBug.length - reversedIndex - 1;
-          timeTrackGroupedByBug.reverse();
-          var temp = timeTrackGroupedByBug[index].timeTracks;
-          if (!temp.some((tt) => tt.timeTrackId === element.timeTrackId)) {
-            temp = [...temp, element];
-            timeTrackGroupedByBug[index].timeTracks = temp;
+        timeTrackGroupedByBug.push({
+          bugId: startBugId,
+          timeTracks: [startTimeTrack],
+          bugName: startBugName,
+        });
+        timeListWithDate.timeTrack.forEach((element) => {
+          if (prevTimeTrackBugId !== element.bugId) {
+            timeTrackGroupedByBug.push({
+              bugId: element.bugId,
+              bugName: element.bugName,
+              timeTracks: [element],
+            });
+            prevTimeTrackBugId = element.bugId;
+          } else {
+            var reversed = timeTrackGroupedByBug.reverse();
+            var reversedIndex = reversed.findIndex(
+              (timeTrackGroup) => timeTrackGroup.bugId === prevTimeTrackBugId
+            );
+            var index = timeTrackGroupedByBug.length - reversedIndex - 1;
+            timeTrackGroupedByBug.reverse();
+            var temp = timeTrackGroupedByBug[index].timeTracks;
+            if (!temp.some((tt) => tt.timeTrackId === element.timeTrackId)) {
+              temp = [...temp, element];
+              timeTrackGroupedByBug[index].timeTracks = temp;
+            }
           }
-        }
-      });
+        });
+      }
       setTimeListWithSameDateGroupedByBug(timeTrackGroupedByBug);
 
       let today = new Date();
       var secDiff = Math.abs(today.getTime() - d.getTime());
       var daysDiff = parseInt(secDiff / (24 * 3600 * 1000));
 
-      if (daysDiff <= 1) {
-        setListVisible(true);
-      }
+      // if (daysDiff <= 1) {
+      //   setListVisible(true);
+      // }
     }
-  }, [timeListWithDate]);
+  }, [timeListWithDate, timeListWithDate.length]);
 
   const toggleVisibility = () => {
     setListVisible(!listVisible);
-    setTimeGroupVisible((timeGroupVisible) => {
-      var temp = timeGroupVisible;
-      temp[index] = !temp[index];
-      return temp;
-    });
-    // setListVisible(!listVisible);
   };
 
   return (
@@ -194,28 +192,21 @@ const TimeGroup = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid container>
-        {/* {listVisible && timeListWithSameDate.length > 0
-          ? timeListWithSameDate.map((time) => {
-              return (
-                <Grid item xs={12} key={time.timeTrackId}>
-                  <TimePaper time={time}></TimePaper>
-                </Grid>
-              );
-            })
-          : ""} */}
 
-        {listVisible && timeListWithSameDateGroupedByBug.length > 0
-          ? timeListWithSameDateGroupedByBug.map((timeGroupByBug, index) => {
-              return (
-                <TimeBugGroup
-                  key={index}
-                  timeGroupByBug={timeGroupByBug}
-                ></TimeBugGroup>
-              );
-            })
-          : ""}
-      </Grid>
+      <Collapse in={listVisible}>
+        <Grid container>
+          {timeListWithSameDateGroupedByBug.length > 0
+            ? timeListWithSameDateGroupedByBug.map((timeGroupByBug, index) => {
+                return (
+                  <TimeBugGroup
+                    key={index}
+                    timeGroupByBug={timeGroupByBug}
+                  ></TimeBugGroup>
+                );
+              })
+            : ""}
+        </Grid>
+      </Collapse>
     </Paper>
   );
 };

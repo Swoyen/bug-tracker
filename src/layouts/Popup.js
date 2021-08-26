@@ -15,6 +15,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     position: "absolute",
     zIndex: 1234,
+    minWidth: (props) => props.minWidth,
+    minHeight: (props) => props.minHeight,
   },
   top: {
     top: (props) => props.topMargin,
@@ -35,7 +37,9 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: 30,
   },
   titleInput: {
-    fontSize: 33,
+    fontSize: 23,
+    textTransform: "uppercase",
+    fontWeight: 500,
     margin: 1,
     padding: 1,
   },
@@ -45,6 +49,7 @@ const Popup = (props) => {
   const {
     openPopup,
     setOpenPopup,
+    closePopup,
     title,
     setTitle,
     editTitle = false,
@@ -91,7 +96,7 @@ const Popup = (props) => {
         )}
         <IconButton
           className={classes.closeButton}
-          onClick={() => setOpenPopup(false)}
+          onClick={() => (closePopup ? closePopup() : setOpenPopup(false))}
         >
           <CloseIcon />
         </IconButton>

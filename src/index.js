@@ -1,18 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
-import { msalConfig } from "./api";
+import { msalConfig } from "./api/config";
+import { Provider } from "react-redux";
+import configureStore from "./store/configureStore";
 
 const msalInstance = new PublicClientApplication(msalConfig);
+const store = configureStore();
 
 ReactDOM.render(
-  <MsalProvider instance={msalInstance}>
-    <App />
-  </MsalProvider>,
+  <Provider store={store}>
+    <MsalProvider instance={msalInstance}>
+      <App />
+    </MsalProvider>
+  </Provider>,
   document.getElementById("root")
 );
 

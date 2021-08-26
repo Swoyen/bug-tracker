@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useRef } from "react";
 
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Typography } from "@material-ui/core";
@@ -6,7 +6,6 @@ import { Grid, Typography } from "@material-ui/core";
 import Input from "../../../controls/Input";
 import Form from "../../../layouts/Form";
 import Button from "../../../controls/Button";
-import { ProjectContext } from "../../../context/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
   createForm: {
@@ -47,25 +46,23 @@ const ProjectCreateDetails = (props) => {
     setProjectTitle,
     showNext,
   } = props;
-  const { projectList } = useContext(ProjectContext);
   const [errors, setErrors] = useState({});
   const fileInput = useRef(null);
 
   const validate = () => {
-    if (projectTitle === "") {
-      setErrors({ ...errors, projectTitle: "Title cannot be empty." });
-      return false;
-    } else {
-      if (projectList.some((project) => project.title === projectTitle)) {
-        setErrors({ ...errors, projectTitle: "Project already exists." });
-        return false;
-      }
-    }
+    // if (projectTitle === "") {
+    //   setErrors({ ...errors, projectTitle: "Title cannot be empty." });
+    //   return false;
+    // } else {
+    //   if (projectList.some((project) => project.title === projectTitle)) {
+    //     setErrors({ ...errors, projectTitle: "Project already exists." });
+    //     return false;
+    //   }
+    // }
     return true;
   };
 
   const previewImg = (event) => {
-    //setSelectedFile(event);
     if (event.target.files && event.target.files[0]) {
       let imageFile = event.target.files[0];
       const reader = new FileReader();
@@ -83,7 +80,6 @@ const ProjectCreateDetails = (props) => {
   const submitDetails = (event) => {
     event.preventDefault();
     if (validate()) {
-      console.log("here");
       showNext();
     }
   };

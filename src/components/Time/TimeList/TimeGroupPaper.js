@@ -1,4 +1,12 @@
-import { makeStyles, Paper, Grid, Typography, Avatar } from "@material-ui/core";
+import {
+  makeStyles,
+  Paper,
+  Grid,
+  Typography,
+  Avatar,
+  Grow,
+  Collapse,
+} from "@material-ui/core";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import TimePaper from "./TimePaper";
@@ -107,8 +115,10 @@ const TimeGroupPaper = (props) => {
             </Typography>
           </Grid>
         </Grid>
+      </Grid>
+      <Collapse in={timeListShown}>
         <Grid item xs={12} container className={classes.timeGroup}>
-          {timeListShown
+          {timeGroupByBug.timeTracks
             ? timeGroupByBug.timeTracks.map((time) => {
                 return (
                   <Grid item xs={12} key={time.timeTrackId}>
@@ -118,7 +128,7 @@ const TimeGroupPaper = (props) => {
               })
             : ""}
         </Grid>
-      </Grid>
+      </Collapse>
     </Paper>
   );
 };

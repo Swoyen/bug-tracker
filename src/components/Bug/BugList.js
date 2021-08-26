@@ -8,6 +8,9 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllBugs, loadBugs } from "../../store/bugs";
+import { showBug } from "../../store/bug";
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -19,23 +22,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BugList = (props) => {
-  const {
-    bugList,
-    setOpenBugDetails,
-    selectedBugId,
-    setSelectedBugId,
-    setSelectedBugComponent,
-  } = props;
+  const dispatch = useDispatch();
+  const bugs = useSelector(getAllBugs);
+
+  useEffect(() => {
+    dispatch(loadBugs());
+  }, []);
 
   const classes = useStyles();
 
-  const showBugDetails = (bug) => {
-    setSelectedBugId(bug.bugId);
-    setOpenBugDetails(true);
-    setSelectedBugComponent(bug);
-  };
+  // const showBugDetails = (bug) => {
+  //   setSelectedBugId(bug.bugId);
+  //   setOpenBugDetails(true);
+  //   setSelectedBugComponent(bug);
+  // };
 
-  useEffect(() => {}, [selectedBugId]);
+  const handleShowBugDetails = (bug) => {
+    dispatch(showBug({ id: bug.bugId }));
+  };
 
   return (
     <>
@@ -52,11 +56,11 @@ const BugList = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {bugList.map((bug) => {
+            {bugs.map((bug) => {
               return (
                 <TableRow
                   className={classes.bugRow}
-                  onClick={() => showBugDetails(bug)}
+                  onClick={() => handleShowBugDetails(bug)}
                   key={bug.bugId}
                 >
                   <TableCell>{bug.bugName}</TableCell>

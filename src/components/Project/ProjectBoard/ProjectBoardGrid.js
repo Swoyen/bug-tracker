@@ -1,63 +1,77 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Grid } from "@material-ui/core";
 import { makeStyles, Typography } from "@material-ui/core";
 
 import ProjectBoardCard from "./ProjectBoardCard";
 import ProjectBoardCardAdd from "./ProjectBoardCardAdd";
+import {
+  getBugsGroupedWithStatus,
+  getMoveCardSilhouetteIndex,
+  modifyBugStatus,
+} from "../../../store/board";
+import { useDispatch, useSelector } from "react-redux";
+import ProjectBoardCardMoveSilhouette from "./ProjectBoardCardMoveSilhouette";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
   title: {
     background: "#c1c1c1",
-    // borderTopLeftRadius: (props) => (props.start ? "10px" : "0px"),
-    // borderTopRightRadius: (props) => (props.end ? "10px" : "0px"),
     borderTopLeftRadius: "5px",
     borderTopRightRadius: "5px",
     padding: theme.spacing(1),
     marginBottom: "3px",
   },
   boardGrid: {
-    // borderLeft: (props) => (props.start ? "1px solid gray" : ""),
-    // borderTopLeftRadius: (props) => (props.start ? "10px" : "0px"),
-    // borderBottomLeftRadius: (props) => (props.start ? "10px" : "0px"),
-    // borderTopRightRadius: (props) => (props.end ? "10px" : "0px"),
-    // borderBottomRightRadius: (props) => (props.end ? "10px" : "0px"),
     borderRadius: "10px",
-    maxWidth: "300px",
+    // width: "300px",
     margin: theme.spacing(0.5),
     background: "#eae9e9",
+  },
+  moveCard: {
+    position: "absolute",
+    minWidth: "235px",
   },
 }));
 
 const ProjectBoardGrid = (props) => {
-  const {
-    status,
-    title,
-    modifyStatus,
-    bugsWithStatus,
-    setBugsWithStatus,
-    addBugs,
-    addCardShown,
-    showAddCard,
-    hideAddCard,
-    resetList,
-  } = props;
+  const { status, title, index } = props;
   const classes = useStyles(props);
-  const [bugListWithStatus, setBugListWithStatus] = useState([]);
+  const dispatch = useDispatch();
+  const itemsRef = useRef([]);
+
+  const [moveCardIndexInGrid, setMoveCardIndexInGrid] = useState(-1);
+
+  const { index: moveCardIndex, yIndex } = useSelector(
+    getMoveCardSilhouetteIndex
+  );
+  const bugsWithSameStatus = useSelector(
+    getBugsGroupedWithStatus(status.statusId)
+  );
 
   useEffect(() => {
-    return () => {
-      setBugListWithStatus([]);
-    };
-  }, []);
+    if (moveCardIndex === index) {
+      //setMoveCardSilhouetteVisible(true);
+
+      console.log("y Index", yIndex);
+      var heightToMoveTo = yIndex * 152;
+
+      console.log("h", heightToMoveTo);
+      setMoveCardIndexInGrid(yIndex);
+    } else {
+      //setMoveCardSilhouetteVisible(false);
+      setMoveCardIndexInGrid(-1);
+    }
+  }, [moveCardIndex, yIndex]);
 
   useEffect(() => {
-    setBugListWithStatus(bugsWithStatus);
+    if (bugsWithSameStatus) {
+      itemsRef.current = itemsRef.current.slice(0, bugsWithSameStatus.length);
+    }
+  }, [bugsWithSameStatus]);
 
-    return () => {
-      setBugListWithStatus([]);
-    };
-  }, [bugsWithStatus]);
+  const handleModifyBug = (bugId, statusId, steps) => {
+    dispatch(modifyBugStatus({ bugId, statusId, steps }));
+  };
 
   return (
     <Grid
@@ -77,34 +91,43 @@ const ProjectBoardGrid = (props) => {
       >
         {title}
       </Typography>
-      {bugListWithStatus !== undefined
-        ? bugListWithStatus.map((bugWithStatus, index) => {
-            return bugWithStatus.status &&
-              bugWithStatus.status.statusId === status.statusId ? (
+      {/* <div  ref={moveCardSilhouetteRef}>
+        <ProjectBoardCardMoveSilhouette className={classes.moveCard}visible={moveCardSilhouetteVisible} />
+      </div> */}
+      {bugsWithSameStatus &&
+        bugsWithSameStatus.bugs.map((bug, i) => {
+          return (
+            <div key={bug.bugId} ref={(el) => (itemsRef.current[i] = el)}>
+              {moveCardIndexInGrid === i ? (
+                <ProjectBoardCardMoveSilhouette
+                  className={classes.moveCard}
+                  visible={true}
+                />
+              ) : (
+                ""
+              )}
               <ProjectBoardCard
-                bug={bugWithStatus.bug}
-                bugList={bugsWithStatus}
-                setBugList={setBugsWithStatus}
-                status={bugWithStatus.status}
-                key={bugWithStatus.bug.bugId}
-                modifyStatus={modifyStatus}
-                bugId={bugWithStatus.bug.bugId}
-                bugName={bugWithStatus.bug.bugName}
+                bug={bug}
+                index={i}
+                key={bug.bugId}
+                bugId={bug.bugId}
+                bugName={bug.bugName}
+                statusId={status.statusId}
+                modifyBug={handleModifyBug}
               ></ProjectBoardCard>
-            ) : (
-              <div key={bugWithStatus.bug.bugId}></div>
-            );
-          })
-        : ""}
-
-      <ProjectBoardCardAdd
-        addCardShown={addCardShown}
-        showAddCard={showAddCard}
-        hideAddCard={hideAddCard}
-        addBugs={addBugs}
-        status={status}
-        resetList={resetList}
-      ></ProjectBoardCardAdd>
+            </div>
+          );
+        })}
+      {bugsWithSameStatus &&
+      moveCardIndexInGrid >= bugsWithSameStatus.bugs.length ? (
+        <ProjectBoardCardMoveSilhouette
+          className={classes.moveCard}
+          visible={true}
+        />
+      ) : (
+        ""
+      )}
+      <ProjectBoardCardAdd index={index} status={status}></ProjectBoardCardAdd>
     </Grid>
   );
 };

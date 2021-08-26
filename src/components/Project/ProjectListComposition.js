@@ -13,12 +13,13 @@ import { Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 
+import { BASE_URL } from "../../api";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  BASE_URL,
-  createAuthenticatedEndPoint,
-  RESTRICTEDENDPOINTS,
-} from "../../api";
-import { ProjectContext } from "../../context/ProjectContext";
+  getRecentProjects,
+  loadRecentProjects,
+  setProjectCreateShown,
+} from "../../store/projects";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,36 +43,11 @@ const useStyles = makeStyles((theme) => ({
 
 const ProjectListComposition = () => {
   const classes = useStyles();
-  const { instance, accounts } = useMsal();
+  const dispatch = useDispatch();
+  const recentProjectList = useSelector(getRecentProjects);
+
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
-
-  const [recentProjectList, setRecentProjectList] = useState([]);
-  const { openProjectCreate, setOpenProjectCreate } =
-    useContext(ProjectContext);
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
-
-  const handleClose = (event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  const showProjectCreate = () => {
-    setOpen(false);
-    setOpenProjectCreate(!openProjectCreate);
-  };
-
-  const handleListKeyDown = (event) => {
-    if (event.key === "Tab") {
-      event.preventDefault();
-      setOpen(false);
-    }
-  };
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = useRef(open);
@@ -84,35 +60,33 @@ const ProjectListComposition = () => {
 
   useEffect(() => {
     if (open) {
-      (async () => {
-        if (instance !== undefined && accounts !== undefined) {
-          var obj = await createAuthenticatedEndPoint(
-            instance,
-            accounts,
-            RESTRICTEDENDPOINTS.RECENTPROJECTS
-          );
-          if (obj) {
-            var result = obj.fetchAll();
-            result
-              .then((res) => {
-                console.log(res.data);
-                let data = res.data;
-                data.sort((a, b) => b.recentOrder - a.recentOrder);
-                setRecentProjectList(data);
-              })
-              .catch((err) => console.log(err));
-          }
-          // .fetchAll()
-          // .then((res) => {
-          //   let data = res.data;
-          //   data.sort((a, b) => b.recentOrder - a.recentOrder);
-          //   setRecentProjectList(data);
-          // })
-          // .catch((err) => console.log(err));
-        }
-      })();
+      dispatch(loadRecentProjects());
     }
-  }, [open, instance, accounts]);
+  }, [open]);
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+    setOpen(false);
+  };
+
+  const handleShowProjectCreate = () => {
+    setOpen(false);
+    dispatch(setProjectCreateShown(true));
+  };
+
+  const handleListKeyDown = (event) => {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      setOpen(false);
+    }
+  };
+
   return (
     <div className={classes.root}>
       <div>
@@ -183,7 +157,7 @@ const ProjectListComposition = () => {
                         </Typography>
                       </MenuItem>
                     </Link>
-                    <MenuItem onClick={() => showProjectCreate()}>
+                    <MenuItem onClick={handleShowProjectCreate}>
                       <Typography variant="subtitle2">
                         Create Project
                       </Typography>

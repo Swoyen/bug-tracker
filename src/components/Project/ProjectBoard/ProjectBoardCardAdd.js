@@ -1,5 +1,11 @@
 import { Button, Grid, makeStyles, Paper, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAddCardVisible,
+  hideAddCard,
+  showAddCard,
+} from "../../../store/board";
 import ProjectBoardCardAddCard from "./ProjectBoardCardAddCard";
 
 const useStyles = makeStyles((theme) => ({
@@ -9,21 +15,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProjectBoardCardAdd = ({
-  showAddCard,
-  hideAddCard,
-  addCardShown,
-  resetList,
-  status,
-}) => {
+const ProjectBoardCardAdd = ({ status, index }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
-  const handleAddCard = () => {
-    showAddCard();
+  const addCardShown = useSelector(getAddCardVisible(index));
+
+  const handleAddCard = (index) => {
+    dispatch(showAddCard(index));
   };
 
-  const handleHideCard = () => {
-    hideAddCard();
+  const handleHideCard = (index) => {
+    dispatch(hideAddCard(index));
   };
 
   return (
@@ -32,12 +35,12 @@ const ProjectBoardCardAdd = ({
         <Grid item xs={12}>
           {addCardShown ? (
             <ProjectBoardCardAddCard
+              index={index}
               status={status}
-              resetList={resetList}
-              hideAddCard={handleHideCard}
+              hideAddCard={() => handleHideCard(index)}
             />
           ) : (
-            <Button fullWidth onClick={handleAddCard}>
+            <Button fullWidth onClick={() => handleAddCard(index)}>
               + Add a card
             </Button>
           )}

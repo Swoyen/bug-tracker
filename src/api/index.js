@@ -2,21 +2,6 @@ import axios from "axios";
 
 export const BASE_URL = "https://localhost:5001/api/";
 
-export const ENDPOINTS = {
-  BUG: "Bug",
-  STATUS: "Status",
-  SEVERITY: "Severity",
-  REGISTER: "Register",
-  IMAGE: "Image",
-};
-
-export const AUTHENTICATIONENDPOINTS = {
-  REGISTER: "Register",
-  LOGIN: "Login",
-  JWTLOGIN: "Jwtlogin",
-  LOGOUT: "Logout",
-};
-
 export const RESTRICTEDENDPOINTS = {
   PROJECT: "Project",
   RECENTPROJECTS: "RecentProject",
@@ -31,6 +16,21 @@ export const RESTRICTEDENDPOINTS = {
   USER: "User",
   CURRENTUSER: "User/Current",
   TAGS: "BugTag",
+};
+
+export const ENDPOINTS = {
+  BUG: "Bug",
+  STATUS: "Status",
+  SEVERITY: "Severity",
+  REGISTER: "Register",
+  IMAGE: "Image",
+};
+
+export const AUTHENTICATIONENDPOINTS = {
+  REGISTER: "Register",
+  LOGIN: "Login",
+  JWTLOGIN: "Jwtlogin",
+  LOGOUT: "Logout",
 };
 
 export const createAPIEndPoint = (endPoint) => {
@@ -52,6 +52,8 @@ export const createAuthenticatedEndPoint = async (
 ) => {
   const request = { ...apiRequest, account: accounts[0] };
   var res = await instance.acquireTokenSilent(request);
+
+  //console.log("res", res);
   let url = BASE_URL + endPoint + "/";
   var accessToken = res.accessToken;
   let config = {
@@ -63,7 +65,6 @@ export const createAuthenticatedEndPoint = async (
       ...filters,
     },
   };
-
   return {
     fetchAll: () => axios.get(url, config),
     fetchById: (id) => axios.get(url + id, config),

@@ -12,10 +12,15 @@ import Button from "../../../controls/Button";
 import Form from "../../../layouts/Form";
 import { useState } from "react";
 import { UserContext } from "../../../context/UserContext";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
-import { BugContext } from "../../../context/BugContext";
 import { useRef } from "react";
-import { useMsal } from "@azure/msal-react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addComment,
+  cancelCommentEdit,
+  updateComment,
+  getEditingComment,
+} from "../../../store/comments";
+import { getShownBug } from "../../../store/bug";
 
 const maxCommentLength = 300;
 const minCommentLength = 4;
@@ -25,23 +30,19 @@ const useStyles = makeStyles((theme) => ({
   submitButton: { marginLeft: "10px" },
 }));
 
-const BugPostComment = (props) => {
+const BugPostComment = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { userDetails } = useContext(UserContext);
 
-  const {
-    selectedBugId,
-    selectedBug,
-    setSelectedBug,
-    commentToEdit,
-    setCommentToEdit,
-  } = useContext(BugContext);
-  const { userDetails, currentUser } = useContext(UserContext);
+  const { id: bugId, shown } = useSelector(getShownBug);
+  const commentToEdit = useSelector(getEditingComment);
+
   const [commentBody, setCommentBody] = useState("");
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [isEditingComment, setIsEditingComment] = useState(false);
   const [editCommentBody, setEditCommentBody] = useState("");
-  const { instance, accounts } = useMsal();
   const ref = useRef();
 
   useEffect(() => {
@@ -60,15 +61,23 @@ const BugPostComment = (props) => {
   }, []);
 
   useEffect(() => {
-    if (commentToEdit.commentId !== undefined) {
-      console.log("Comment edit", commentToEdit);
+    if (
+      Object.keys(commentToEdit).length !== 0 &&
+      commentToEdit.commentId !== -1
+    ) {
       setIsEditingComment(true);
       setInputFocused(true);
       setEditCommentBody(commentToEdit.content);
     }
   }, [commentToEdit]);
 
-  const changeComment = (e) => {
+  useEffect(() => {
+    return () => {
+      dispatch(cancelCommentEdit());
+    };
+  }, [shown]);
+
+  const handleChangeComment = (e) => {
     var newComment = e.target.value;
     if (newComment.length <= maxCommentLength) {
       setCommentBody(newComment);
@@ -78,7 +87,7 @@ const BugPostComment = (props) => {
     }
   };
 
-  const changeEditComment = (e) => {
+  const handleChangeEditComment = (e) => {
     var newEditComment = e.target.value;
     if (newEditComment.length <= maxCommentLength) {
       setEditCommentBody(newEditComment);
@@ -88,8 +97,8 @@ const BugPostComment = (props) => {
     }
   };
 
-  const cancelEdit = () => {
-    setCommentToEdit({});
+  const handleCancelEdit = () => {
+    dispatch(cancelCommentEdit());
     setIsEditingComment(false);
   };
 
@@ -102,7 +111,7 @@ const BugPostComment = (props) => {
     return false;
   };
 
-  const submitComment = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
       let comment = {};
@@ -111,58 +120,24 @@ const BugPostComment = (props) => {
           commentId: commentToEdit.commentId,
           content: editCommentBody,
           commentedByUserId: userDetails.idTokenClaims.oid,
-          commentedOnBugId: selectedBugId,
+          commentedOnBugId: bugId,
         };
-        console.log("updated", comment);
-        const apiObj = await createAuthenticatedEndPoint(
-          instance,
-          accounts,
-          RESTRICTEDENDPOINTS.COMMENT
+        const result = dispatch(
+          updateComment(commentToEdit.commentId, comment)
         );
-        let result = apiObj.update(comment.commentId, comment);
-        result
-          .then((res) => {
-            setCommentToEdit({});
-            setIsEditingComment(false);
-            setEditCommentBody("");
-            let index = selectedBug.comments.findIndex(
-              (comm) => comm.commentId === comment.commentId
-            );
-            let newComments = selectedBug.comments;
-            newComments[index].content = editCommentBody;
-            setSelectedBug({ ...selectedBug, comments: newComments });
-          })
-          .catch((err) => console.log(err));
+        result.then(() => {
+          setIsEditingComment(false);
+          setEditCommentBody("");
+        });
       } else {
         //Non edited comment
         comment = {
           commentId: "0",
           content: commentBody,
           commentedByUserId: userDetails.idTokenClaims.oid,
-          commentedOnBugId: selectedBugId,
+          commentedOnBugId: bugId,
         };
-        const apiObj = await createAuthenticatedEndPoint(
-          instance,
-          accounts,
-          RESTRICTEDENDPOINTS.COMMENT
-        );
-        let result = apiObj.create(comment);
-        result
-          .then((res) => {
-            let data = res.data;
-            let prevComments = selectedBug.comments;
-            let newComment = data;
-            newComment.commentedByUser = currentUser;
-            if (prevComments === null) {
-              let newComments = [newComment];
-              setSelectedBug({ ...selectedBug, comments: newComments });
-            } else {
-              let newComments = [...selectedBug.comments, newComment];
-              setSelectedBug({ ...selectedBug, comments: newComments });
-            }
-            setCommentBody("");
-          })
-          .catch((err) => console.log(err));
+        dispatch(addComment(comment));
       }
     }
   };
@@ -171,7 +146,7 @@ const BugPostComment = (props) => {
     <Form
       onFocus={() => setInputFocused(true)}
       className={classes.root}
-      onSubmit={(e) => submitComment(e)}
+      onSubmit={(e) => handleSubmit(e)}
     >
       <Typography gutterBottom>Comments:</Typography>
       <Paper ref={ref}>
@@ -196,7 +171,9 @@ const BugPostComment = (props) => {
             value={isEditingComment ? editCommentBody : commentBody}
             onFocus={() => setInputFocused(true)}
             onChange={(e) =>
-              isEditingComment ? changeEditComment(e) : changeComment(e)
+              isEditingComment
+                ? handleChangeEditComment(e)
+                : handleChangeComment(e)
             }
             multiline
             rows={1}
@@ -213,7 +190,11 @@ const BugPostComment = (props) => {
               {isEditingComment ? "Update" : "Post"}
             </Button>
             {isEditingComment ? (
-              <Button onClick={() => cancelEdit()} variant="text" type="submit">
+              <Button
+                onClick={() => handleCancelEdit()}
+                variant="text"
+                type="submit"
+              >
                 Cancel
               </Button>
             ) : (

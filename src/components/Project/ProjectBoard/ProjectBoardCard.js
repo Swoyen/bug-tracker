@@ -1,156 +1,210 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Grid, Typography, Paper, Chip, Avatar } from "@material-ui/core";
-import Draggable from "react-draggable";
-import { makeStyles } from "@material-ui/core";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
-import { BugContext } from "../../../context/BugContext";
-import { useMsal } from "@azure/msal-react";
+import Draggable, { DraggableCore } from "react-draggable";
+import { makeStyles, IconButton } from "@material-ui/core";
+import { useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getMoveCardShownBugList,
+  hideMoveCardSilhouette,
+  modifyBugStatus,
+  showMoveCardSilhouette,
+} from "../../../store/board";
+import { showBug } from "../../../store/bug";
+
 const useStyles = makeStyles((theme) => ({
-  root: {},
   bugPaper: {
     padding: theme.spacing(1),
     margin: theme.spacing(1),
     minHeight: "120px",
-    zIndex: 1000,
     borderRadius: "5px",
+    zIndex: 1000,
+    position: "relative",
   },
   draggingBugPaper: {
+    width: "230px",
+    position: "absolute",
     zIndex: 999,
   },
-  bugChip: {
+  bugChipParent: {
     position: "absolute",
     right: 0,
     bottom: 0,
-    margin: theme.spacing(1),
+    background: "yellow",
   },
 }));
 
 const ProjectBoardCard = (props) => {
   const classes = useStyles();
-  const { instance, accounts } = useMsal();
-  const { bug, bugName, bugId, modifyStatus, status, bugList, setBugList } =
-    props;
+  const { index, bugName, bugId, statusId, modifyBug } = props;
 
-  const { setOpenBugDetails, setSelectedBugId, setSelectedBugComponent } =
-    useContext(BugContext);
+  const moveCardShownBugList = useSelector(getMoveCardShownBugList);
 
   const [startX, setStartX] = useState(0);
-  // const [startY, setStartY] = useState(0);
+  const [startY, setStartY] = useState(0);
+
+  const [pos3, setPos3] = useState(0);
+  const [pos4, setPos4] = useState(0);
+
+  const [startOffsetTop, setStartOffsetTop] = useState(0);
+  const [startOffsetLeft, setStartOffsetLeft] = useState(0);
+
+  const [currentMoveSilhouetteSteps, setCurrentMoveSilhouetteSteps] =
+    useState(0);
+
+  const [currentMoveSilhouetteYIndex, setCurrentMoveSilhouetteYIndex] =
+    useState(index);
+
+  // const [pos1, setPos1] = useState(0);
+  // const [pos2, setPos2] = useState(0);
+
+  const divRef = useRef(null);
+  const dispatch = useDispatch();
 
   const [isDragging, setIsDragging] = useState(false);
-  const [hidden, setHidden] = useState(false);
-
-  // const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [currentStatus, setCurrentStatus] = useState(status);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    return () => {
+      setStartX(0);
+      setStartY(0);
+      setIsDragging(false);
+      setPos({ x: 0, y: 0 });
+    };
+  }, []);
 
   const dragStart = (e) => {
-    setStartX(e.screenX);
-    // setStartY(e.screenY);
+    if (isDragging) return;
+    setPos3(e.clientX);
+    setPos4(e.clientY);
+    setStartX(e.clientX);
+    setStartY(e.clientY);
+
+    setStartOffsetTop(divRef.current.offsetTop);
+    setStartOffsetLeft(divRef.current.offsetLeft);
+
+    divRef.current.style.top = divRef.current.offsetTop + "px";
+    divRef.current.style.left = divRef.current.offsetLeft + "px";
+
+    dispatch(showMoveCardSilhouette(statusId, 0, index));
+    setCurrentMoveSilhouetteYIndex(index);
+    setCurrentMoveSilhouetteSteps(0);
     setIsDragging(true);
   };
 
-  const dragEnd = (e, bugId) => {
-    setIsDragging(false);
-    let offsetX = startX - e.screenX;
-    var steps;
-    if (offsetX > 100) {
-      steps = -Math.round(offsetX / 300);
-      modifyStatus(bugId, steps, setCurrentStatus);
-    } else if (offsetX < -100) {
-      steps = -Math.round(offsetX / 300);
-      modifyStatus(bugId, steps, setCurrentStatus);
+  const dragging = (e) => {
+    var pos1 = pos3 - e.clientX;
+    var pos2 = pos4 - e.clientY;
+    setPos3(e.clientX);
+    setPos4(e.clientY);
+    divRef.current.style.top = divRef.current.offsetTop - pos2 + "px";
+    divRef.current.style.left = divRef.current.offsetLeft - pos1 + "px";
+
+    var newSteps;
+    let offsetX = startX - e.clientX;
+    let offsetY = startY - e.clientY;
+    let parse = parseInt(offsetY / 140);
+    let newYOffsetIndex = parse === 0 ? parse + index : (parse - index) * -1;
+    console.log("newYOffset", parse, newYOffsetIndex);
+    newSteps =
+      offsetX < 0
+        ? Math.round(offsetX / cardSize) * -1
+        : Math.round(offsetX / cardSize) * -1;
+
+    if (currentMoveSilhouetteSteps !== newSteps) {
+      // var yIndex = currentMoveSilhouetteYIndex;
+      if (currentMoveSilhouetteYIndex !== newYOffsetIndex) {
+        //yIndex = newYOffsetIndex;
+        dispatch(showMoveCardSilhouette(statusId, newSteps, newYOffsetIndex));
+        setCurrentMoveSilhouetteYIndex(newYOffsetIndex);
+        setCurrentMoveSilhouetteSteps(newSteps);
+      } else {
+        dispatch(
+          showMoveCardSilhouette(
+            statusId,
+            newSteps,
+            currentMoveSilhouetteYIndex
+          )
+        );
+        setCurrentMoveSilhouetteSteps(newSteps);
+      }
+    } else {
+      if (currentMoveSilhouetteYIndex !== newYOffsetIndex) {
+        //yIndex = newYOffsetIndex;
+        dispatch(
+          showMoveCardSilhouette(
+            statusId,
+            currentMoveSilhouetteSteps,
+            newYOffsetIndex
+          )
+        );
+        setCurrentMoveSilhouetteYIndex(newYOffsetIndex);
+      } else {
+        // yIndex = newYOffsetIndex;
+        // setCurrentMoveSilhouetteYIndex(newYOffsetIndex);
+        // dispatch(showMoveCardSilhouette(statusId, currentMoveSilhouetteSteps, yIndex));
+      }
     }
   };
 
-  const showBugDetails = async (bugId) => {
-    setSelectedBugId(bugId);
-    setOpenBugDetails(true);
+  const cardSize = 240;
 
-    const apiObj = await createAuthenticatedEndPoint(
-      instance,
-      accounts,
-      RESTRICTEDENDPOINTS.BUG
-    );
-    let result = apiObj.fetchById(bugId);
-    result
-      .then((res) => setSelectedBugComponent(res.data))
-      .catch((err) => console.log(err));
+  const dragEnd = (e) => {
+    dispatch(hideMoveCardSilhouette());
+    divRef.current.style.top = startOffsetTop + "px";
+    divRef.current.style.left = startOffsetLeft + "px";
+    let offsetX = startX - e.clientX;
+    let offsetY = startY - e.clientY;
+    var steps;
+    if (offsetX > 100) {
+      steps = -Math.round(offsetX / cardSize);
+      modifyBug(bugId, statusId, steps);
+    } else if (offsetX < -100) {
+      steps = -Math.round(offsetX / cardSize);
+      modifyBug(bugId, statusId, steps);
+    } else {
+      //console.log("offsetY", offsetY);
+      //minus is down
+      //get height of card
+      //console.log(divRef.current.clientHeight);
+      setPos({ x: 0, y: 0 });
+    }
+    setIsDragging(false);
   };
 
-  // TODO: Refactor this
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      if (mounted) {
-        if (currentStatus.statusId !== status.statusId) {
-          let tempBugList = bugList;
-          let bugIndex = tempBugList.findIndex((bug) => bug.bug.id === bugId);
-          console.log("Before", bugList);
-          bug.status = currentStatus;
-
-          let newBug = {
-            bugId: bug.bugId,
-            bugName: bug.bugName,
-            createdDate: bug.createdDate,
-            bugDescription: bug.bugDescription,
-            reporterUserId: bug.reporter.userId,
-            assigneeUserId: bug.assignee.userId,
-            severityId: bug.severity.severityId,
-            statusId: bug.status.statusId,
-          };
-
-          setHidden(true);
-          const apiObj = await createAuthenticatedEndPoint(
-            instance,
-            accounts,
-            RESTRICTEDENDPOINTS.BUG
-          );
-          let result = apiObj.update(bugId, newBug);
-          result
-            .then((res) => {
-              tempBugList[bugIndex] = bug;
-              console.log(tempBugList);
-              setBugList([...tempBugList]);
-              console.log(res);
-            })
-            .catch((err) => {
-              console.log(err);
-              setHidden(false);
-            });
-        }
-      }
-    })();
-    return () => (mounted = false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStatus]);
+  const handleShowBugDetails = (bugId) => {
+    if (!isDragging) {
+      dispatch(showBug({ id: bugId }));
+    }
+  };
 
   return (
-    <Grid className={`${isDragging ? classes.draggingBugPaper : ""}`} item>
-      {hidden ? (
-        ""
-      ) : (
-        <Draggable
-          axis="both"
-          onStart={(e) => dragStart(e)}
-          onStop={(e) => dragEnd(e, bugId, setCurrentStatus)}
-          // position={pos}
-        >
-          <Paper className={`${classes.bugPaper}`} square={true} elevation={3}>
-            <Typography variant="subtitle2" color="initial">
-              {bugName}
-            </Typography>
-            <div className={classes.bugChip}>
-              <Chip
-                clickable
-                onClick={() => showBugDetails(bugId)}
-                size="small"
-                avatar={<Avatar>F</Avatar>}
-                label={bugId}
-              />
-            </div>
-          </Paper>
-        </Draggable>
-      )}
+    <Grid
+      ref={divRef}
+      className={`${isDragging ? classes.draggingBugPaper : ""}`}
+      item
+    >
+      <DraggableCore
+        axis="both"
+        onStart={dragStart}
+        onStop={dragEnd}
+        onDrag={dragging}
+        //position={pos}
+      >
+        <Paper className={`${classes.bugPaper}`} square={true} elevation={3}>
+          <Typography variant="subtitle2" color="initial">
+            {bugName}
+          </Typography>
+          <div className={classes.bugChipParent}>
+            <Chip
+              clickable
+              onClick={() => handleShowBugDetails(bugId)}
+              size="small"
+              avatar={<Avatar>F</Avatar>}
+              label={bugId}
+            />
+          </div>
+        </Paper>
+      </DraggableCore>
     </Grid>
   );
 };

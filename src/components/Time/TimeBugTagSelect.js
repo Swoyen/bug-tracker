@@ -65,7 +65,6 @@ const TimeBugTagSelect = (props) => {
               if (mounted) {
                 let data = res.data;
                 var newTags = [];
-                console.log("dt", data);
                 if (data.length > 0) {
                   data.forEach((tag) =>
                     newTags.push({

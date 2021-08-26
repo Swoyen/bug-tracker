@@ -5,9 +5,9 @@ import {
   MenuItem,
   makeStyles,
 } from "@material-ui/core";
-import { useContext } from "react";
-import { BugContext } from "../../../context/BugContext";
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllBugs, loadBugs } from "../../../store/bugs";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,10 +19,16 @@ const useStyles = makeStyles((theme) => ({
 let emptyBug = { bugId: "-1", bugName: "Select a bug" };
 const TimeBugSelectWithEmpty = (props) => {
   const classes = useStyles();
-  const { bugList } = useContext(BugContext);
+  const bugList = useSelector(getAllBugs);
+  const dispatch = useDispatch();
   const { selectedBugId, setSelectedBugId } = props;
 
   const [bugListWithEmptyBug, setBugListWithEmptyBug] = useState([emptyBug]);
+
+  useEffect(() => {
+    dispatch(loadBugs());
+  }, []);
+
   useEffect(() => {
     setBugListWithEmptyBug([emptyBug, ...bugList]);
 

@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
-import { useMsal } from "@azure/msal-react";
+import React, { useState, useEffect, useContext } from "react";
 
 import { Typography, Grid, makeStyles, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import Form from "../../../layouts/Form";
 import Button from "../../../controls/Button";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import ProjectAccessTag from "./ProjectAccessTag";
 import { UserContext } from "../../../context/UserContext";
+import { useSelector } from "react-redux";
+import { getProjectCreateShown } from "../../../store/projects";
+import { getAllUsers } from "../../../store/users";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -45,56 +46,31 @@ const emptyUser = {
 
 const ProjectCreateAccess = (props) => {
   const classes = useStyles();
-  const [users, setUsers] = useState([]);
-  const { instance, accounts } = useMsal();
+  //const [users, setUsers] = useState([]);
   const [addedUsers, setAddedUsers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [userToAdd, setUserToAdd] = useState(emptyUser);
   const [userToAddInput, setUserToAddInput] = useState("");
-  const { openProjectCreate, uploadProject, setAssignedUsers } = props;
+
+  const openProjectCreate = useSelector(getProjectCreateShown);
+  const allUsers = useSelector(getAllUsers);
+
+  const { addProject, setAssignedUsers } = props;
   const { currentUser } = useContext(UserContext);
 
-  const FetchUsersToAdd = useCallback(async () => {
-    var apiObj = await createAuthenticatedEndPoint(
-      instance,
-      accounts,
-      RESTRICTEDENDPOINTS.USER
-    );
-    if (apiObj) {
-      var result = apiObj.fetchAll();
-      result
-        .then((res) => {
-          let data = res.data;
-          console.log(data);
-          let index = data.findIndex(
-            (user) => user.userId === currentUser.userId
-          );
-          if (index > -1) data.splice(index, 1);
-          var users = [emptyUser, ...data];
-          setUsers(users);
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [instance, accounts, currentUser]);
-
   useEffect(() => {
-    (async () => {
-      if (openProjectCreate) {
-        await FetchUsersToAdd();
+    if (openProjectCreate) {
+      if (allUsers && allUsers.length > 0) {
+        let data = [...allUsers];
+        let index = data.findIndex(
+          (user) => user.userId === currentUser.userId
+        );
+        if (index > -1) data.splice(index, 1);
+        var users = [emptyUser, ...data];
+        setUsers(users);
       }
-      // createAPIEndPoint(ENDPOINTS.USER)
-      //   .fetchAll()
-      //   .then((res) => {
-      //     let data = res.data;
-      //     let index = data.findIndex(
-      //       (user) => user.userId === userDetails.userId
-      //     );
-      //     if (index > -1) data.splice(index, 1);
-      //     var users = [emptyUser, ...data];
-      //     setUsers(users);
-      //   })
-      //   .catch((err) => console.log(err));
-    })();
-  }, [openProjectCreate, FetchUsersToAdd]);
+    }
+  }, [openProjectCreate, allUsers]);
 
   useEffect(() => {
     let userIds = [];
@@ -104,17 +80,13 @@ const ProjectCreateAccess = (props) => {
     setAssignedUsers(userIds);
   }, [addedUsers, setAssignedUsers]);
 
-  const addUsers = () => {
+  const handleAddUsersToList = () => {
     if (userToAdd.userId !== "" && users.includes(userToAdd)) {
       let temp = users;
       const index = temp.indexOf(userToAdd);
       if (index > -1) {
         temp.splice(index, 1);
       }
-
-      console.log(userToAdd.userId);
-      console.log(temp);
-
       //remove added user from searchlist
       setUsers(temp);
       setAddedUsers([...addedUsers, userToAdd]);
@@ -127,17 +99,14 @@ const ProjectCreateAccess = (props) => {
 
   const submitForm = (event) => {
     event.preventDefault();
-
-    uploadProject();
+    addProject();
   };
 
-  const removeAddedUser = (user) => {
+  const handleRemoveAddedUsers = (user) => {
     let tempAddedUsers = addedUsers;
 
     const index = tempAddedUsers.indexOf(user);
     if (index > -1) tempAddedUsers.splice(index, 1);
-    console.log(tempAddedUsers);
-    console.log("removed", index);
 
     setAddedUsers([...tempAddedUsers]);
 
@@ -176,7 +145,7 @@ const ProjectCreateAccess = (props) => {
               />
             </Grid>
             <Grid item xs={4}>
-              <Button onClick={addUsers}>Add</Button>
+              <Button onClick={handleAddUsersToList}>Add</Button>
             </Grid>
             <Grid
               className={classes.avatars}
@@ -190,7 +159,7 @@ const ProjectCreateAccess = (props) => {
                   <ProjectAccessTag
                     key={user.userId}
                     user={user}
-                    removeAddedUser={removeAddedUser}
+                    removeAddedUser={handleRemoveAddedUsers}
                   ></ProjectAccessTag>
                 );
               })}

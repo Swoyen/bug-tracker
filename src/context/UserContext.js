@@ -22,10 +22,24 @@ export const UserProvider = (props) => {
         let result = apiObj.fetchAll();
         result
           .then((res) => {
+            //console.log("status", res.status);
             setCurrentUser(res.data);
             //console.log(res.data);
           })
-          .catch((err) => console.log(err));
+          .catch(async (err) => {
+            console.log(err);
+            if (err.response.status === 404) {
+              const apiObj = await createAuthenticatedEndPoint(
+                instance,
+                accounts,
+                "User/PostMSAL"
+              );
+              let r = apiObj.create();
+              r.then((res) => setCurrentUser(res.data)).catch((err) =>
+                console.log(err)
+              );
+            }
+          });
       }
     })();
   }, [isAuthenticated, instance, accounts]);

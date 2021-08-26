@@ -10,31 +10,32 @@ import React from "react";
 import { useState } from "react";
 import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 import Form from "../../../layouts/Form";
-import { useMsal } from "@azure/msal-react";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import { UserContext } from "../../../context/UserContext";
 import { useContext } from "react";
+import { useDispatch } from "react-redux";
+import { addBug } from "../../../store/bugs";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
   form: { padding: theme.spacing(1) },
 }));
 
-const ProjectBoardCardAddCard = ({ status, hideAddCard, resetList }) => {
+const ProjectBoardCardAddCard = ({ status, hideAddCard, index }) => {
   const classes = useStyles();
   const [text, setText] = useState("");
   const [errors, setErrors] = useState("");
-  const { instance, accounts } = useMsal();
   const { currentUser } = useContext(UserContext);
+
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate) {
-      const apiObj = await createAuthenticatedEndPoint(
-        instance,
-        accounts,
-        RESTRICTEDENDPOINTS.BUG
-      );
+      // const apiObj = await createAuthenticatedEndPoint(
+      //   instance,
+      //   accounts,
+      //   RESTRICTEDENDPOINTS.BUG
+      // );
       var currentTime = new Date();
       var currentTimeISO = currentTime.toISOString();
       let newBug = {
@@ -47,11 +48,10 @@ const ProjectBoardCardAddCard = ({ status, hideAddCard, resetList }) => {
         statusId: status.statusId,
         severityId: 1,
       };
-      console.log(newBug);
-      const result = apiObj.create(newBug);
+      const result = dispatch(addBug(newBug));
+
       result
         .then((res) => {
-          resetList();
           handleClose();
         })
         .catch((err) => console.log(err));

@@ -25,13 +25,15 @@ const TimeChipArray = (props) => {
   return (
     <>
       <Grid item xs={12} className={classes.root}>
-        {tags.map((data) => {
-          return (
-            <li key={data.bugTagId}>
-              <Chip label={data.bugTagName} className={classes.chip} />
-            </li>
-          );
-        })}
+        {tags
+          ? tags.map((data) => {
+              return (
+                <li key={data.bugTagId}>
+                  <Chip label={data.bugTagName} className={classes.chip} />
+                </li>
+              );
+            })
+          : ""}
       </Grid>
     </>
   );

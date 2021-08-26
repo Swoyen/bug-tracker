@@ -1,13 +1,19 @@
 import React, { useEffect, useContext } from "react";
-
-import { BugContext } from "../../../context/BugContext";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import BugUserComment from "./BugUserComment";
 import { Grid } from "@material-ui/core";
 
 import Dialog from "../../../layouts/Dialog";
 import { makeStyles } from "@material-ui/core";
-import { useMsal } from "@azure/msal-react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllComments,
+  getCommentDeleteShown,
+  getCommentIdToDelete,
+  hideCommentDelete,
+  loadComments,
+  removeComment,
+} from "../../../store/comments";
+import { getShownBug } from "../../../store/bug";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,43 +23,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BugCommentList = () => {
-  const classes = useStyles();
-  const {
-    selectedBug,
-    setSelectedBug,
-    openCommentConfirmDeleteDialog,
-    setOpenCommentConfirmDeleteDialog,
-    commentToDeleteId,
-    comments,
-    setComments,
-  } = useContext(BugContext);
-  const { instance, accounts } = useMsal();
+  const dispatch = useDispatch();
+  const comments = useSelector(getAllComments);
+  const { id: bugId, shown } = useSelector(getShownBug);
+  const commentIdToDelete = useSelector(getCommentIdToDelete);
+  const deleteVisible = useSelector(getCommentDeleteShown);
 
   useEffect(() => {
-    if (selectedBug.comments !== null) {
-      setComments(selectedBug.comments);
-    }
-    return () => {
-      setComments([]);
-    };
-  }, [selectedBug.comments, setComments]);
+    if (shown) dispatch(loadComments(bugId));
+  }, [shown]);
 
-  const deleteComment = async () => {
-    const apiObj = await createAuthenticatedEndPoint(
-      instance,
-      accounts,
-      RESTRICTEDENDPOINTS.COMMENT
-    );
-    let result = apiObj.delete(commentToDeleteId);
-    result
-      .then((res) => {
-        let comments = selectedBug.comments.filter(
-          (comment) => comment.commentId !== commentToDeleteId
-        );
+  const classes = useStyles();
 
-        setSelectedBug({ ...selectedBug, comments: comments });
-      })
-      .catch((err) => console.log(err));
+  const handleDeleteConfirm = async () => {
+    dispatch(removeComment(commentIdToDelete));
   };
 
   return (
@@ -74,10 +57,10 @@ const BugCommentList = () => {
         : ""}
       <Dialog
         title="Confirm Delete"
-        openDialog={openCommentConfirmDeleteDialog}
-        setOpenDialog={setOpenCommentConfirmDeleteDialog}
+        openDialog={deleteVisible}
+        setOpenDialog={() => dispatch(hideCommentDelete())}
         top="250px"
-        onConfirm={() => deleteComment()}
+        onConfirm={() => handleDeleteConfirm()}
       >
         Are you sure you want to delete this comment?
       </Dialog>

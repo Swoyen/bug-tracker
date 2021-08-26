@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-import {
-  makeStyles,
-  IconButton,
-  Paper,
-  Grid,
-  Typography,
-  Grow,
-  Tooltip,
-} from "@material-ui/core";
-import DeleteSweepRoundedIcon from "@material-ui/icons/DeleteSweepRounded";
-import EditAttributesRoundedIcon from "@material-ui/icons/EditAttributesRounded";
-import { useContext } from "react";
-import { TimeContext } from "../../../context/TimeContext";
-import AlarmOnTwoToneIcon from "@material-ui/icons/AlarmOnTwoTone";
+import { makeStyles, Paper, Grid, Typography } from "@material-ui/core";
 import TimeChipArray from "./TimeChipArray";
+import { setTimeTrackEditShown } from "../../../store/timeTrack";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,24 +37,15 @@ const useStyles = makeStyles((theme) => ({
 const TimePaper = (props) => {
   const classes = useStyles();
   const { time } = props;
-
-  const {
-    setOpenConfirmation,
-    setTimeTrackIdToDelete,
-    actionsShownId,
-    setActionsShownId,
-    setOpenTimeEdit,
-    openTimeEdit,
-    setTimeTrackIdToEdit,
-  } = useContext(TimeContext);
+  const dispatch = useDispatch();
 
   const [timeDuration, setTimeDuration] = useState("00:00");
-  const [actionsShown, setActionsShown] = useState(false);
 
   useEffect(() => {
     const getFormattedTimeFromSeconds = (totalSeconds) => {
-      let hours = totalSeconds / 3600;
-      let minutes = totalSeconds / 60;
+      let hours = parseInt(totalSeconds / 3600);
+      // console.log("Hours", hours);
+      let minutes = parseInt(Math.abs(hours * 60 - totalSeconds / 60));
       let seconds = totalSeconds % 60;
       let t = new Date(1970, 0, 1);
       t.setHours(hours);
@@ -80,31 +60,12 @@ const TimePaper = (props) => {
     setTimeDuration(getFormattedTimeFromSeconds(diffTime / 1000));
   }, [time.startTime, time.stopTime]);
 
-  useEffect(() => {
-    if (actionsShownId === time.timeTrackId) {
-      setActionsShown(true);
-    } else {
-      setActionsShown(false);
-    }
-  }, [actionsShownId, time]);
+  const handleDeleteTimeTrack = (timeTrackId) => {};
 
-  const toggleActionsShown = () => {
-    // if (!actionsShown) {
-    //   setActionsShownId(time.timeTrackId);
-    //   setActionsShown(true);
-    // } else {
-    //   setActionsShown(false);
-    // }
-  };
-
-  const deleteTimeRecord = (timeTrackId) => {
-    setTimeTrackIdToDelete(timeTrackId);
-    setOpenConfirmation(true);
-  };
-
-  const editTimeRecord = (timeTrackId) => {
-    setTimeTrackIdToEdit(timeTrackId);
-    setOpenTimeEdit(true);
+  const handleEditTimeTrack = (timeTrackId) => {
+    // setTimeTrackIdToEdit(timeTrackId);
+    // setOpenTimeEdit(true);
+    dispatch(setTimeTrackEditShown(true, timeTrackId));
   };
 
   return (
@@ -118,9 +79,9 @@ const TimePaper = (props) => {
         <Grid
           item
           className={classes.grid}
-          onClick={() => editTimeRecord(time.timeTrackId)}
+          onClick={() => handleEditTimeTrack(time.timeTrackId)}
           container
-          xs={time.timeTrackId === actionsShownId && actionsShown ? 10 : 12}
+          xs={12}
           justifyContent="space-between"
           alignItems="center"
           alignContent="center"
@@ -152,11 +113,6 @@ const TimePaper = (props) => {
             )}
           </Grid>
           <Grid item sm={2} container justifyContent="center">
-            {/* <AlarmOnTwoToneIcon
-              className={classes.alarmIcon}
-              color="primary"
-              style={{ fontSize: "15px" }}
-            ></AlarmOnTwoToneIcon> */}
             <Typography variant="subtitle2" color="initial" align="right">
               {timeDuration}
             </Typography>
@@ -169,45 +125,7 @@ const TimePaper = (props) => {
           item
           xs={2}
           alignItems="center"
-        >
-          {time.timeTrackId === actionsShownId && actionsShown ? (
-            <Grow in={time.timeTrackId === actionsShownId && actionsShown}>
-              <Grid
-                container
-                justifyContent="space-evenly"
-                item
-                xs={12}
-                alignItems="center"
-              >
-                <Grid item>
-                  <Tooltip title="Delete Time Record">
-                    <IconButton
-                      variant="filled"
-                      size="medium"
-                      className={classes.actionButton}
-                      onClick={() => deleteTimeRecord(time.timeTrackId)}
-                    >
-                      <DeleteSweepRoundedIcon></DeleteSweepRoundedIcon>
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-                <Grid item>
-                  <Tooltip title="Edit Time Record">
-                    <IconButton
-                      onClick={() => editTimeRecord(time.timeTrackId)}
-                      size="medium"
-                      className={classes.actionButton}
-                    >
-                      <EditAttributesRoundedIcon></EditAttributesRoundedIcon>
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-              </Grid>
-            </Grow>
-          ) : (
-            ""
-          )}
-        </Grid>
+        ></Grid>
       </Grid>
     </Paper>
   );

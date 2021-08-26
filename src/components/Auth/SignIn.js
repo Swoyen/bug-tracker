@@ -21,8 +21,8 @@ const SignIn = () => {
   //   }
   // }, []);
   useEffect(() => {
-    if (isAuthenticated) history.replace(from);
-  });
+    // if (isAuthenticated) history.replace(from);
+  }, []);
 
   // const handleLogin = (instance) => {
   //   instance

@@ -11,11 +11,14 @@ import { AccountCircle } from "@material-ui/icons";
 
 import { UserContext } from "../../../context/UserContext";
 import Button from "../../../controls/Button";
-import { BugContext } from "../../../context/BugContext";
 import { Badge } from "@material-ui/core";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
-import { useMsal } from "@azure/msal-react";
+import { useDispatch } from "react-redux";
+import {
+  likeComment,
+  showCommentDelete,
+  startCommentEdit,
+} from "../../../store/comments";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,22 +28,15 @@ const useStyles = makeStyles((theme) => ({
 
 const BugUserComment = (props) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   const { comment } = props;
   const [liked, setLiked] = useState(false);
   const [totalLikes, setTotalLikes] = useState(0);
-  const { instance, accounts } = useMsal();
 
-  const {
-    setOpenCommentConfirmDeleteDialog,
-    setCommentToDeleteId,
-    setCommentToEdit,
-    selectedBug,
-    setSelectedBug,
-  } = useContext(BugContext);
   const { currentUser } = useContext(UserContext);
 
   useEffect(() => {
-    //console.log(comment);
     if (
       comment.likedUsers.length !== 0 &&
       comment.likedUsers.some((id) => id === currentUser.userId)
@@ -56,37 +52,16 @@ const BugUserComment = (props) => {
     return () => {};
   }, [comment, currentUser.userId]);
 
-  const deleteComment = () => {
-    setCommentToDeleteId(comment.commentId);
-    setOpenCommentConfirmDeleteDialog(true);
+  const handleDelete = (id) => {
+    dispatch(showCommentDelete(id));
   };
 
-  const likeComment = async () => {
-    const apiObj = await createAuthenticatedEndPoint(
-      instance,
-      accounts,
-      RESTRICTEDENDPOINTS.LIKE
-    );
-    let result = apiObj.fetchById(comment.commentId);
-    result
-      .then((res) => {
-        setLiked(!liked);
-        let temp = selectedBug;
-        let likedUsersArr = comment.likedUsers;
+  const handleLikeComment = (id) => {
+    dispatch(likeComment(id));
+  };
 
-        if (likedUsersArr.some((l) => l === currentUser.userId)) {
-          var index = likedUsersArr.indexOf(currentUser.userId);
-          likedUsersArr.splice(index, 1);
-        } else likedUsersArr.push(currentUser.userId);
-
-        let commentIndex = selectedBug.comments.findIndex(
-          (com) => com.commentId === comment.commentId
-        );
-        temp.comments[commentIndex].likedUsers = likedUsersArr;
-        setSelectedBug(temp);
-        setTotalLikes(likedUsersArr.length);
-      })
-      .catch((err) => console.log(err));
+  const handeStartEditComment = (comment) => {
+    dispatch(startCommentEdit(comment));
   };
 
   return (
@@ -122,7 +97,7 @@ const BugUserComment = (props) => {
               comment.commentedByUser.userId === currentUser.userId ? (
                 <Grid style={{ marginLeft: "-8px" }} item xs={5}>
                   <Button
-                    onClick={() => deleteComment()}
+                    onClick={() => handleDelete(comment.commentId)}
                     variant="text"
                     margin="none"
                     size="small"
@@ -131,7 +106,12 @@ const BugUserComment = (props) => {
                     Delete
                   </Button>
                   <Button
-                    onClick={() => setCommentToEdit(comment)}
+                    onClick={
+                      () =>
+                        handeStartEditComment(
+                          comment
+                        ) /*setCommentToEdit(comment)*/
+                    }
                     variant="text"
                     size="small"
                     style={{ padding: "0px" }}
@@ -144,7 +124,10 @@ const BugUserComment = (props) => {
               )}
 
               <Grid item xs={1}>
-                <IconButton onClick={() => likeComment()} size="small">
+                <IconButton
+                  onClick={() => handleLikeComment(comment.commentId)}
+                  size="small"
+                >
                   <Badge badgeContent={totalLikes} color="default">
                     <ThumbUpIcon
                       style={{

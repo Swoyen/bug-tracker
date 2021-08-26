@@ -1,29 +1,27 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
-import { TimeContext } from "../../../context/TimeContext";
 import Popup from "../../../layouts/Popup";
 import Form from "../../../layouts/Form";
-import { useMsal } from "@azure/msal-react";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../../api";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import {
-  Button,
-  Divider,
-  Input,
-  makeStyles,
-  TextField,
-} from "@material-ui/core";
+import { Button, Divider, makeStyles } from "@material-ui/core";
 import TimeDatePicker from "./TimeDatePicker";
-import TimeEditInput from "./TimeEditInput";
 import { useTheme } from "@material-ui/core";
-import { BugReportOutlined } from "@material-ui/icons";
 import TimeBugSelectWithEmpty from "./TimeBugSelectWithEmpty";
 import RichTextFieldEditor from "../../../controls/RichTextFieldEditor";
 import TimeBugTagSelect from "../TimeBugTagSelect";
-
-import Dialog from "../../../layouts/Dialog";
 import TimeConfirmDialog from "../TimeConfirmDialog";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getLoadedTimeTrack,
+  getTimeTrackDeleteIdAndShown,
+  getTimeTrackEditId,
+  loadTimeTrack,
+  modifyTimeTrack,
+  removeTimeTrack,
+  setTimeTrackDeleteShown,
+  setTimeTrackEditShown,
+} from "../../../store/timeTrack";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -46,67 +44,40 @@ const useStyles = makeStyles((theme) => ({
 
 const TimeEdit = () => {
   const classes = useStyles();
-  const {
-    openTimeEdit,
-    setOpenTimeEdit,
-    timeTrackIdToEdit,
-    setTimeTrackIdToDelete,
-    setOpenConfirmation,
-    openConfirmation,
-    deleteTimeRecord,
-    fetchTimeList,
-  } = useContext(TimeContext);
-  const { instance, accounts } = useMsal();
-  const [timeTracker, setTimeTracker] = useState({});
+  const dispatch = useDispatch();
+  const theme = useTheme();
+
+  const [openTimeEdit, setOpenTimeEdit] = useState(false);
   const [values, setValues] = useState({});
   const [selectedBugId, setSelectedBugId] = useState(-1);
-  const [toolbarVisible, setToolbarVisible] = useState(false);
   const [clearDesc, setClearDesc] = useState(false);
   const [loadedJsonDescription, setLoadedJsonDescription] = useState(null);
   const [formattedJsonDescription, setFormattedJsonDescription] = useState({});
   const [selectedTagValues, setSelectedTagValues] = useState([]);
-  const theme = useTheme();
 
-  const fetchTimeTrack = useCallback(async () => {
-    if (timeTrackIdToEdit !== -1) {
-      const api = await createAuthenticatedEndPoint(
-        instance,
-        accounts,
-        RESTRICTEDENDPOINTS.TIMER
-      );
-      api
-        .fetchById(timeTrackIdToEdit)
-        .then((res) => {
-          let data = res.data;
-          setTimeTracker(res.data);
-          setValues({
-            startDateTime: new Date(data.startTime),
-            endDateTime: new Date(data.stopTime),
-          });
-          setLoadedJsonDescription(data.description);
-          setSelectedBugId(data.bugId);
-          setSelectedTagValues(data.bugTags);
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [instance, accounts, timeTrackIdToEdit]);
+  const timeTrackEditId = useSelector(getTimeTrackEditId);
+  const timeTracker = useSelector(getLoadedTimeTrack);
+  const { timeTrackId: timeTrackIdToDelete, shown: timeTrackDeleteShown } =
+    useSelector(getTimeTrackDeleteIdAndShown);
 
   useEffect(() => {
-    if (openTimeEdit) {
-      fetchTimeTrack();
-    }
-    return () => {
-      setTimeTracker({});
-      setLoadedJsonDescription("");
-      setSelectedBugId(-1);
-      setSelectedTagValues([]);
-    };
-  }, [fetchTimeTrack, openTimeEdit]);
+    if (timeTrackEditId !== -1) {
+      setOpenTimeEdit(true);
+      dispatch(loadTimeTrack(timeTrackEditId));
+    } else setOpenTimeEdit(false);
+  }, [timeTrackEditId]);
 
-  const handleDelete = (e) => {
-    setTimeTrackIdToDelete(timeTrackIdToEdit);
-    setOpenConfirmation(true);
-  };
+  useEffect(() => {
+    if (timeTrackEditId !== -1 && Object.keys(timeTracker).length !== 0) {
+      setValues({
+        startDateTime: new Date(timeTracker.startTime),
+        endDateTime: new Date(timeTracker.stopTime),
+      });
+      setLoadedJsonDescription(timeTracker.description);
+      setSelectedBugId(timeTracker.bugId);
+      setSelectedTagValues(timeTracker.bugTags);
+    }
+  }, [timeTracker, timeTrackEditId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -117,7 +88,6 @@ const TimeEdit = () => {
         bugTagId: tag.bugTagId,
       });
     });
-    console.log(ttbt);
     var newTimeTracker = {
       timeTrackId: timeTracker.timeTrackId,
       startSeconds: timeTracker.startSeconds,
@@ -137,19 +107,22 @@ const TimeEdit = () => {
       newTimeTracker.stopTime = values.endDateTime.toISOString();
     else newTimeTracker.stopTime = timeTracker.stopTime;
 
-    const apiObj = await createAuthenticatedEndPoint(
-      instance,
-      accounts,
-      RESTRICTEDENDPOINTS.TIMER
-    );
-    apiObj
-      .update(timeTrackIdToEdit, newTimeTracker)
-      .then((res) => {
-        setOpenTimeEdit(false);
-        // fetchTimeList();
-        fetchTimeList();
-      })
-      .catch((err) => console.log(err));
+    dispatch(modifyTimeTrack(timeTracker.timeTrackId, newTimeTracker));
+  };
+
+  const handleDeleteTimeTrackShown = (e) => {
+    dispatch(setTimeTrackDeleteShown(true, timeTrackEditId));
+  };
+
+  const handleClose = () => {
+    dispatch(setTimeTrackEditShown(false));
+  };
+
+  const handleDeleteTimeTrackHidden = () => {
+    dispatch(setTimeTrackDeleteShown(false));
+  };
+  const handleDeleteTimeTrack = () => {
+    dispatch(removeTimeTrack(timeTrackIdToDelete));
   };
 
   return (
@@ -159,7 +132,7 @@ const TimeEdit = () => {
         center={false}
         title="Edit Time"
         openPopup={openTimeEdit}
-        setOpenPopup={setOpenTimeEdit}
+        setOpenPopup={handleClose}
       >
         <Form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
@@ -190,11 +163,7 @@ const TimeEdit = () => {
               </Grid>
               <Grid item xs={12}>
                 <Grid item xs={12} className={classes.textEditorGrid}>
-                  <div
-                    className={classes.textEditorContainer}
-                    onFocus={() => setToolbarVisible(true)}
-                    className={classes.textEditorContainer}
-                  >
+                  <div className={classes.textEditorContainer}>
                     <RichTextFieldEditor
                       setContent={setFormattedJsonDescription}
                       clear={clearDesc}
@@ -217,7 +186,10 @@ const TimeEdit = () => {
             ></TimeDatePicker>
             <Grid item xs={12} container spacing={1} justifyContent="flex-end">
               <Grid item>
-                <Button onClick={(e) => handleDelete(e)} variant="outlined">
+                <Button
+                  onClick={(e) => handleDeleteTimeTrackShown(e)}
+                  variant="outlined"
+                >
                   Delete
                 </Button>
               </Grid>
@@ -231,9 +203,9 @@ const TimeEdit = () => {
         </Form>
 
         <TimeConfirmDialog
-          openConfirmation={openConfirmation}
-          setOpenConfirmation={setOpenConfirmation}
-          deleteTimeRecord={deleteTimeRecord}
+          openConfirmation={timeTrackDeleteShown}
+          setOpenConfirmation={() => handleDeleteTimeTrackHidden()}
+          deleteTimeRecord={() => handleDeleteTimeTrack()}
         ></TimeConfirmDialog>
       </Popup>
     </>
