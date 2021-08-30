@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
   dialogWrapper: {
     padding: theme.spacing(1),
     position: "absolute",
-    zIndex: 1234,
     minWidth: (props) => props.minWidth,
     minHeight: (props) => props.minHeight,
   },
@@ -62,6 +61,7 @@ const Popup = (props) => {
 
   return (
     <Dialog
+      disableEnforceFocus
       classes={{
         paper: `${classes.dialogWrapper} ${
           center ? classes.middle : classes.top

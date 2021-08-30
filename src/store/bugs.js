@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import { apiCallBegan } from "./api";
 import { RESTRICTEDENDPOINTS } from "../api/config";
+import bug, { modifyBug } from "./bug";
+import { successSnackbarEnqueued, enqueueSuccessSnackbar } from "./notifier";
 
 const bugsSlice = createSlice({
   name: "bugs",
@@ -54,12 +56,47 @@ const bugsSlice = createSlice({
       const index = bugs.list.findIndex((bug) => bug.id === bugId);
       bugs.list[index].userId = userId;
     },
+
+    bugResolveModified: (bugs, action) => {
+      let bugId = action.payload.bugId;
+      bugs.list = bugs.list.filter((bug) => bug.bugId !== bugId);
+    },
   },
 });
 
 // Action Creators
 // Store in Config
 const url = RESTRICTEDENDPOINTS.BUG;
+
+export const loadUnresolvedBugs = (id) => (dispatch) => {
+  return dispatch(
+    apiCallBegan({
+      url,
+      filter: { resolved: false, projectId: id },
+      onStart: bugsRequested.type,
+      onSuccess: bugsReceived.type,
+      onError: bugsRequestFailed.type,
+    })
+  );
+};
+
+export const loadResolvedBugs = (id) => (dispatch, getState) => {
+  // const { accessToken } = getState().entities.auth;
+  // const { lastFetch } = getState().entities.bugs;
+  // const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
+  // if (diffInMinutes < 10) {
+  //   return;
+  // }
+  return dispatch(
+    apiCallBegan({
+      url,
+      filter: { resolved: true, projectId: id },
+      onStart: bugsRequested.type,
+      onSuccess: bugsReceived.type,
+      onError: bugsRequestFailed.type,
+    })
+  );
+};
 
 export const loadBugs = () => (dispatch, getState) => {
   // const { accessToken } = getState().entities.auth;
@@ -83,27 +120,37 @@ export const addBug = (bug) =>
     url,
     method: "post",
     data: bug,
-    onSuccess: bugAdded.type,
+    onSuccess: [
+      bugAdded.type,
+      { type: successSnackbarEnqueued.type, payload: "Bug Added" },
+    ],
   });
-
-export const assignBugToUser = (bugId, userId) =>
-  apiCallBegan({
-    url: url + "/" + bugId,
-    method: "patch",
-    data: { userId },
-    onSuccess: bugAssignedToUser.type,
-  });
-
 export const toggleBugCreateShown = () => (dispatch) => {
   dispatch(bugCreateShownToggled());
 };
 
+export const resolveBug = (bugId, bug) => (dispatch) => {
+  var currentTime = new Date().toISOString();
+  var newBug = { ...bug, resolved: true, resolvedTime: currentTime };
+
+  dispatch(bugResolveModified(newBug));
+  return dispatch(modifyBug(bugId, newBug, true)).then((res) =>
+    dispatch(enqueueSuccessSnackbar("Bug Resolved"))
+  );
+};
+
+export const unResolveBug = (bugId, bug) => (dispatch) => {
+  var newBug = { ...bug, resolved: false };
+  dispatch(bugResolveModified(newBug));
+  return dispatch(modifyBug(bugId, newBug, true));
+};
+
 // Memoization selector
-export const getUnresolvedBugs = createSelector(
-  (state) => state.entities.bugs,
-  (state) => state.entities.projects,
-  (bugs, projects) => bugs.list.filter((bug) => !bug.resolved)
-);
+// export const getUnresolvedBugs = createSelector(
+//   (state) => state.entities.bugs,
+//   (state) => state.entities.projects,
+//   (bugs, projects) => bugs.list.filter((bug) => !bug.resolved)
+// );
 
 export const getAllBugs = createSelector(
   (state) => state.entities.bugs,
@@ -123,11 +170,11 @@ export const getBugsByUser = (userId) =>
 
 const {
   bugAdded,
-  bugAssignedToUser,
   bugsReceived,
   bugsRequested,
   bugsRequestFailed,
   bugCreateShownToggled,
+  bugResolveModified,
 } = bugsSlice.actions;
 
 export const { bugArrayModified, bugRemovedFromArray } = bugsSlice.actions;

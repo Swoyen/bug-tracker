@@ -52,10 +52,10 @@ const ProjectBoardGrid = (props) => {
     if (moveCardIndex === index) {
       //setMoveCardSilhouetteVisible(true);
 
-      console.log("y Index", yIndex);
-      var heightToMoveTo = yIndex * 152;
+      //console.log("y Index", yIndex);
+      //var heightToMoveTo = yIndex * 152;
 
-      console.log("h", heightToMoveTo);
+      //console.log("h", heightToMoveTo);
       setMoveCardIndexInGrid(yIndex);
     } else {
       //setMoveCardSilhouetteVisible(false);

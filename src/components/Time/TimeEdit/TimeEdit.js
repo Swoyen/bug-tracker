@@ -22,6 +22,7 @@ import {
   setTimeTrackDeleteShown,
   setTimeTrackEditShown,
 } from "../../../store/timeTrack";
+import { emptyAddedTimeBugTag } from "../../../store/timeBugTags";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -60,11 +61,22 @@ const TimeEdit = () => {
   const { timeTrackId: timeTrackIdToDelete, shown: timeTrackDeleteShown } =
     useSelector(getTimeTrackDeleteIdAndShown);
 
+  const { addedBugTag } = useSelector((state) => state.entities.timeBugTags);
+
+  useEffect(() => {
+    if (Object.keys(addedBugTag).length !== 0) {
+      setSelectedTagValues((value) => [...value, addedBugTag]);
+      dispatch(emptyAddedTimeBugTag());
+    }
+  }, [addedBugTag]);
+
   useEffect(() => {
     if (timeTrackEditId !== -1) {
       setOpenTimeEdit(true);
       dispatch(loadTimeTrack(timeTrackEditId));
-    } else setOpenTimeEdit(false);
+    } else {
+      setOpenTimeEdit(false);
+    }
   }, [timeTrackEditId]);
 
   useEffect(() => {

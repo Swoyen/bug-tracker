@@ -13,6 +13,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import TimeBugGroup from "./TimeBugGroup";
 import moment from "moment";
 import { Grow } from "@material-ui/core";
+import { getDurationFromArray } from "../../../helper/timecalc";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,27 +60,15 @@ const TimeGroup = (props) => {
 
   useEffect(() => {
     if (timeListWithDate) {
-      var totalDuration = 0;
-      timeListWithDate.timeTrack.forEach((timeTrack) => {
-        var startTime =
-          timeTrack.startTime.slice(-1) !== "Z"
-            ? new Date(timeTrack.startTime + "Z")
-            : new Date(timeTrack.startTime);
+      var startEnd = [];
+      timeListWithDate.timeTrack.forEach((timeTrack) =>
+        startEnd.push({
+          startTime: timeTrack.startTime,
+          endTime: timeTrack.stopTime,
+        })
+      );
 
-        var stopTime =
-          timeTrack.stopTime.slice(-1) !== "Z"
-            ? new Date(timeTrack.stopTime + "Z")
-            : new Date(timeTrack.stopTime);
-
-        var a = moment(startTime);
-        var b = moment(stopTime);
-        let duration = a.diff(b);
-
-        // var duration = stopTime.getTime() - startTime.getTime();
-        totalDuration += duration;
-      });
-
-      setDuration(getFormattedTimeFromSeconds(totalDuration / 1000));
+      setDuration(getDurationFromArray(startEnd));
 
       let dt = timeListWithDate.date;
       setListVisible(timeListWithDate.visible);

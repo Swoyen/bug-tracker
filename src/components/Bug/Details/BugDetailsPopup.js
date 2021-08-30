@@ -8,10 +8,12 @@ import {
   getShownBug,
   hideBug,
   removeBug,
+  setBugResolveShown,
   setTempTitle,
   toggleBugDeleteShown,
 } from "../../../store/bug";
 import { useState, useEffect } from "react";
+import { resolveBug, unResolveBug } from "../../../store/bugs";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -25,14 +27,17 @@ const BugDetailsPopup = (props) => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const bugDeleteConfirm = useSelector(getBugDeleteToggled);
+  const bugResolveConfirm = useSelector(
+    (state) => state.entities.bug.resolveShown
+  );
 
   useEffect(() => {
     if (shown) setBugTitle(loadedBug.bugName);
   }, [shown, loadedBug.bugName]);
 
   useEffect(() => {
-    dispatch(setTempTitle(bugTitle));
-  }, [bugTitle]);
+    if (shown) dispatch(setTempTitle(bugTitle));
+  }, [shown, bugTitle]);
 
   const handleClose = () => {
     dispatch(hideBug());
@@ -40,6 +45,14 @@ const BugDetailsPopup = (props) => {
 
   const handleDelete = async () => {
     dispatch(removeBug(id));
+  };
+
+  const handleResolve = () => {
+    dispatch(resolveBug(id, loadedBug));
+  };
+
+  const handleUnresolve = () => {
+    dispatch(unResolveBug(id, loadedBug));
   };
 
   return (
@@ -57,7 +70,20 @@ const BugDetailsPopup = (props) => {
     >
       {props.children}
       <Dialog
+        title="Confirm Resolve"
+        openDialog={bugResolveConfirm}
+        setOpenDialog={() => dispatch(setBugResolveShown(false))}
+        onConfirm={() =>
+          loadedBug.resolved ? handleUnresolve() : handleResolve()
+        }
+      >
+        {loadedBug.resolved
+          ? "Are you sure you want to track this issue again?"
+          : "Are you sure you want to resolve this issue?"}
+      </Dialog>
+      <Dialog
         title="Confirm Delete"
+        danger={true}
         openDialog={bugDeleteConfirm}
         setOpenDialog={() => dispatch(toggleBugDeleteShown())}
         onConfirm={() => handleDelete()}

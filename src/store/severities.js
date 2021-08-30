@@ -44,9 +44,7 @@ export const loadSeverities = () => (dispatch, getState) => {
   return dispatch(
     apiCallBegan({
       url: RESTRICTEDENDPOINTS.SEVERITY,
-      onStart: severitiesRequested.type,
       onSuccess: severitiesReceived.type,
-      onError: severitiesRequestFailed.type,
     })
   );
 };

@@ -9,6 +9,8 @@ import severityReducer from "./severities";
 import commentsReducer from "./comments";
 import boardReducer from "./board";
 import timeTrackReducer from "./timeTrack";
+import timeBugTagsReducer from "./timeBugTags";
+import labelsReducer from "./labels";
 
 export default combineReducers({
   bugs: bugsReducer,
@@ -21,4 +23,6 @@ export default combineReducers({
   comments: commentsReducer,
   board: boardReducer,
   timeTracks: timeTrackReducer,
+  timeBugTags: timeBugTagsReducer,
+  labels: labelsReducer,
 });

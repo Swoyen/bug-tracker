@@ -71,17 +71,12 @@ const boardSlice = createSlice({
       );
       // before pushing
       // change card order of elemnts after by + 1
-      console.log("Before", bugGroups[newStatusIndex].bugs);
-      console.log("yindex", yIndex);
       if (yIndex + 1 <= bugGroups[newStatusIndex].bugs.length) {
-        console.log("temp", bugGroups[newStatusIndex].bugs[yIndex].cardOrder);
         for (let i = yIndex; i < bugGroups[newStatusIndex].bugs.length; i++) {
           var prevCardOrder = bugGroups[newStatusIndex].bugs[i].cardOrder;
           bugGroups[newStatusIndex].bugs[i].cardOrder = prevCardOrder + 1;
-          console.log(prevCardOrder);
         }
       }
-      console.log("After", bugGroups[newStatusIndex].bugs);
 
       bugGroups[newStatusIndex].bugs.push(newBug);
 
@@ -126,7 +121,6 @@ export const modifyBugStatus =
     const { list: statuses } = getState().entities.statuses;
     const { bugsGroupedWithStatusList, moveCardYIndex } =
       getState().entities.board;
-    console.log("abc", moveCardYIndex);
     // modify bug then status index
     // get bug
     var statusIndex = bugsGroupedWithStatusList.findIndex(
@@ -149,11 +143,12 @@ export const modifyBugStatus =
       // dispatch(bugStatusModified({ bugId, newBug, statusId, newStatus }));
 
       let newBugList = bugsGroupedWithStatusList[newStatusIndex].bugs;
-      //console.log("list", newBugList);
+
       // if no bug before && after
       if (newBugList.length === 0) {
         var newCardOrder = 0;
         newBug.cardOrder = newCardOrder;
+        dispatch(modifyBug(bugId, newBug));
         dispatch(
           bugStatusModified({
             bugId,
@@ -168,9 +163,10 @@ export const modifyBugStatus =
       else if (newBugList.length === moveCardYIndex) {
         // only append
         var cardOrder = newBugList[newBugList.length - 1].cardOrder;
-        console.log("Should be here 2", newBug);
+
         var newCardOrder = cardOrder + 1;
         newBug.cardOrder = newCardOrder;
+        dispatch(modifyBug(bugId, newBug));
         dispatch(
           bugStatusModified({
             bugId,
@@ -183,11 +179,10 @@ export const modifyBugStatus =
       }
       // bugs after
       else {
-        console.log("Modifying with after");
-        console.log("Ind", moveCardYIndex);
         // if no bugs before
         if (moveCardYIndex === 0) {
           newBug.cardOrder = 0;
+          dispatch(modifyBug(bugId, newBug));
           dispatch(
             bugStatusModified({
               bugId,
@@ -200,10 +195,10 @@ export const modifyBugStatus =
         }
         // if bug before
         else if (moveCardYIndex !== 0) {
-          console.log("sadasdasd");
           // get card order at index
           var cardOrder = newBugList[moveCardYIndex].cardOrder;
           newBug.cardOrder = cardOrder;
+          dispatch(modifyBug(bugId, newBug));
           dispatch(
             bugStatusModified({
               bugId,
@@ -217,9 +212,12 @@ export const modifyBugStatus =
         var bugsAfter = bugsGroupedWithStatusList[newStatusIndex].bugs.filter(
           (_, i) => i >= moveCardYIndex
         );
+        //modifyBugAfter
+        bugsAfter.forEach((bug) => {
+          var bugWithNewCardOrder = { ...bug, cardOrder: bug.cardOrder + 1 };
+          dispatch(modifyBug(bug.bugId, bugWithNewCardOrder));
+        });
       }
-
-      // console.log("bugsAfter", bugsAfter);
     }
   };
 

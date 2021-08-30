@@ -34,6 +34,9 @@ const BugCreate = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const bugCreateShown = useSelector(getBugCreateShown);
+  const projectId = useSelector(
+    (state) => state.entities.projects.currentProjectId
+  );
 
   const users = useSelector(getAllUsers);
   const severities = useSelector(getAllSeverities);
@@ -80,8 +83,9 @@ const BugCreate = () => {
     newBug.reporterUserId = reporterId;
     newBug.assigneeUserId = assigneeId;
     newBug.createdDate = new Date().toISOString();
-    newBug.statusId = 1;
+    newBug.statusId = statusId;
     newBug.severityId = severityId;
+    newBug.projectId = projectId;
 
     dispatch(addBug(newBug));
   };
@@ -99,6 +103,7 @@ const BugCreate = () => {
     setReporter("");
     setAssignee("");
     setSeverity("");
+    setStatus("");
     setErrors({});
   };
 

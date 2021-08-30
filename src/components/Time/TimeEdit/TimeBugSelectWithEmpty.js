@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBugs, loadBugs } from "../../../store/bugs";
+import { getAllBugs, loadUnresolvedBugs } from "../../../store/bugs";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,12 +22,15 @@ const TimeBugSelectWithEmpty = (props) => {
   const bugList = useSelector(getAllBugs);
   const dispatch = useDispatch();
   const { selectedBugId, setSelectedBugId } = props;
+  const projectId = useSelector(
+    (state) => state.entities.projects.currentProjectId
+  );
 
   const [bugListWithEmptyBug, setBugListWithEmptyBug] = useState([emptyBug]);
 
   useEffect(() => {
-    dispatch(loadBugs());
-  }, []);
+    if (projectId !== -1) dispatch(loadUnresolvedBugs(projectId));
+  }, [projectId]);
 
   useEffect(() => {
     setBugListWithEmptyBug([emptyBug, ...bugList]);

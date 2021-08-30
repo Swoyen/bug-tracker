@@ -37,9 +37,7 @@ export const loadStatuses = () => (dispatch, getState) => {
   return dispatch(
     apiCallBegan({
       url: RESTRICTEDENDPOINTS.STATUS,
-      onStart: statusRequested.type,
       onSuccess: statusReceived.type,
-      onError: statusRequestFailed.type,
     })
   );
 };

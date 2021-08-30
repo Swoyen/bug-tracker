@@ -16,6 +16,11 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     top: (props) => props.top,
   },
+  button: {
+    background: (props) =>
+      props.danger ? theme.palette.error.light : theme.palette.primary.main,
+    color: "white",
+  },
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -29,6 +34,7 @@ const Dialog = (props) => {
     openDialog,
     setOpenDialog,
     onConfirm,
+    danger = false,
   } = props;
 
   const classes = useStyles(props);
@@ -66,17 +72,14 @@ const Dialog = (props) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            variant="contained"
-            onClick={() => handleClose()}
-            color="primary"
-          >
+          <Button variant="text" onClick={() => handleClose()}>
             Cancel
           </Button>
           <Button
             variant="contained"
             onClick={() => handleAgree()}
-            color="primary"
+            className={classes.button}
+            //color={danger ? "warning" : "primary"}
           >
             Confirm
           </Button>

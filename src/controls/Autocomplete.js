@@ -32,12 +32,12 @@ const Autocomplete = (props) => {
                   });
                 }
                 if (newVal && newVal.inputValue) {
-                  const newOption = addOption(newVal.inputValue);
-                  newOption.then((res) =>
-                    setValue((val) => {
-                      return [...val, res];
-                    })
-                  );
+                  addOption(newVal.inputValue);
+                  // newOption.then((res) =>
+                  //   setValue((val) => {
+                  //     return [...val, res];
+                  //   })
+                  // );
                 } else {
                   setValue(newValue);
                 }

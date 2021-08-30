@@ -9,7 +9,7 @@ import { getShownBug, getToggled, setTempDesc } from "../../../store/bug";
 import { useState, useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
-  root: { paddingLeft: "10px", height: "120px" },
+  root: { minHeight: "150px", maxHeight: "250px" },
   input: { fontSize: "15px", padding: "0" },
   label: { height: "0px" },
 }));
@@ -33,7 +33,7 @@ const BugDetailsDescription = () => {
 
   return (
     <Grid className={classes.root} item xs={12}>
-      <Typography gutterBottom>Description:</Typography>
+      <Typography variant="subtitle1">Description:</Typography>
       {canEdit ? (
         <Grow in style={{ transformOrigin: "0 0 0" }}>
           <Input

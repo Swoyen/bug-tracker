@@ -1,14 +1,19 @@
 import BugList from "./BugList";
 
 import React from "react";
-import { Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, makeStyles, Typography, Container } from "@material-ui/core";
 
-import { useDispatch } from "react-redux";
-import { toggleBugCreateShown } from "../../store/bugs";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loadBugs,
+  loadUnresolvedBugs,
+  toggleBugCreateShown,
+} from "../../store/bugs";
 
 import BugDetails from "./Details/BugDetails";
 import BugCreateButton from "./Create/BugCreateButton";
 import BugCreate from "./Create/BugCreate";
+import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: { textAlign: "left" },
@@ -18,6 +23,13 @@ const useStyles = makeStyles((theme) => ({
 const Bug = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const projectId = useSelector(
+    (state) => state.entities.projects.currentProjectId
+  );
+
+  useEffect(() => {
+    if (projectId !== -1) dispatch(loadUnresolvedBugs(projectId));
+  }, [projectId]);
 
   const handleToggleBugCreateShown = () => {
     dispatch(toggleBugCreateShown());
@@ -25,14 +37,19 @@ const Bug = () => {
 
   return (
     <div className={classes.root}>
-      <Typography gutterBottom variant="h5" color="initial">
-        Bug Tracker
-      </Typography>
-      <Grid className={classes.buttons} container justifyContent="flex-end">
-        <BugCreateButton
-          onClick={() => handleToggleBugCreateShown()}
-        ></BugCreateButton>
+      <Grid container justifyContent="space-between">
+        <Grid item>
+          <Typography gutterBottom variant="h5" color="initial">
+            Issue Tracker
+          </Typography>
+        </Grid>
+        <Grid item>
+          <BugCreateButton
+            onClick={() => handleToggleBugCreateShown()}
+          ></BugCreateButton>
+        </Grid>
       </Grid>
+
       <BugList></BugList>
       <BugCreate></BugCreate>
       <BugDetails></BugDetails>

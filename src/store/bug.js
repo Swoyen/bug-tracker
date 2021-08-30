@@ -7,9 +7,11 @@ const bugSlice = createSlice({
   name: "bug",
   initialState: {
     loadedBug: {},
+    modifying: false,
     loading: false,
     shown: false,
     deleteShown: false,
+    resolveShown: false,
     editable: false,
     tempDesc: "",
     tempTitle: "",
@@ -18,6 +20,14 @@ const bugSlice = createSlice({
   reducers: {
     bugRequested: (bug, action) => {
       bug.loading = true;
+    },
+
+    bugModifyRequested: (bug, action) => {
+      bug.modifying = true;
+    },
+
+    bugModifyRequestFailed: (bug) => {
+      bug.modifying = false;
     },
 
     bugReceived: (bug, action) => {
@@ -41,8 +51,9 @@ const bugSlice = createSlice({
     },
 
     bugModified: (shownBug, action) => {
-      shownBug.loading = false;
+      //shownBug.loading = false;
       shownBug.loadedBug = action.payload;
+      shownBug.modifying = false;
     },
 
     bugRemoved: (shownBug, action) => {
@@ -65,6 +76,13 @@ const bugSlice = createSlice({
     bugTempTitleChanged: (bug, action) => {
       bug.tempTitle = action.payload;
     },
+
+    bugResolveShown: (bug, action) => {
+      bug.resolveShown = true;
+    },
+    bugResolveHidden: (bug, action) => {
+      bug.resolveShown = false;
+    },
   },
 });
 
@@ -80,7 +98,7 @@ export const loadBug = (id) => (dispatch) => {
   );
 };
 
-export const modifyBug = (id, bug) => (dispatch) => {
+export const modifyBug = (id, bug, hide) => (dispatch) => {
   let cleanedBug = {
     bugId: bug.bugId,
     assigneeUserId: bug.assignee.userId,
@@ -90,16 +108,21 @@ export const modifyBug = (id, bug) => (dispatch) => {
     reporterUserId: bug.reporter.userId,
     severityId: bug.severity.severityId,
     statusId: bug.status.statusId,
+    resolved: bug.resolved,
+    resolvedTime: bug.resolvedTime,
+    cardOrder: bug.cardOrder,
+    projectId: bug.projectId,
+    labels: bug.labels,
   };
-
+  if (hide) {
+    dispatch(bugHidden());
+  }
   return dispatch(
     apiCallBegan({
       url: RESTRICTEDENDPOINTS.BUG + "/" + id,
       data: cleanedBug,
       method: "put",
-      onStart: bugRequested.type,
       onSuccess: [bugModified.type, bugArrayModified.type],
-      onError: bugRequestFailed.type,
     })
   );
 };
@@ -120,6 +143,10 @@ export const showBug = (id) => (dispatch) => {
 
 export const hideBug = () => (dispatch) => {
   dispatch(bugHidden());
+};
+
+export const setBugResolveShown = (show) => (dispatch) => {
+  dispatch(show ? bugResolveShown() : bugResolveHidden());
 };
 
 export const toggleBugEdit = () => (dispatch) => {
@@ -177,5 +204,7 @@ const {
   bugDeleteShownToggled,
   bugTempDescChanged,
   bugTempTitleChanged,
+  bugResolveShown,
+  bugResolveHidden,
 } = bugSlice.actions;
 export default bugSlice.reducer;

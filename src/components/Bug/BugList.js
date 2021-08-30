@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import {
   makeStyles,
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -21,13 +22,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BugList = (props) => {
+const BugList = ({ resolved = false }) => {
   const dispatch = useDispatch();
   const bugs = useSelector(getAllBugs);
-
-  useEffect(() => {
-    dispatch(loadBugs());
-  }, []);
 
   const classes = useStyles();
 
@@ -43,21 +40,47 @@ const BugList = (props) => {
 
   return (
     <>
-      <TableContainer>
+      <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="Bugs-table">
           <TableHead>
-            <TableRow>
-              <TableCell>Bug</TableCell>
-              <TableCell>Reporter</TableCell>
-              <TableCell>Created</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Assignee</TableCell>
-              <TableCell>Severity</TableCell>
-            </TableRow>
+            {resolved ? (
+              <TableRow>
+                <TableCell>Bug</TableCell>
+                <TableCell>Reporter</TableCell>
+                <TableCell>Created</TableCell>
+                <TableCell>Resolved</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Assignee</TableCell>
+                <TableCell>Severity</TableCell>
+              </TableRow>
+            ) : (
+              <TableRow>
+                <TableCell>Bug</TableCell>
+                <TableCell>Reporter</TableCell>
+                <TableCell>Created</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Assignee</TableCell>
+                <TableCell>Severity</TableCell>
+              </TableRow>
+            )}
           </TableHead>
           <TableBody>
             {bugs.map((bug) => {
-              return (
+              return resolved ? (
+                <TableRow
+                  className={classes.bugRow}
+                  onClick={() => handleShowBugDetails(bug)}
+                  key={bug.bugId}
+                >
+                  <TableCell>{bug.bugName}</TableCell>
+                  <TableCell>{bug.reporter.userName}</TableCell>
+                  <TableCell>{bug.createdDate}</TableCell>
+                  <TableCell>{bug.resolvedTime}</TableCell>
+                  <TableCell>{bug.status.statusName}</TableCell>
+                  <TableCell>{bug.assignee.userName}</TableCell>
+                  <TableCell>{bug.severity.severityName}</TableCell>
+                </TableRow>
+              ) : (
                 <TableRow
                   className={classes.bugRow}
                   onClick={() => handleShowBugDetails(bug)}

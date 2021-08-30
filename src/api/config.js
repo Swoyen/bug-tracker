@@ -14,6 +14,7 @@ export const RESTRICTEDENDPOINTS = {
   USER: "User",
   CURRENTUSER: "User/Current",
   TAGS: "BugTag",
+  LABELS: "Labels",
 };
 
 export const msalConfig = {

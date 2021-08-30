@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import TimeGroup from "./TimeGroup.js";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  emptyTimeTracks,
   getAllTimeTracksGroupedByDate,
   loadTimeTracks,
   loadTimeTracksByDate,
@@ -17,7 +18,6 @@ const TimeList = () => {
   const dispatch = useDispatch();
 
   const timeListGroupedByDate = useSelector(getAllTimeTracksGroupedByDate);
-
   const [timeListDateToFetch, setTimeListDateToFetch] = useState(new Date());
 
   useEffect(() => {
@@ -29,6 +29,9 @@ const TimeList = () => {
         return newDt;
       })
     );
+    return () => {
+      dispatch(emptyTimeTracks());
+    };
   }, [dispatch]);
 
   const handleLoadTimeTracks = async () => {

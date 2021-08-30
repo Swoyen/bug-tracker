@@ -26,7 +26,7 @@ const maxCommentLength = 300;
 const minCommentLength = 4;
 
 const useStyles = makeStyles((theme) => ({
-  root: { padding: "10px" },
+  root: { paddingBottom: theme.spacing(1) },
   submitButton: { marginLeft: "10px" },
 }));
 
@@ -72,9 +72,10 @@ const BugPostComment = () => {
   }, [commentToEdit]);
 
   useEffect(() => {
-    return () => {
+    if (shown) {
+    } else {
       dispatch(cancelCommentEdit());
-    };
+    }
   }, [shown]);
 
   const handleChangeComment = (e) => {
@@ -148,7 +149,6 @@ const BugPostComment = () => {
       className={classes.root}
       onSubmit={(e) => handleSubmit(e)}
     >
-      <Typography gutterBottom>Comments:</Typography>
       <Paper ref={ref}>
         <Tooltip
           title="Character length should be within 4-300"

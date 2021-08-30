@@ -1,20 +1,19 @@
-import { makeStyles, Typography, Grid } from "@material-ui/core";
+import { makeStyles, Typography, Grid, Container } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import ProjectBoardGrid from "./ProjectBoardGrid";
 
 import BugDetails from "../../Bug/Details/BugDetails";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBugs, loadBugs } from "../../../store/bugs";
+import { getAllBugs, loadBugs, loadUnresolvedBugs } from "../../../store/bugs";
 import { getAllStatuses, loadStatuses } from "../../../store/status";
 import {
-  getBugsWithStatus,
   initializeAddCardList,
   initializeBugsWithStatus,
 } from "../../../store/board";
+import ContentLoader from "react-content-loader";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(1),
     textAlign: "left",
   },
   boardGridContainer: {
@@ -37,12 +36,18 @@ const useStyles = makeStyles((theme) => ({
 
 const ProjectBoard = () => {
   const dispatch = useDispatch();
-  const bugs = useSelector(getAllBugs);
+  const { list: bugs, loading } = useSelector((state) => state.entities.bugs);
+  const projectId = useSelector(
+    (state) => state.entities.projects.currentProjectId
+  );
   const statuses = useSelector(getAllStatuses);
 
   useEffect(() => {
+    if (projectId !== -1) dispatch(loadUnresolvedBugs(projectId));
+  }, [projectId]);
+
+  useEffect(() => {
     dispatch(loadStatuses());
-    dispatch(loadBugs());
   }, []);
 
   useEffect(() => {
@@ -64,24 +69,30 @@ const ProjectBoard = () => {
       <Typography gutterBottom variant="h5" color="initial">
         Project Board
       </Typography>
-      <div className={classes.boardGridContainer}>
-        <Grid className={classes.board} container>
-          {statuses.map((status, index) => {
-            return (
-              <ProjectBoardGrid
-                status={status}
-                key={status.statusId}
-                title={status.statusName}
-                index={index}
-              ></ProjectBoardGrid>
-            );
-          })}
-        </Grid>
-      </div>
-      <BugDetails
-        handleDelete={() => console.log("Hello")}
-        s={() => console.log("hello")}
-      ></BugDetails>
+      {loading ? (
+        <ContentLoader />
+      ) : (
+        <>
+          <div className={classes.boardGridContainer}>
+            <Grid className={classes.board} container>
+              {statuses.map((status, index) => {
+                return (
+                  <ProjectBoardGrid
+                    status={status}
+                    key={status.statusId}
+                    title={status.statusName}
+                    index={index}
+                  ></ProjectBoardGrid>
+                );
+              })}
+            </Grid>
+          </div>
+          <BugDetails
+            handleDelete={() => console.log("Hello")}
+            s={() => console.log("hello")}
+          ></BugDetails>
+        </>
+      )}
     </div>
   );
 };

@@ -28,6 +28,7 @@ const BugDetailsProperties = (props) => {
     let propertyName = e.target.name;
 
     var propertyValue = e.target.value;
+    console.log(propertyValue);
     var newPropertyValue;
     switch (propertyName) {
       case "severity":
@@ -42,9 +43,14 @@ const BugDetailsProperties = (props) => {
         );
         newPropertyValue = status;
         break;
-      case "assignee" || "reporter":
-        let user = users.find((user) => user.userId === propertyValue);
-        newPropertyValue = user;
+      case "assignee":
+        let assignee = users.find((user) => user.userName === propertyValue);
+        newPropertyValue = assignee;
+        console.log("newVal", newPropertyValue);
+        break;
+      case "reporter":
+        let reporter = users.find((user) => user.userName === propertyValue);
+        newPropertyValue = reporter;
         break;
       default:
         break;
@@ -53,6 +59,8 @@ const BugDetailsProperties = (props) => {
       ...loadedBug,
       [propertyName]: newPropertyValue,
     };
+
+    console.log("changed Bug", newBug);
 
     dispatch(modifyBug(id, newBug));
   };

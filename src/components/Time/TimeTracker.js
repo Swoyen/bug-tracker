@@ -26,6 +26,9 @@ import {
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "left",
+  },
+  paperRoot: {
+    textAlign: "left",
     padding: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
@@ -217,93 +220,95 @@ const TimeTracker = () => {
   };
 
   return (
-    <Paper className={classes.root}>
-      <Typography gutterBottom variant="h5" color="initial">
-        TRACK TIME
+    <div className={classes.root}>
+      <Typography gutterBottom variant="h5">
+        Track Time
       </Typography>
-      <Form className={classes.form}>
-        <Grid
-          alignItems="flex-start"
-          justifyContent="space-between"
-          container
-          spacing={1}
-        >
-          <Grid item container sm={8} spacing={1}>
+      <Paper className={classes.paperRoot}>
+        <Form className={classes.form}>
+          <Grid
+            alignItems="flex-start"
+            justifyContent="space-between"
+            container
+            spacing={1}
+          >
+            <Grid item container sm={8} spacing={1}>
+              <Grid
+                item
+                container
+                xs={12}
+                sm={12}
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Grid item sm={12} xs={12}>
+                  <TimeBugSelectWithEmpty
+                    selectedBugId={selectedBugId}
+                    setSelectedBugId={setSelectedBugId}
+                  />
+                </Grid>
+                <Grid item sm={12} xs={12}>
+                  <TimeBugTagSelect
+                    value={selectedTagValues}
+                    setValue={setSelectedTagValues}
+                  ></TimeBugTagSelect>
+                </Grid>
+              </Grid>
+            </Grid>
+
             <Grid
               item
-              container
-              xs={12}
-              sm={12}
+              justifyContent="flex-end"
               alignItems="center"
-              justifyContent="space-between"
+              container
+              xs={4}
             >
-              <Grid item sm={12} xs={12}>
-                <TimeBugSelectWithEmpty
-                  selectedBugId={selectedBugId}
-                  setSelectedBugId={setSelectedBugId}
-                />
+              <Grid item xs={10}>
+                <Typography align="right" variant="h6">
+                  {formattedElapsedTime}
+                </Typography>
               </Grid>
-              <Grid item sm={12} xs={12}>
-                <TimeBugTagSelect
-                  value={selectedTagValues}
-                  setValue={setSelectedTagValues}
-                ></TimeBugTagSelect>
+              <Grid item xs={2}>
+                {isTimerStarted ? (
+                  <IconButton
+                    onClick={() => stopTimer()}
+                    className={classes.iconButton}
+                    fontSize="small"
+                  >
+                    <StopRoundedIcon fontSize="medium"></StopRoundedIcon>
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    onClick={() => startTimer()}
+                    className={classes.iconButton}
+                    fontSize="small"
+                  >
+                    <PlayRoundedIcon fontSize="medium"></PlayRoundedIcon>
+                  </IconButton>
+                )}
               </Grid>
             </Grid>
-          </Grid>
+            <Grid item xs={12} className={classes.textEditorGrid}>
+              <Button onClick={toggleDescription}>
+                {descriptionShown ? "Hide description" : "Show description"}
+              </Button>
 
-          <Grid
-            item
-            justifyContent="flex-end"
-            alignItems="center"
-            container
-            xs={4}
-          >
-            <Grid item xs={10}>
-              <Typography align="right" variant="h6">
-                {formattedElapsedTime}
-              </Typography>
+              <Collapse in={descriptionShown}>
+                <div className={classes.textEditorContainer}>
+                  <RichTextFieldEditor
+                    setContent={setFormattedJsonDescription}
+                    clear={clearDesc}
+                    setClear={setClearDesc}
+                    defaultValue={formattedJsonDefaultValue}
+                  ></RichTextFieldEditor>
+                </div>
+              </Collapse>
             </Grid>
-            <Grid item xs={2}>
-              {isTimerStarted ? (
-                <IconButton
-                  onClick={() => stopTimer()}
-                  className={classes.iconButton}
-                  fontSize="small"
-                >
-                  <StopRoundedIcon fontSize="medium"></StopRoundedIcon>
-                </IconButton>
-              ) : (
-                <IconButton
-                  onClick={() => startTimer()}
-                  className={classes.iconButton}
-                  fontSize="small"
-                >
-                  <PlayRoundedIcon fontSize="medium"></PlayRoundedIcon>
-                </IconButton>
-              )}
-            </Grid>
+            <Grid item xs={12}></Grid>
           </Grid>
-          <Grid item xs={12} className={classes.textEditorGrid}>
-            <Button onClick={toggleDescription}>
-              {descriptionShown ? "Hide description" : "Show description"}
-            </Button>
-
-            <Collapse in={descriptionShown}>
-              <div className={classes.textEditorContainer}>
-                <RichTextFieldEditor
-                  setContent={setFormattedJsonDescription}
-                  clear={clearDesc}
-                  setClear={setClearDesc}
-                  defaultValue={formattedJsonDefaultValue}
-                ></RichTextFieldEditor>
-              </div>
-            </Collapse>
-          </Grid>
-          <Grid item xs={12}></Grid>
-        </Grid>
-      </Form>
-    </Paper>
+        </Form>
+      </Paper>
+    </div>
   );
 };
 

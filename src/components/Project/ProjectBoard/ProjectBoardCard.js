@@ -1,28 +1,27 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, Typography, Paper, Chip, Avatar } from "@material-ui/core";
-import Draggable, { DraggableCore } from "react-draggable";
+import { DraggableCore } from "react-draggable";
 import { makeStyles, IconButton } from "@material-ui/core";
 import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getMoveCardShownBugList,
   hideMoveCardSilhouette,
-  modifyBugStatus,
   showMoveCardSilhouette,
 } from "../../../store/board";
 import { showBug } from "../../../store/bug";
+import ProjectBoardCardTags from "./ProjectBoardCardTags";
 
 const useStyles = makeStyles((theme) => ({
   bugPaper: {
     padding: theme.spacing(1),
     margin: theme.spacing(1),
     minHeight: "120px",
-    borderRadius: "5px",
-    zIndex: 1000,
+    //borderRadius: "5px",
     position: "relative",
   },
   draggingBugPaper: {
-    width: "230px",
+    width: "232px",
     position: "absolute",
     zIndex: 999,
   },
@@ -34,20 +33,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const bugTags = [
+  {
+    id: 1,
+    name: "Heol",
+    color: "#B8255F",
+  },
+  {
+    id: 2,
+    name: "Heol",
+    color: "#B8255F",
+  },
+  {
+    id: 3,
+    name: "Heol",
+    color: "#B8255F",
+  },
+  {
+    id: 4,
+    name: "Heol",
+    color: "#B8255F",
+  },
+];
+
 const ProjectBoardCard = (props) => {
   const classes = useStyles();
   const { index, bugName, bugId, statusId, modifyBug } = props;
-
-  const moveCardShownBugList = useSelector(getMoveCardShownBugList);
 
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
 
   const [pos3, setPos3] = useState(0);
   const [pos4, setPos4] = useState(0);
-
-  const [startOffsetTop, setStartOffsetTop] = useState(0);
-  const [startOffsetLeft, setStartOffsetLeft] = useState(0);
 
   const [currentMoveSilhouetteSteps, setCurrentMoveSilhouetteSteps] =
     useState(0);
@@ -63,6 +80,7 @@ const ProjectBoardCard = (props) => {
 
   const [isDragging, setIsDragging] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
     return () => {
       setStartX(0);
@@ -79,10 +97,7 @@ const ProjectBoardCard = (props) => {
     setStartX(e.clientX);
     setStartY(e.clientY);
 
-    setStartOffsetTop(divRef.current.offsetTop);
-    setStartOffsetLeft(divRef.current.offsetLeft);
-
-    divRef.current.style.top = divRef.current.offsetTop + "px";
+    divRef.current.style.top = divRef.current.offsetTop - 8 + "px";
     divRef.current.style.left = divRef.current.offsetLeft + "px";
 
     dispatch(showMoveCardSilhouette(statusId, 0, index));
@@ -94,6 +109,7 @@ const ProjectBoardCard = (props) => {
   const dragging = (e) => {
     var pos1 = pos3 - e.clientX;
     var pos2 = pos4 - e.clientY;
+
     setPos3(e.clientX);
     setPos4(e.clientY);
     divRef.current.style.top = divRef.current.offsetTop - pos2 + "px";
@@ -104,7 +120,7 @@ const ProjectBoardCard = (props) => {
     let offsetY = startY - e.clientY;
     let parse = parseInt(offsetY / 140);
     let newYOffsetIndex = parse === 0 ? parse + index : (parse - index) * -1;
-    console.log("newYOffset", parse, newYOffsetIndex);
+    // console.log("newYOffset", parse, newYOffsetIndex);
     newSteps =
       offsetX < 0
         ? Math.round(offsetX / cardSize) * -1
@@ -150,8 +166,8 @@ const ProjectBoardCard = (props) => {
 
   const dragEnd = (e) => {
     dispatch(hideMoveCardSilhouette());
-    divRef.current.style.top = startOffsetTop + "px";
-    divRef.current.style.left = startOffsetLeft + "px";
+    // divRef.current.style.top = startOffsetTop + "px";
+    // divRef.current.style.left = startOffsetLeft + "px";
     let offsetX = startX - e.clientX;
     let offsetY = startY - e.clientY;
     var steps;
@@ -185,12 +201,15 @@ const ProjectBoardCard = (props) => {
     >
       <DraggableCore
         axis="both"
-        onStart={dragStart}
+        // onStart={dragStart}
         onStop={dragEnd}
         onDrag={dragging}
+        onMouseDown={dragStart}
         //position={pos}
       >
-        <Paper className={`${classes.bugPaper}`} square={true} elevation={3}>
+        <Paper className={`${classes.bugPaper}`} elevation={1}>
+          <ProjectBoardCardTags bugTags={bugTags}></ProjectBoardCardTags>
+
           <Typography variant="subtitle2" color="initial">
             {bugName}
           </Typography>

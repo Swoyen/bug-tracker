@@ -14,6 +14,7 @@ const projectsSlice = createSlice({
     lastFetch: null,
     projectSettingsShownId: -1,
     projectCreateShown: false,
+    currentProjectId: -1,
   },
   reducers: {
     projectsRequested: (projects, action) => {
@@ -76,6 +77,10 @@ const projectsSlice = createSlice({
 
     projectCreateHidden: (projects) => {
       projects.projectCreateShown = false;
+    },
+
+    projectOpened: (projects, action) => {
+      projects.currentProjectId = action.payload;
     },
   },
 });
@@ -171,16 +176,10 @@ export const addProject = (project) => (dispatch) => {
       onSuccess: projectAdded.type,
     })
   );
-  // return dispatch(
-  //   apiCallBegan({
-  //     url: RESTRICTEDENDPOINTS.PROJECT,
-  //     method: "post",
-  //     data: project,
-  //     onSuccess: projectAdded.type,
-  //   })
-  // );
 };
-
+export const setCurrentProject = (projectId) => (dispatch) => {
+  return dispatch(projectOpened(projectId));
+};
 // Selectors
 export const getAllProjects = createSelector(
   (state) => state.entities.projects,
@@ -221,5 +220,6 @@ const {
   projectCreateShown,
   projectCreateHidden,
   projectAdded,
+  projectOpened,
 } = projectsSlice.actions;
 export default projectsSlice.reducer;

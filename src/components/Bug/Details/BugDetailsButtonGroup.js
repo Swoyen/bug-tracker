@@ -52,7 +52,7 @@ const BugDetailsButtonGroup = () => {
   };
 
   return (
-    <Grid item xs={2}>
+    <Grid item xs={2} container alignContent="center" alignItems="center">
       <ButtonGroup
         className={classes.actionButtonGroup}
         variant="text"

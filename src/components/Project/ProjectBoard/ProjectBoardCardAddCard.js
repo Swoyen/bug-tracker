@@ -12,7 +12,7 @@ import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 import Form from "../../../layouts/Form";
 import { UserContext } from "../../../context/UserContext";
 import { useContext } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addBug } from "../../../store/bugs";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,6 +25,9 @@ const ProjectBoardCardAddCard = ({ status, hideAddCard, index }) => {
   const [text, setText] = useState("");
   const [errors, setErrors] = useState("");
   const { currentUser } = useContext(UserContext);
+  const projectId = useSelector(
+    (state) => state.entities.projects.currentProjectId
+  );
 
   const dispatch = useDispatch();
 
@@ -46,6 +49,8 @@ const ProjectBoardCardAddCard = ({ status, hideAddCard, index }) => {
         assigneeUserId: currentUser.userId,
         createdDate: currentTimeISO,
         statusId: status.statusId,
+        projectId: projectId,
+        resolved: false,
         severityId: 1,
       };
       const result = dispatch(addBug(newBug));

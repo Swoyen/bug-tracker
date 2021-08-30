@@ -307,8 +307,7 @@ const timeTrackSlice = createSlice({
 
     timeTrackRemoved: (timeTracks, action) => {
       timeTracks.timeTrackDeleteShown = false;
-      timeTracks.timeTrackEditId = -1;
-      timeTracks.timeTrackDeleteId = -1;
+      timeTracks.timeTrackEditId = timeTracks.timeTrackDeleteId = -1;
       var oldTimeTrack = timeTracks.list.find(
         (timeTrack) => timeTrack.timeTrackId === action.payload.timeTrackId
       );
@@ -343,6 +342,10 @@ const timeTrackSlice = createSlice({
         );
       }
     },
+    timeTrackEmptied: (timeTracks) => {
+      timeTracks.list = [];
+      timeTracks.listGroupedByDate = [];
+    },
   },
 });
 
@@ -370,6 +373,22 @@ export const loadTimeTracks = (date) => (dispatch) => {
     apiCallWithFormDataBegan({
       url: RESTRICTEDENDPOINTS.TIMETRACK,
       filter: { start: date },
+      onStart: timeTrackRequested.type,
+      onSuccess: timeTracksLoaded.type,
+      onError: timeTrackRequestFailed.type,
+    })
+  );
+};
+
+export const emptyTimeTracks = () => (dispatch) => {
+  dispatch(timeTrackEmptied());
+};
+
+export const loadTimeTracksByBug = (bugId) => (dispatch) => {
+  return dispatch(
+    apiCallBegan({
+      url: RESTRICTEDENDPOINTS.TIMETRACK,
+      filter: { bugId: bugId },
       onStart: timeTrackRequested.type,
       onSuccess: timeTracksLoaded.type,
       onError: timeTrackRequestFailed.type,
@@ -496,5 +515,6 @@ const {
   timeTrackDeleteShown,
   timeTrackDeleteHidden,
   timeTrackRemoved,
+  timeTrackEmptied,
 } = timeTrackSlice.actions;
 export default timeTrackSlice.reducer;

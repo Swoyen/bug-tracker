@@ -30,8 +30,8 @@ const BugCommentList = () => {
   const deleteVisible = useSelector(getCommentDeleteShown);
 
   useEffect(() => {
-    if (shown) dispatch(loadComments(bugId));
-  }, [shown]);
+    dispatch(loadComments(bugId));
+  }, []);
 
   const classes = useStyles();
 
@@ -44,7 +44,7 @@ const BugCommentList = () => {
       className={classes.root}
       container
       justifyContent="center"
-      spacing={1}
+      spacing={2}
     >
       {comments
         ? comments.map((comment) => (

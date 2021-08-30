@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { useParams, Route } from "react-router";
 
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Container } from "@material-ui/core";
 
 import Bug from "../Bug";
 import { UserContext } from "../../context/UserContext";
@@ -11,7 +11,8 @@ import ProjectBoard from "./ProjectBoard/ProjectBoard";
 import Time from "../Time/Time";
 import ProjectSideBar from "./ProjectSideBar";
 import { useDispatch } from "react-redux";
-import { addRecentProjects } from "../../store/projects";
+import { addRecentProjects, setCurrentProject } from "../../store/projects";
+import BugsResolved from "../Bug/Resolved/BugsResolved";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,10 +33,10 @@ const Project = () => {
   const dispatch = useDispatch();
   const { url } = useRouteMatch();
   const { id } = useParams();
-
   const { currentUser } = useContext(UserContext);
   useEffect(() => {
     dispatch(addRecentProjects(id, currentUser.userId));
+    dispatch(setCurrentProject(id));
   }, [id]);
 
   return (
@@ -43,9 +44,18 @@ const Project = () => {
       <ProjectSideBar className={classes.sidebar} />
 
       <div className={classes.content}>
-        <Route path={`${url}/bugs`} component={() => <Bug />}></Route>
-        <Route path={`${url}/board`} component={() => <ProjectBoard />}></Route>
-        <Route path={`${url}/time`} component={() => <Time />}></Route>
+        <Container maxWidth="md">
+          <Route path={`${url}/bugs`} component={() => <Bug />}></Route>
+          <Route
+            path={`${url}/board`}
+            component={() => <ProjectBoard />}
+          ></Route>
+          <Route path={`${url}/time`} component={() => <Time />}></Route>
+          <Route
+            path={`${url}/resolved`}
+            component={() => <BugsResolved />}
+          ></Route>
+        </Container>
       </div>
     </div>
   );

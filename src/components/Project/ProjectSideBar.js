@@ -14,6 +14,7 @@ import BugReportIcon from "@material-ui/icons/BugReport";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
 import WebAssetTwoToneIcon from "@material-ui/icons/WebAssetTwoTone";
 import TimerRoundedIcon from "@material-ui/icons/TimerRounded";
+import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineOutlined";
 
 const drawerWidth = 240;
 
@@ -106,6 +107,18 @@ const ProjectSideBar = () => {
                 primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
                 dense="true"
                 primary={"Timer"}
+              />
+            </ListItem>
+          </Link>
+          <Link className={classes.routerlink} to={`${url}/resolved`}>
+            <ListItem className={classes.listContent} dense button>
+              <ListItemIcon>
+                <DoneOutlineRoundedIcon />
+              </ListItemIcon>
+              <ListItemText
+                primaryTypographyProps={{ style: { fontSize: "0.95em" } }}
+                dense="true"
+                primary={"Resolved"}
               />
             </ListItem>
           </Link>

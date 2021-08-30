@@ -4,11 +4,15 @@ import { Grid, makeStyles } from "@material-ui/core";
 import BugComment from "../Comment/BugComment";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getShownBug, loadBug } from "../../../store/bug";
+import { getShownBug, loadBug, setBugResolveShown } from "../../../store/bug";
 import BugDetailsContentLoader from "./BugDetailsContentLoader";
 import BugDetailsDescription from "./BugDetailsDescription";
 import BugDetailsActionProperties from "./BugDetailsActionProperties";
 import BugDetailsPopup from "./BugDetailsPopup";
+import Button from "../../../controls/Button";
+import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
+import BugDetailActivities from "./Activities/BugDetailActivities";
+import BugDetailsLabels from "./Labels/BugDetailsLabels";
 
 const useStyles = makeStyles((theme) => ({
   deleteDialogButtonGroup: { position: "absolute" },
@@ -16,20 +20,30 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px",
     maxHeight: "300px",
   },
-  desc: { paddingLeft: "10px", height: "120px" },
+  desc: { minHeight: "120px", maxHeight: "250px" },
+  button: { textAlign: "right" },
+  activities: { background: "red" },
 }));
 
 const BugDetails = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { id, shown, loading } = useSelector(getShownBug);
+  const { id, shown, loading, loadedBug } = useSelector(getShownBug);
 
   useEffect(() => {
     if (shown) {
       dispatch(loadBug(id));
     }
   }, [id, shown]);
+
+  const handleResolve = () => {
+    dispatch(setBugResolveShown(true));
+  };
+
+  const handleUnresolve = () => {
+    dispatch(setBugResolveShown(true));
+  };
 
   return (
     <>
@@ -38,11 +52,37 @@ const BugDetails = () => {
           <BugDetailsContentLoader />
         ) : id !== -1 ? (
           <Grid container spacing={0}>
-            <Grid item container xs={7}>
+            <Grid item container xs={7} alignContent="flex-start">
+              <BugDetailsLabels />
               <BugDetailsDescription />
-              <BugComment />
+              <BugDetailActivities />
             </Grid>
             <BugDetailsActionProperties />
+            <Grid
+              className={classes.button}
+              item
+              xs={12}
+              container
+              justifyContent="flex-end"
+            >
+              {loadedBug.resolved ? (
+                <Button
+                  onClick={() => handleUnresolve()}
+                  startIcon={<DoneOutlineRoundedIcon />}
+                  color="primary"
+                >
+                  Re-Track
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => handleResolve()}
+                  startIcon={<DoneOutlineRoundedIcon />}
+                  color="primary"
+                >
+                  Resolve
+                </Button>
+              )}
+            </Grid>
           </Grid>
         ) : (
           ""
