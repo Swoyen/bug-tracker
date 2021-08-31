@@ -16,9 +16,9 @@ import {
 
 const useStyles = makeStyles((theme) => ({
   actionButtonGroup: { marginBottom: "10px" },
-  editButton: { background: "#0081A7" },
-  doneButton: { background: "#06D6A0" },
-  deleteButton: { background: "#C05746" },
+  // editButton: { background: "#0081A7" },
+  // doneButton: { background: "#06D6A0" },
+  // deleteButton: { background: "#C05746" },
 }));
 
 const BugDetailsButtonGroup = () => {
@@ -55,12 +55,17 @@ const BugDetailsButtonGroup = () => {
     <Grid item xs={2} container alignContent="center" alignItems="center">
       <ButtonGroup
         className={classes.actionButtonGroup}
-        variant="text"
+        variant="outlined"
         color="default"
         aria-label=""
       >
         {canEdit ? (
-          <Button className={classes.doneButton} onClick={() => handleDone()}>
+          <Button
+            variant="outlined"
+            color="primary"
+            className={classes.doneButton}
+            onClick={() => handleDone()}
+          >
             <DoneTwoToneIcon />
           </Button>
         ) : (

@@ -14,6 +14,7 @@ import BugDetails from "./Details/BugDetails";
 import BugCreateButton from "./Create/BugCreateButton";
 import BugCreate from "./Create/BugCreate";
 import { useEffect } from "react";
+import { loadLabels } from "../../store/labels";
 
 const useStyles = makeStyles((theme) => ({
   root: { textAlign: "left" },
@@ -28,7 +29,10 @@ const Bug = () => {
   );
 
   useEffect(() => {
-    if (projectId !== -1) dispatch(loadUnresolvedBugs(projectId));
+    if (projectId !== -1) {
+      dispatch(loadUnresolvedBugs(projectId));
+      dispatch(loadLabels());
+    }
   }, [projectId]);
 
   const handleToggleBugCreateShown = () => {

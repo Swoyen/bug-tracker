@@ -99,6 +99,10 @@ export const loadBug = (id) => (dispatch) => {
 };
 
 export const modifyBug = (id, bug, hide) => (dispatch) => {
+  let cleanedLabels = [];
+  bug.labels.forEach((label) =>
+    cleanedLabels.push({ bugId: label.bugId, labelId: label.labelId })
+  );
   let cleanedBug = {
     bugId: bug.bugId,
     assigneeUserId: bug.assignee.userId,
@@ -112,7 +116,7 @@ export const modifyBug = (id, bug, hide) => (dispatch) => {
     resolvedTime: bug.resolvedTime,
     cardOrder: bug.cardOrder,
     projectId: bug.projectId,
-    labels: bug.labels,
+    labels: cleanedLabels,
   };
   if (hide) {
     dispatch(bugHidden());

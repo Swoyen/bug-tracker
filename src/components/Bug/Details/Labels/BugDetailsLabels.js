@@ -5,15 +5,16 @@ import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import { Popper } from "@material-ui/core";
 import { useState } from "react";
-import BugDetailsTagPopper from "./BugDetailsTagPopper";
+import BugDetailsLabelPopper from "./BugDetailsLabelPopper";
+import { useDispatch, useSelector } from "react-redux";
+import BugDetailsLabelChip from "./BugDetailsLabelChip";
 
+import { useTheme } from "@material-ui/styles";
+import { removeLabel } from "../../../../store/labels";
+import { modifyBug } from "../../../../store/bug";
 const useStyles = makeStyles((theme) => ({
-  bugTag: {
-    marginRight: theme.spacing(0.5),
-    color: theme.palette.secondary.main,
-    fontWeight: 600,
-  },
-  deleteIcon: { color: theme.palette.secondary.dark },
+  bugTag: {},
+  deleteIcon: {},
   paper: {
     border: "1px solid",
     padding: theme.spacing(1),
@@ -23,45 +24,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const bugTags = [
-  {
-    id: 1,
-    name: "Heol",
-    color: "#B8255F",
-  },
-  {
-    id: 2,
-    name: "Heol",
-    color: "#B8255F",
-  },
-  {
-    id: 3,
-    name: "Heol",
-    color: "#B8255F",
-  },
-  {
-    id: 4,
-    name: "Heol",
-    color: "#B8255F",
-  },
-];
-
 const BugDetailsLabels = () => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const handleDelete = (id) => {};
-  const handleAdd = (event) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-    console.log(anchorEl);
+  const loadedBug = useSelector((state) => state.entities.bug.loadedBug);
+
+  const dispatch = useDispatch();
+  const theme = useTheme();
+
+  const handleDelete = (id) => {
+    var labels = loadedBug.labels;
+    labels = labels.filter((l) => l.labelId !== id);
+    var newBug = {
+      ...loadedBug,
+      labels: labels,
+    };
+    dispatch(modifyBug(loadedBug.bugId, newBug));
   };
-  const open = Boolean(anchorEl);
-  const id = open ? "transitions-popper" : undefined;
 
   return (
     <>
       <Typography variant="subtitle1">Labels:</Typography>
-      <Grid container alignItems="center">
-        {bugTags.map((bugTag) => (
+      <Grid
+        style={{ marginBottom: theme.spacing(1) }}
+        container
+        alignItems="center"
+        spacing={1}
+      >
+        {/* {bugTags.map((bugTag) => (
           <Chip
             key={bugTag.id}
             className={classes.bugTag}
@@ -72,16 +61,32 @@ const BugDetailsLabels = () => {
               <HighlightOffRoundedIcon className={classes.deleteIcon} />
             }
           ></Chip>
-        ))}
+        ))} */}
+        {loadedBug.labels &&
+          loadedBug.labels.map((label) => (
+            <BugDetailsLabelChip
+              key={label.labelId}
+              label={label}
+              handleDelete={handleDelete}
+              canDelete={!loadedBug.resolved}
+            />
 
-        {/* <Popper id={id} open={open} anchorEl={anchorEl} transition>
-          {({ TransitionProps }) => (
-            <Fade {...TransitionProps} timeout={350}>
-              <div className={classes.paper}>Contents of this paper</div>
-            </Fade>
-          )}
-        </Popper> */}
-        <BugDetailsTagPopper></BugDetailsTagPopper>
+            // <Chip
+            //   key={label.labelId}
+            //   className={classes.bugTag}
+            //   label={label.label.name}
+            //   onDelete={() => handleDelete(label.labelId)}
+            //   style={{ background: label.label.color }}
+            //   deleteIcon={
+            //     <HighlightOffRoundedIcon className={classes.deleteIcon} />
+            //   }
+            // />
+          ))}
+        {loadedBug.resolved ? (
+          ""
+        ) : (
+          <BugDetailsLabelPopper></BugDetailsLabelPopper>
+        )}
       </Grid>
     </>
   );

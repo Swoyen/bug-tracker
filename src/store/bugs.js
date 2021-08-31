@@ -162,10 +162,10 @@ export const getBugCreateShown = createSelector(
   (bugs) => bugs.createShown
 );
 
-export const getBugsByUser = (userId) =>
+export const getBugById = (bugId) =>
   createSelector(
-    (state) => state.entities.bugs,
-    (bugs) => bugs.filter((bug) => bug.userId === userId)
+    (state) => state.entities.bugs.list,
+    (bugList) => bugList.find((bug) => bug.bugId === bugId)
   );
 
 const {

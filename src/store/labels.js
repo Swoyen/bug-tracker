@@ -36,6 +36,7 @@ const labelsSlice = createSlice({
     },
 
     labelsRemoved: (labels, action) => {
+      console.log(action);
       labels.list = labels.list.filter(
         (label) => label.labelId !== action.payload.labelId
       );
@@ -108,6 +109,13 @@ export const getSelectedLabel = createSelector(
       label.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
 );
+
+export const getLabelName = (id) =>
+  createSelector(
+    (state) => state.entities.labels,
+    (labels) => labels.list.find((label) => label.labelId === id).name
+  );
+
 const {
   labelsReceived,
   labelsRequested,

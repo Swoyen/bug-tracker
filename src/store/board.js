@@ -13,6 +13,7 @@ const boardSlice = createSlice({
     bugsGroupedWithStatusList: [],
     moveCardSilhouetteShownIndex: -1,
     moveCardYIndex: 0,
+    labelsExpanded: false,
   },
   reducers: {
     addCardListInitialized: (board, action) => {
@@ -95,6 +96,14 @@ const boardSlice = createSlice({
     moveCardSilhouetteHidden: (board) => {
       board.moveCardSilhouetteShownIndex = -1;
     },
+
+    cardLabelsExpanded: (board) => {
+      board.labelsExpanded = true;
+    },
+
+    cardLabelsCollapsed: (board) => {
+      board.labelsExpanded = false;
+    },
   },
 });
 
@@ -116,7 +125,7 @@ export const initializeBugsWithStatus = (bugs, statuses) => (dispatch) => {
 };
 
 export const modifyBugStatus =
-  ({ bugId, statusId, steps }) =>
+  ({ bugId, statusId, steps, bug }) =>
   (dispatch, getState) => {
     const { list: statuses } = getState().entities.statuses;
     const { bugsGroupedWithStatusList, moveCardYIndex } =
@@ -126,9 +135,9 @@ export const modifyBugStatus =
     var statusIndex = bugsGroupedWithStatusList.findIndex(
       (bugWithStatus) => bugWithStatus.status.statusId === statusId
     );
-    var bug = bugsGroupedWithStatusList[statusIndex].bugs.find(
-      (bug) => bug.bugId === bugId
-    );
+    // var bug = bugsGroupedWithStatusList[statusIndex].bugs.find(
+    //   (bug) => bug.bugId === bugId
+    // );
     var newBug = { ...bug };
 
     let newStatusIndex = statusIndex + steps;
@@ -241,6 +250,10 @@ export const hideMoveCardSilhouette = () => (dispatch) => {
   dispatch(moveCardSilhouetteHidden());
 };
 
+export const setProjectCardLabelsExpanded = (expand) => (dispatch) => {
+  expand ? dispatch(cardLabelsExpanded()) : dispatch(cardLabelsCollapsed());
+};
+
 // Selector
 export const getAddCardVisibleList = createSelector(
   (state) => state.entities.board,
@@ -288,5 +301,7 @@ const {
   bugStatusModified,
   moveCardSilhouetteShown,
   moveCardSilhouetteHidden,
+  cardLabelsExpanded,
+  cardLabelsCollapsed,
 } = boardSlice.actions;
 export default boardSlice.reducer;

@@ -7,7 +7,8 @@ import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import { Fade } from "@material-ui/core";
 import BugDetailsLabelDetails from "./BugDetailsLabelDetails";
 import { useState } from "react";
-
+import AdbIcon from "@material-ui/icons/Adb";
+import { useRef } from "react";
 const useStyles = makeStyles((theme) => ({
   paper: {
     border: "1px solid",
@@ -20,12 +21,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BugDetailsTagPopper = () => {
+const BugDetailsLabelPopper = () => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorPos, setAnchorPos] = useState({ x: 0, y: 0 });
+  const targetRef = useRef(null);
   const handleClick = (event) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
+    setAnchorEl(anchorEl ? null : targetRef.current);
+
+    let boundingRect = event.currentTarget.getBoundingClientRect();
+    setAnchorPos({ x: boundingRect.left + 30, y: boundingRect.top + 30 });
   };
 
   const open = Boolean(anchorEl);
@@ -41,7 +47,15 @@ const BugDetailsTagPopper = () => {
       >
         <AddCircleRoundedIcon></AddCircleRoundedIcon>
       </IconButton>
-
+      <div
+        ref={targetRef}
+        style={{
+          position: "fixed",
+          top: anchorPos.y,
+          left: anchorPos.x,
+          width: "1px",
+        }}
+      ></div>
       <Popper
         className={classes.popper}
         id={id}
@@ -61,4 +75,4 @@ const BugDetailsTagPopper = () => {
   );
 };
 
-export default BugDetailsTagPopper;
+export default BugDetailsLabelPopper;

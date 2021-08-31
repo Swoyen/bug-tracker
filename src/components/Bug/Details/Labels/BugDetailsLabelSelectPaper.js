@@ -17,7 +17,12 @@ import React, { useEffect } from "react";
 import EditRoundedIcon from "@material-ui/icons/EditRounded";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { modifyLabel, removeLabel } from "../../../../store/labels";
+import {
+  getLabelName,
+  getSelectedLabel,
+  modifyLabel,
+  removeLabel,
+} from "../../../../store/labels";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import DoneRoundedIcon from "@material-ui/icons/DoneRounded";
 import { modifyBug } from "../../../../store/bug";
@@ -50,19 +55,28 @@ const BugDetailsLabelSelectPaper = (props) => {
   const [edit, setEdit] = useState(false);
   const [selected, setSelected] = useState(false);
   const loadedBug = useSelector((state) => state.entities.bug.loadedBug);
+  const labelName = useSelector(getLabelName(label.labelId));
 
   useEffect(() => {
     if (currentEditId === label.labelId) setEdit(true);
     else setEdit(false);
   }, [currentEditId]);
 
+  useEffect(() => {
+    if (loadedBug.labels && loadedBug.labels.length > 0) {
+      if (loadedBug.labels.some((l) => l.labelId === label.labelId)) {
+        setSelected(true);
+      }
+    }
+  }, [loadedBug.labels, label]);
+
   const handleEdit = () => {
     if (edit) {
       if (labelText !== label.name) {
         let newLabel = { ...label, name: labelText };
-        dispatch(modifyLabel(label.labelId, newLabel)).then(() =>
-          setEdit(false)
-        );
+        dispatch(modifyLabel(label.labelId, newLabel)).then((res) => {
+          setEdit(false);
+        });
       } else {
         setEdit(false);
       }
@@ -79,7 +93,6 @@ const BugDetailsLabelSelectPaper = (props) => {
 
   const handleSelected = (e) => {
     if (!selected) {
-      console.log("call api to select");
       var newBug = {
         ...loadedBug,
         labels: [
@@ -87,12 +100,20 @@ const BugDetailsLabelSelectPaper = (props) => {
           { bugId: loadedBug.bugId, labelId: label.labelId },
         ],
       };
-      console.log("newBug", newBug);
 
-      dispatch(modifyBug(loadedBug.bugId, newBug));
-      setSelected(true);
+      dispatch(modifyBug(loadedBug.bugId, newBug)).then(() =>
+        setSelected(true)
+      );
     } else {
-      console.log("call api to unselesct");
+      var labels = loadedBug.labels;
+      labels = labels.filter((l) => l.labelId !== label.labelId);
+      var newBug = {
+        ...loadedBug,
+        labels: labels,
+      };
+      dispatch(modifyBug(loadedBug.bugId, newBug)).then(() =>
+        setSelected(false)
+      );
     }
     setSelected((selected) => !selected);
   };
@@ -134,17 +155,7 @@ const BugDetailsLabelSelectPaper = (props) => {
                     onChange={(e) => handleLabelTextModified(e)}
                   ></Input>
                 </Grid>
-                <Grid item>
-                  <Grow in={selected}>
-                    <DoneRoundedIcon
-                      style={{
-                        marginRight: theme.spacing(0.5),
-                        marginTop: theme.spacing(0.5),
-                      }}
-                      color="secondary"
-                    />
-                  </Grow>
-                </Grid>
+
                 <Grid item>
                   <Grow in={edit}>
                     <IconButton
@@ -174,7 +185,7 @@ const BugDetailsLabelSelectPaper = (props) => {
                     variant="subtitle2"
                     color="secondary"
                   >
-                    <b>{label.name}</b>
+                    <b>{labelName}</b>
                   </Typography>
                 </Grid>
                 <Grid item>

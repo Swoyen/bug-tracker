@@ -1,6 +1,9 @@
-import { Chip, makeStyles } from "@material-ui/core";
-import React from "react";
+import { Chip, Grid, makeStyles } from "@material-ui/core";
+import React, { useEffect } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { getBugById } from "../../../store/bugs";
+import BugDetailsLabelChip from "../../Bug/Details/Labels/BugDetailsLabelChip";
 const useStyles = makeStyles((theme) => ({
   bugChip: {
     height: "10px",
@@ -20,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProjectBoardCardTags = (props) => {
-  const { bugTags } = props;
-  const classes = useStyles();
+const ProjectBoardCardTags = ({ bugId }) => {
+  const loadedBug = useSelector(getBugById(bugId));
+
   const [chipsExpanded, setChipsExpanded] = useState(false);
 
   const handleChipClicked = (bugTag) => {
@@ -32,18 +35,32 @@ const ProjectBoardCardTags = (props) => {
     }
   };
 
-  return bugTags.map((bugTag) => {
-    return (
-      <Chip
-        clickable
-        onClick={() => handleChipClicked(bugTag)}
-        key={bugTag.id}
-        label={bugTag.name}
-        className={chipsExpanded ? classes.bugChipExpanded : classes.bugChip}
-        style={{ background: bugTag.color }}
-      ></Chip>
-    );
-  });
+  return (
+    <>
+      <Grid container>
+        {loadedBug && loadedBug.labels
+          ? loadedBug.labels.map((label) => {
+              return (
+                <BugDetailsLabelChip
+                  key={label.labelId}
+                  label={label}
+                  canDelete={false}
+                  canExpand={true}
+                />
+                // <Chip
+                //   clickable
+                //   onClick={() => handleChipClicked(bugTag)}
+                //   key={bugTag.id}
+                //   label={bugTag.name}
+                //   className={chipsExpanded ? classes.bugChipExpanded : classes.bugChip}
+                //   style={{ background: bugTag.color }}
+                // ></Chip>
+              );
+            })
+          : ""}
+      </Grid>
+    </>
+  );
 };
 
 export default ProjectBoardCardTags;

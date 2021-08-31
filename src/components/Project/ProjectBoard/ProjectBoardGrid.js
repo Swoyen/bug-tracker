@@ -69,8 +69,8 @@ const ProjectBoardGrid = (props) => {
     }
   }, [bugsWithSameStatus]);
 
-  const handleModifyBug = (bugId, statusId, steps) => {
-    dispatch(modifyBugStatus({ bugId, statusId, steps }));
+  const handleModifyBug = (bugId, statusId, steps, bug) => {
+    dispatch(modifyBugStatus({ bugId, statusId, steps, bug }));
   };
 
   return (

@@ -6,6 +6,7 @@ import BugList from "../BugList";
 import BugDetails from "../Details/BugDetails";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core";
+import { loadLabels } from "../../../store/labels";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,7 +22,10 @@ const BugsResolved = () => {
   );
 
   useEffect(() => {
-    if (projectId !== -1) dispatch(loadResolvedBugs(projectId));
+    if (projectId !== -1) {
+      dispatch(loadResolvedBugs(projectId));
+      dispatch(loadLabels());
+    }
   }, [projectId]);
 
   return (

@@ -6,7 +6,8 @@ import BugDetailActivitiesTabPanel from "./BugDetailActivitiesTabPanel";
 import CommentRoundedIcon from "@material-ui/icons/CommentRounded";
 import TimerRoundedIcon from "@material-ui/icons/TimerRounded";
 import BugTimeTrack from "./BugTimeTrack";
-
+import AttachFileRoundedIcon from "@material-ui/icons/AttachFileRounded";
+import BugAttachFile from "./BugAttachFile";
 const BugDetailsActivitiesTab = () => {
   const [value, setValue] = useState(0);
 
@@ -33,6 +34,7 @@ const BugDetailsActivitiesTab = () => {
         >
           <Tab icon={<CommentRoundedIcon />} {...a11yProps(0)} />
           <Tab icon={<TimerRoundedIcon />} {...a11yProps(1)} />
+          <Tab icon={<AttachFileRoundedIcon />} {...a11yProps(2)} />
         </Tabs>
       </Paper>
       <BugDetailActivitiesTabPanel value={value} index={0}>
@@ -40,6 +42,9 @@ const BugDetailsActivitiesTab = () => {
       </BugDetailActivitiesTabPanel>
       <BugDetailActivitiesTabPanel value={value} index={1}>
         <BugTimeTrack />
+      </BugDetailActivitiesTabPanel>
+      <BugDetailActivitiesTabPanel value={value} index={2}>
+        <BugAttachFile />
       </BugDetailActivitiesTabPanel>
       {/* <BugDetailActivitiesTabPanel value={value} index={2}>
         Item Three

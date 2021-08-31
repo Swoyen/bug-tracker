@@ -11,6 +11,7 @@ import {
   initializeBugsWithStatus,
 } from "../../../store/board";
 import ContentLoader from "react-content-loader";
+import { loadLabels } from "../../../store/labels";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,7 +44,10 @@ const ProjectBoard = () => {
   const statuses = useSelector(getAllStatuses);
 
   useEffect(() => {
-    if (projectId !== -1) dispatch(loadUnresolvedBugs(projectId));
+    if (projectId !== -1) {
+      dispatch(loadUnresolvedBugs(projectId));
+      dispatch(loadLabels());
+    }
   }, [projectId]);
 
   useEffect(() => {

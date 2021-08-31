@@ -11,6 +11,7 @@ import {
 } from "../../../store/board";
 import { showBug } from "../../../store/bug";
 import ProjectBoardCardTags from "./ProjectBoardCardTags";
+import { getBugById } from "../../../store/bugs";
 
 const useStyles = makeStyles((theme) => ({
   bugPaper: {
@@ -33,32 +34,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const bugTags = [
-  {
-    id: 1,
-    name: "Heol",
-    color: "#B8255F",
-  },
-  {
-    id: 2,
-    name: "Heol",
-    color: "#B8255F",
-  },
-  {
-    id: 3,
-    name: "Heol",
-    color: "#B8255F",
-  },
-  {
-    id: 4,
-    name: "Heol",
-    color: "#B8255F",
-  },
-];
-
 const ProjectBoardCard = (props) => {
   const classes = useStyles();
   const { index, bugName, bugId, statusId, modifyBug } = props;
+
+  const bug = useSelector(getBugById(bugId));
 
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
@@ -173,10 +153,10 @@ const ProjectBoardCard = (props) => {
     var steps;
     if (offsetX > 100) {
       steps = -Math.round(offsetX / cardSize);
-      modifyBug(bugId, statusId, steps);
+      modifyBug(bugId, statusId, steps, bug);
     } else if (offsetX < -100) {
       steps = -Math.round(offsetX / cardSize);
-      modifyBug(bugId, statusId, steps);
+      modifyBug(bugId, statusId, steps, bug);
     } else {
       //console.log("offsetY", offsetY);
       //minus is down
@@ -208,7 +188,7 @@ const ProjectBoardCard = (props) => {
         //position={pos}
       >
         <Paper className={`${classes.bugPaper}`} elevation={1}>
-          <ProjectBoardCardTags bugTags={bugTags}></ProjectBoardCardTags>
+          <ProjectBoardCardTags bugId={bugId}></ProjectBoardCardTags>
 
           <Typography variant="subtitle2" color="initial">
             {bugName}

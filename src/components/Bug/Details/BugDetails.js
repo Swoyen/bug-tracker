@@ -4,7 +4,12 @@ import { Grid, makeStyles } from "@material-ui/core";
 import BugComment from "../Comment/BugComment";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getShownBug, loadBug, setBugResolveShown } from "../../../store/bug";
+import {
+  getShownBug,
+  hideBug,
+  loadBug,
+  setBugResolveShown,
+} from "../../../store/bug";
 import BugDetailsContentLoader from "./BugDetailsContentLoader";
 import BugDetailsDescription from "./BugDetailsDescription";
 import BugDetailsActionProperties from "./BugDetailsActionProperties";
@@ -13,6 +18,7 @@ import Button from "../../../controls/Button";
 import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
 import BugDetailActivities from "./Activities/BugDetailActivities";
 import BugDetailsLabels from "./Labels/BugDetailsLabels";
+import CancelRoundedIcon from "@material-ui/icons/CancelRounded";
 
 const useStyles = makeStyles((theme) => ({
   deleteDialogButtonGroup: { position: "absolute" },
@@ -37,14 +43,6 @@ const BugDetails = () => {
     }
   }, [id, shown]);
 
-  const handleResolve = () => {
-    dispatch(setBugResolveShown(true));
-  };
-
-  const handleUnresolve = () => {
-    dispatch(setBugResolveShown(true));
-  };
-
   return (
     <>
       <BugDetailsPopup>
@@ -65,23 +63,13 @@ const BugDetails = () => {
               container
               justifyContent="flex-end"
             >
-              {loadedBug.resolved ? (
-                <Button
-                  onClick={() => handleUnresolve()}
-                  startIcon={<DoneOutlineRoundedIcon />}
-                  color="primary"
-                >
-                  Re-Track
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => handleResolve()}
-                  startIcon={<DoneOutlineRoundedIcon />}
-                  color="primary"
-                >
-                  Resolve
-                </Button>
-              )}
+              <Button
+                onClick={() => dispatch(hideBug())}
+                startIcon={<CancelRoundedIcon />}
+                color="primary"
+              >
+                close
+              </Button>
             </Grid>
           </Grid>
         ) : (
