@@ -19,6 +19,7 @@ import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
 import BugDetailActivities from "./Activities/BugDetailActivities";
 import BugDetailsLabels from "./Labels/BugDetailsLabels";
 import CancelRoundedIcon from "@material-ui/icons/CancelRounded";
+import BugDetailsCheckList from "./CheckList/BugDetailsCheckList";
 
 const useStyles = makeStyles((theme) => ({
   deleteDialogButtonGroup: { position: "absolute" },
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   activities: { background: "red" },
 }));
 
-const BugDetails = () => {
+const BugDetails = ({ removeFromBoard = false }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -45,7 +46,7 @@ const BugDetails = () => {
 
   return (
     <>
-      <BugDetailsPopup>
+      <BugDetailsPopup removeFromBoard={removeFromBoard}>
         {loading ? (
           <BugDetailsContentLoader />
         ) : id !== -1 ? (
@@ -53,6 +54,7 @@ const BugDetails = () => {
             <Grid item container xs={7} alignContent="flex-start">
               <BugDetailsLabels />
               <BugDetailsDescription />
+              <BugDetailsCheckList />
               <BugDetailActivities />
             </Grid>
             <BugDetailsActionProperties />

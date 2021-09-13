@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { Collapse, makeStyles } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 
 import CloseIcon from "@material-ui/icons/Close";
@@ -12,10 +12,12 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addProject,
   getProjectCreateShown,
+  setProjectCreatedShown,
   setProjectCreateShown,
 } from "../../../store/projects";
 import { loadUsers } from "../../../store/users";
-
+import { Redirect } from "react-router";
+import { useRouteMatch } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "absolute",
@@ -58,6 +60,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const defaultImgSrc = "/img/default.jpg";
+var redirectId = -1;
+var redirect = false;
 
 const ProjectCreate = () => {
   const classes = useStyles();
@@ -70,6 +74,17 @@ const ProjectCreate = () => {
   // const [errors, setErrors] = useState({});
   const [stage, setStage] = useState(1);
   const [assignedUsers, setAssignedUsers] = useState([]);
+  const createdProjectId = useSelector(
+    (state) => state.entities.projects.projectCreatedId
+  );
+
+  useEffect(() => {
+    if (open && createdProjectId && createdProjectId !== -1) {
+      redirect = true;
+      dispatch(setProjectCreatedShown());
+      redirectId = createdProjectId;
+    }
+  }, [open, createdProjectId]);
 
   useEffect(() => {
     if (open) dispatch(loadUsers());
@@ -81,6 +96,10 @@ const ProjectCreate = () => {
     };
   }, [open]);
 
+  if (redirect && redirectId !== -1) {
+    redirect = false;
+    return <Redirect to={{ pathname: `/projects/${redirectId}/bugs` }} />;
+  }
   const handleAddProject = async () => {
     const formData = new FormData();
     formData.append("title", projectTitle);
@@ -110,42 +129,39 @@ const ProjectCreate = () => {
 
   return (
     <>
-      {open ? (
-        <Fade in={open}>
-          <div className={classes.root}>
-            <Button
-              className={classes.closeButton}
-              variant="text"
-              onClick={handleProjectCreateHidden}
-            >
-              <CloseIcon></CloseIcon>
-            </Button>
-            {stage === 1 ? (
-              <ProjectCreateDetails
-                {...{
-                  selectedImg,
-                  setSelectedImg,
-                  selectedImgSrc,
-                  setSelectedImgSrc,
-                  projectTitle,
-                  setProjectTitle,
-                  showNext,
-                }}
-              ></ProjectCreateDetails>
-            ) : (
-              <ProjectCreateAccess
-                {...{
-                  addProject: handleAddProject,
-                  assignedUsers,
-                  setAssignedUsers,
-                }}
-              ></ProjectCreateAccess>
-            )}
-          </div>
-        </Fade>
-      ) : (
-        ""
-      )}
+      <Fade in={open}>
+        <div className={classes.root}>
+          <Button
+            className={classes.closeButton}
+            variant="text"
+            onClick={handleProjectCreateHidden}
+          >
+            <CloseIcon></CloseIcon>
+          </Button>
+
+          {stage === 1 ? (
+            <ProjectCreateDetails
+              {...{
+                selectedImg,
+                setSelectedImg,
+                selectedImgSrc,
+                setSelectedImgSrc,
+                projectTitle,
+                setProjectTitle,
+                showNext,
+              }}
+            ></ProjectCreateDetails>
+          ) : (
+            <ProjectCreateAccess
+              {...{
+                addProject: handleAddProject,
+                assignedUsers,
+                setAssignedUsers,
+              }}
+            ></ProjectCreateAccess>
+          )}
+        </div>
+      </Fade>
     </>
   );
 };

@@ -13,7 +13,7 @@ import { Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 
-import { BASE_URL } from "../../api";
+import { BASE_URL } from "../../api/config";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getRecentProjects,
@@ -128,7 +128,7 @@ const ProjectListComposition = () => {
                     {recentProjectList.map((menuItem) => (
                       <Link
                         className={classes.link}
-                        to={`/projects/${menuItem.openedProjectId}`}
+                        to={`/projects/${menuItem.openedProjectId}/summary`}
                         key={menuItem.openedProjectId}
                       >
                         <MenuItem onClick={handleClose}>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import React, { useEffect } from "react";
 import {
   useIsAuthenticated,
@@ -39,6 +39,12 @@ import { Fade } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
 
 import Notifier from "./components/Notifier";
+import NotFound from "./components/Main/NotFound";
+import Unauthorized from "./components/Main/Unauthorized";
+import RedirectHandler from "./components/Main/RedirectHandler";
+import UserSettings from "./components/User/UserSettings";
+import { NavProvider } from "./context/NavContext";
+import Forbidden from "./components/Main/Forbidden";
 
 const theme = createMuiTheme({
   palette: {
@@ -50,6 +56,7 @@ const theme = createMuiTheme({
 
     secondary: {
       main: "#E8EEF1",
+      ligh: "#9bb5c2",
     },
 
     default: {
@@ -70,11 +77,11 @@ const theme = createMuiTheme({
 });
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  // root: {
+  //   display: "flex",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
   content: { paddingTop: "100px", flexGrow: 1 },
 }));
 
@@ -85,11 +92,19 @@ const App = () => {
   const shouldAcquireToken = useSelector(
     (state) => state.entities.auth.shouldAcquireToken
   );
+  const acquiringToken = useSelector(
+    (state) => state.entities.auth.acquringToken
+  );
   const { instance, accounts } = useMsal();
   const { login, error } = useMsalAuthentication(
     InteractionType.Silent,
     loginRequest
   );
+
+  // var redirectToUnauthorize = false;
+  // useEffect(() => {
+  //   if (unauthorized) redirectToUnauthorize = true;
+  // }, [unauthorized]);
 
   useEffect(() => {
     if (error) {
@@ -108,12 +123,17 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      if (shouldAcquireToken && instance && accounts.length > 0) {
+      if (
+        !acquiringToken &&
+        shouldAcquireToken &&
+        instance &&
+        accounts.length > 0
+      ) {
         const request = { ...apiRequest, account: accounts[0] };
         dispatch(acquireToken({ instance, request }));
       }
     })();
-  }, [instance, accounts, shouldAcquireToken]);
+  }, [instance, accounts, shouldAcquireToken, acquiringToken]);
 
   return (
     <div className={classes.root}>
@@ -123,27 +143,46 @@ const App = () => {
           TransitionComponent={Fade}
         >
           <UserProvider>
-            <BrowserRouter>
-              <Notifier />
-              {isAuthenticated ? <Nav></Nav> : ""}
-              <main className={classes.content}>
-                <Route path="/login" component={() => <Login />}></Route>
-                <Route path="/register" component={() => <Register />}></Route>
-                <Route path="/signin" component={() => <SignIn />}></Route>
-                <Route path="/" exact component={() => <Home />}></Route>
-                <PrivateRoute isAuthenticated exact path="/projects">
-                  <Projects />
-                </PrivateRoute>
-                <PrivateRoute isAuthenticated path="/projects/:id">
-                  <Project />
-                </PrivateRoute>
-                <PrivateRoute path="/dashboard">
-                  <Dashboard></Dashboard>
-                </PrivateRoute>
-              </main>
-            </BrowserRouter>
-            <ProjectCreate></ProjectCreate>
-            <ProjectSettings></ProjectSettings>
+            <NavProvider>
+              <BrowserRouter>
+                <RedirectHandler />
+                <Notifier />
+                {isAuthenticated ? <Nav></Nav> : ""}
+                <main className={classes.content}>
+                  <Switch>
+                    <Route path="/login" component={() => <Login />}></Route>
+                    {/* <Route
+                      path="/register"
+                      component={() => <Register />}
+                    ></Route>
+                 <Route path="/signin" component={() => <SignIn />}></Route> */}
+                    <PrivateRoute isAuthenticated path="/" exact>
+                      <Home />
+                    </PrivateRoute>
+                    <PrivateRoute isAuthenticated exact path="/projects">
+                      <Projects />
+                    </PrivateRoute>
+                    <PrivateRoute isAuthenticated path="/projects/:id">
+                      <Project />
+                    </PrivateRoute>
+                    <PrivateRoute isAuthenticated path="/dashboard">
+                      <Dashboard></Dashboard>
+                    </PrivateRoute>
+                    <PrivateRoute isAuthenticated path="/usersettings">
+                      <UserSettings></UserSettings>
+                    </PrivateRoute>
+                    <Route
+                      path="/401"
+                      component={() => <Unauthorized />}
+                    ></Route>
+                    <Route path="/403" component={() => <Forbidden />}></Route>
+                    <Route path="/404" component={() => <NotFound />}></Route>
+                    <Route component={NotFound}></Route>
+                  </Switch>
+                </main>
+                <ProjectCreate></ProjectCreate>
+              </BrowserRouter>
+            </NavProvider>
           </UserProvider>
         </SnackbarProvider>
       </ThemeProvider>

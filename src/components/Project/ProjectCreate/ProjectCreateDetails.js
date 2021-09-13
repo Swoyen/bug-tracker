@@ -50,15 +50,10 @@ const ProjectCreateDetails = (props) => {
   const fileInput = useRef(null);
 
   const validate = () => {
-    // if (projectTitle === "") {
-    //   setErrors({ ...errors, projectTitle: "Title cannot be empty." });
-    //   return false;
-    // } else {
-    //   if (projectList.some((project) => project.title === projectTitle)) {
-    //     setErrors({ ...errors, projectTitle: "Project already exists." });
-    //     return false;
-    //   }
-    // }
+    if (projectTitle === "") {
+      setErrors({ projectTitle: "Project title is required." });
+      return false;
+    }
     return true;
   };
 
@@ -88,7 +83,7 @@ const ProjectCreateDetails = (props) => {
     <Form onSubmit={(e) => submitDetails(e)} className={classes.createForm}>
       <Grid container justifyContent="center" spacing={3}>
         <Grid item xs={12}>
-          <Typography align="left" variant="h3" color="initial">
+          <Typography align="left" variant="h4" color="initial">
             Create Project
           </Typography>
         </Grid>

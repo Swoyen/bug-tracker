@@ -1,6 +1,9 @@
 import React, { useState, createContext, useEffect } from "react";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../api";
+import { createAuthenticatedEndPoint } from "../api";
+import { RESTRICTEDENDPOINTS } from "../api/config";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import { useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 
 export const UserContext = createContext();
 
@@ -28,7 +31,7 @@ export const UserProvider = (props) => {
           })
           .catch(async (err) => {
             console.log(err);
-            if (err.response.status === 404) {
+            if (err.response && err.response.status === 404) {
               const apiObj = await createAuthenticatedEndPoint(
                 instance,
                 accounts,
@@ -44,47 +47,9 @@ export const UserProvider = (props) => {
     })();
   }, [isAuthenticated, instance, accounts]);
 
-  const loginJwt = (callback, failcallback) => {
-    // if (!isLoggedIn) {
-    //   (async () => {
-    //     try {
-    //       const response = await createAuthenticationEndPoint(
-    //         AUTHENTICATIONENDPOINTS.JWTLOGIN
-    //       ).fetch();
-    //       if (response.status === 200) {
-    //         setUserDetails(response.data);
-    //         setIsLoggedIn(true);
-    //         callback();
-    //         return true;
-    //       }
-    //     } catch (err) {
-    //       setIsLoggedIn(false);
-    //       failcallback();
-    //       return false;
-    //     }
-    //   })();
-    // }
-  };
+  const loginJwt = (callback, failcallback) => {};
 
-  const login = async (user, setError, cb) => {
-    // if (!isLoggedIn) {
-    //   try {
-    //     let response = await createAuthenticationEndPoint(
-    //       AUTHENTICATIONENDPOINTS.LOGIN
-    //     ).post(user, true);
-    //     if (response.status === 200) {
-    //       setIsLoggedIn(true);
-    //       setUserDetails(response.data);
-    //       setError(false);
-    //       cb();
-    //     } else {
-    //       setError(true);
-    //     }
-    //   } catch (err) {
-    //     setError(true);
-    //   }
-    // }
-  };
+  const login = async (user, setError, cb) => {};
 
   return (
     <UserContext.Provider

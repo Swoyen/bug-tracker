@@ -165,11 +165,8 @@ const timeTrackSlice = createSlice({
         return t2 - t1;
       });
 
-      var tempVis = [];
-      timeTracks.listGroupVisible = tempVis;
-
       if (timeTracks.listGroupVisible.length === uniqueDates.length) {
-        // nothing
+        timeTracks.listGroupVisible = [...timeTracks.listGroupVisible];
       } else if (uniqueDates.length > timeTracks.listGroupVisible.length) {
         var diff = uniqueDates.length - timeTracks.listGroupVisible.length;
         var temp = [...timeTracks.listGroupVisible];
@@ -178,6 +175,7 @@ const timeTrackSlice = createSlice({
         }
         timeTracks.listGroupVisible = [...temp];
       }
+      // timeTracks.listGroupVisible = tempVis;
       for (var i = 0; i < uniqueDates.length; i++) {
         tempTimeList[i] = {
           ...tempTimeList[i],
@@ -350,29 +348,30 @@ const timeTrackSlice = createSlice({
 });
 
 // Action creators
-export const loadTimeTracksByDate = (date) => (dispatch, getState) => {
-  const { lastFetch } = getState().entities.statuses;
-  const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
-  // only load if not loaded in last ten minutes
-  // if (diffInMinutes < 10) {
-  //   return;
-  // }
-  return dispatch(
-    apiCallWithFormDataBegan({
-      url: RESTRICTEDENDPOINTS.TIMETRACK,
-      filter: { start: date },
-      onStart: timeTrackRequested.type,
-      onSuccess: timeTracksAdded.type,
-      onError: timeTrackRequestFailed.type,
-    })
-  );
-};
+export const loadTimeTracksByDate =
+  (date, projectId, userId) => (dispatch, getState) => {
+    const { lastFetch } = getState().entities.statuses;
+    const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
+    // only load if not loaded in last ten minutes
+    // if (diffInMinutes < 10) {
+    //   return;
+    // }
+    return dispatch(
+      apiCallWithFormDataBegan({
+        url: RESTRICTEDENDPOINTS.TIMETRACK,
+        filter: { start: date, projectId, userId },
+        onStart: timeTrackRequested.type,
+        onSuccess: timeTracksAdded.type,
+        onError: timeTrackRequestFailed.type,
+      })
+    );
+  };
 
-export const loadTimeTracks = (date) => (dispatch) => {
+export const loadTimeTracks = (date, projectId, userId) => (dispatch) => {
   return dispatch(
     apiCallWithFormDataBegan({
       url: RESTRICTEDENDPOINTS.TIMETRACK,
-      filter: { start: date },
+      filter: { start: date, projectId, userId },
       onStart: timeTrackRequested.type,
       onSuccess: timeTracksLoaded.type,
       onError: timeTrackRequestFailed.type,

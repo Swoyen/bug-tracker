@@ -1,23 +1,19 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useRef } from "react";
 
-import { Paper, Grid, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import EditIcon from "@material-ui/icons/Edit";
-import { IconButton } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { TextField } from "@material-ui/core";
-import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
+import { Paper, Grid, Typography, Button, Divider } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/styles";
 
 import Popup from "../../../layouts/Popup";
-import { BASE_URL, createAPIEndPoint, ENDPOINTS } from "../../../api";
-import Button from "../../../controls/Button";
+import { BASE_URL } from "../../../api/config";
+
 import Input from "../../../controls/Input";
 import Form from "../../../layouts/Form";
 import Dialog from "../../../layouts/Dialog";
 import ProjectAccessTag from "../ProjectCreate/ProjectAccessTag";
 import { UserContext } from "../../../context/UserContext";
 import { useDispatch, useSelector } from "react-redux";
+import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
+import CancelRoundedIcon from "@material-ui/icons/CancelRounded";
 import {
   getLoadedProject,
   getProjectShown,
@@ -33,7 +29,7 @@ import { CopyrightTwoTone } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
-  paper: { padding: "20px", border: "none" },
+  paper: { border: "none" },
   projectPic: {
     width: "300px",
     height: "250px",
@@ -57,6 +53,7 @@ const emptyUser = {
 const ProjectSettings = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const theme = useTheme();
 
   const projectIdToShow = useSelector(getProjectShown);
   const projectDetails = useSelector(getLoadedProject);
@@ -77,7 +74,6 @@ const ProjectSettings = () => {
   const assignedUsers = useSelector(getAssignedUsers);
 
   const [newProjectTitle, setNewProjectTitle] = useState("");
-  const [editProjectTitle, setEditProjectTitle] = useState(false);
 
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const { currentUser } = useContext(UserContext);
@@ -97,7 +93,6 @@ const ProjectSettings = () => {
       setAddedUsers([...assignedUsers]);
     }
   }, [loadedUsers, assignedUsers, openProjectSettings]);
-
   useEffect(() => {
     if (
       projectIdToShow !== -1 &&
@@ -114,7 +109,9 @@ const ProjectSettings = () => {
       setNewSelectedImgSrc(imgSrc);
     } else setOpenProjectSettings(false);
 
-    return () => {};
+    return () => {
+      setOpenProjectSettings(false);
+    };
   }, [projectIdToShow, projectDetails, currentUser]);
 
   useEffect(() => {
@@ -233,7 +230,7 @@ const ProjectSettings = () => {
         <>
           <Paper className={classes.paper} variant="outlined">
             <Form onSubmit={handleSubmit}>
-              <Grid container spacing={2}>
+              <Grid container spacing={1}>
                 <ProjectSettingsProfile
                   previewImg={previewImg}
                   newSelectedImgSrc={newSelectedImgSrc}
@@ -241,8 +238,6 @@ const ProjectSettings = () => {
                 ></ProjectSettingsProfile>
 
                 <ProjectSettingsTitle
-                  editProjectTitle={editProjectTitle}
-                  setEditProjectTitle={setEditProjectTitle}
                   newProjectTitle={newProjectTitle}
                   setNewProjectTitle={setNewProjectTitle}
                   authorized={authorized}
@@ -263,13 +258,29 @@ const ProjectSettings = () => {
                   }}
                 ></ProjectSettingsAccess>
 
-                <Grid item xs={12}>
+                <Grid item xs={12} container justifyContent="flex-end">
                   {authorized ? (
                     <>
-                      <Button type="submit">Confirm Changes</Button>
-                      <Button onClick={() => setOpenDeleteConfirmDialog(true)}>
-                        Delete Project
-                      </Button>
+                      <Grid item>
+                        <Button
+                          startIcon={<CancelRoundedIcon />}
+                          variant="outlined"
+                          style={{ marginRight: "8px" }}
+                          onClick={() => setOpenDeleteConfirmDialog(true)}
+                        >
+                          Delete
+                        </Button>
+                      </Grid>
+                      <Grid item>
+                        <Button
+                          color="primary"
+                          startIcon={<DoneOutlineRoundedIcon />}
+                          type="submit"
+                          variant="outlined"
+                        >
+                          Confirm
+                        </Button>
+                      </Grid>
                     </>
                   ) : (
                     <Button onClick={() => setOpenProjectSettings(false)}>

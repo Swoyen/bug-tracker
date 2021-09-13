@@ -13,8 +13,17 @@ export const RESTRICTEDENDPOINTS = {
   IMAGE: "Image",
   USER: "User",
   CURRENTUSER: "User/Current",
+  MODIFYCURRENTUSER: "User/Current/Modify",
+  DELETECURRENTUSER: "User/Current/Delete",
   TAGS: "BugTag",
   LABELS: "Labels",
+  ATTACHMENTS: "Attachments",
+  DOWNLOAD: "Download",
+  CHECKLIST: "CheckList",
+  CHECKLISTITEM: "CheckListItem",
+  BUGACTION: "BugAction",
+  UNAUTHORIZE: "User/Unauthorize",
+  GENERATEDATA: "User/Current/GenerateData",
 };
 
 export const msalConfig = {

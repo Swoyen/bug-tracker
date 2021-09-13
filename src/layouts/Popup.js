@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+import DialogHeaderImg from "./DialogHeaderImg";
 
 const useStyles = makeStyles((theme) => ({
   dialogWrapper: {
@@ -46,6 +47,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Popup = (props) => {
   const {
+    headerImgSrc,
+    handleUnsetImg,
     openPopup,
     setOpenPopup,
     closePopup,
@@ -71,6 +74,14 @@ const Popup = (props) => {
       maxWidth={maxWidth}
       aria-labelledby=""
     >
+      {headerImgSrc ? (
+        <DialogHeaderImg
+          headerImgSrc={headerImgSrc}
+          handleUnsetImg={handleUnsetImg}
+        />
+      ) : (
+        ""
+      )}
       <DialogTitle
         disableTypography
         className={classes.dialogTitle}

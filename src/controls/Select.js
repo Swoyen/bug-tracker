@@ -15,14 +15,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "0px",
     fontSize: "1",
     margin: "0px",
+    borderRadius: "5px",
   },
   input: {
     fontSize: 14,
     background: "#E8E8E8",
     paddingLeft: "5px",
     paddingTop: "5px",
-    borderTopLeftRadius: "5px",
-    borderTopRightRadius: "5px",
+    borderRadius: "5px",
   },
 }));
 

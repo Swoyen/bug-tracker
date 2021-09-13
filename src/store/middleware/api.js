@@ -2,7 +2,12 @@ import axios from "axios";
 import { BASE_URL } from "../../api/config";
 import * as actions from "../api";
 import { waitUntil, TimeoutError } from "async-wait-until";
-import { requestToken } from "../auth";
+import {
+  forbidUser,
+  requestToken,
+  setPageNotFound,
+  unauthorizeUser,
+} from "../auth";
 
 const api =
   ({ dispatch, getState }) =>
@@ -18,15 +23,22 @@ const api =
       action.payload;
 
     next(action);
-    if (!getState().entities.auth.accessToken) dispatch(requestToken());
+    if (
+      !getState().entities.auth.accessToken &&
+      !getState().entities.auth.shouldAcquireToken
+    )
+      dispatch(requestToken());
     const canMakeRequest = await waitUntil(
-      () => getState().entities.auth.accessToken !== null,
+      () =>
+        getState().entities.auth.accessToken !== null &&
+        getState().entities.auth.shouldAcquireToken === false,
       {
         timeout: 5000,
       }
     );
     try {
       if (canMakeRequest) {
+        console.log("Making request");
         if (onStart) dispatch({ type: onStart });
 
         try {
@@ -67,16 +79,34 @@ const api =
           return response.data;
         } catch (error) {
           // General
+          if (error && error.response) {
+            if (error.response.status === 401) {
+              var currentTime = new Date().getTime();
+              console.log("expireTime", getState().entities.auth.expiresOn);
+              console.log("currentTime", currentTime);
+              if (currentTime >= getState().entities.auth.expiresOn) {
+                dispatch(requestToken());
+              } else {
+                dispatch(unauthorizeUser());
+              }
+            } else if (error.response.status === 403) {
+              dispatch(forbidUser());
+            } else if (error.response.status === 404) {
+              dispatch(setPageNotFound());
+            }
+          }
           dispatch(actions.apiCallFailed(error.message));
+
           // Specific
           if (onError) dispatch({ type: onError, payload: error.message });
+          throw error;
         }
       }
     } catch (e) {
       if (e instanceof TimeoutError) {
         console.error("Cant access token due to timeout");
       } else {
-        console.error(e);
+        throw e;
       }
     }
   };

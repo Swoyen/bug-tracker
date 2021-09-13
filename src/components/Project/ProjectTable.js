@@ -11,12 +11,16 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
-import { Typography } from "@material-ui/core";
+import { Avatar, Typography } from "@material-ui/core";
 
-import { BASE_URL } from "../../api";
+import { BASE_URL } from "../../api/config";
 import Grid from "@material-ui/core/Grid";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProjects, setProjectSettingsShown } from "../../store/projects";
+import {
+  getFormattedDateFromIsoString,
+  getFormattedTimeFromIsoString,
+} from "../../helper/timecalc";
 
 const useStyles = makeStyles({
   table: {
@@ -59,37 +63,37 @@ const ProjectTable = () => {
         <TableBody>
           {projects &&
             projects.map((project) => (
-              <TableRow key={project.title}>
+              <TableRow key={project.projectId}>
                 <TableCell component="th" scope="row">
                   {project.projectId}
                 </TableCell>
                 <TableCell align="left">
                   <Link
                     className={classes.link}
-                    to={`/projects/${project.projectId}`}
+                    to={`/projects/${project.projectId}/summary`}
                   >
                     <Grid alignItems="center" container spacing={3}>
-                      <Grid item xs={2}>
-                        <img
-                          src={`${BASE_URL}Image/${project.imageName}`}
-                          alt=""
-                          style={{
-                            width: "40px",
-                            height: "40px",
-                            margin: "auto",
-                            borderRadius: "50%",
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={10}>
-                        <Typography variant="subtitle2">
+                      <Avatar src={`${BASE_URL}Image/${project.imageName}`} />
+
+                      <Grid item>
+                        <Typography display="inline" variant="subtitle2">
                           {project.title}
                         </Typography>
                       </Grid>
                     </Grid>
                   </Link>
                 </TableCell>
-                <TableCell align="left">{project.createdTime}</TableCell>
+                <TableCell align="left">
+                  {
+                    <>
+                      <b>Time:</b>{" "}
+                      {getFormattedTimeFromIsoString(project.createdTime)}{" "}
+                      <br />
+                      <b>Date:</b>{" "}
+                      {getFormattedDateFromIsoString(project.createdTime)}
+                    </>
+                  }
+                </TableCell>
                 <TableCell align="left">{project.creator.userName}</TableCell>
                 <TableCell align="center">
                   <IconButton

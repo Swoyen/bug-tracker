@@ -1,45 +1,34 @@
+import { Button, Container, Grid, Typography } from "@material-ui/core";
+import { Add } from "@material-ui/icons";
 import React, { useContext } from "react";
+import { useDispatch } from "react-redux";
+import UserCreateFakeData from "../components/User/UserCreateFakeData";
 import { UserContext } from "../context/UserContext";
+import { testUnauthorize } from "../store/auth";
 
 const Home = (props) => {
   const { currentUser } = useContext(UserContext);
-
+  const dispatch = useDispatch();
   // if (!isLoggedIn) {
   //   return <Redirect to="/login" />;
   // }
+
+  const handleAdd = () => {};
   return (
-    <div>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt incidunt
-      beatae sed quis. Vero excepturi, ipsam accusamus voluptates vel deserunt
-      debitis voluptatem consectetur unde reiciendis aliquid provident itaque
-      porro hiLorem ipsum dolor sit amet consectetur adipisicing elit. Sunt
-      incidunt beatae sed quis. Vero excepturi, ipsam accusamus voluptates vel
-      deserunt debitis voluptatem consectetur unde reiciendis aliquid provident
-      itaque porro hiLorem ipsum dolor sit amet consectetur adipisicing elit.
-      Sunt incidunt beatae sed quis. Vero excepturi, ipsam accusamus voluptates
-      vel deserunt debitis voluptatem consectetur unde reiciendis aliquid
-      provident itaque porro hiLorem ipsum dolor sit amet consectetur
-      adipisicing elit. Sunt incidunt beatae sed quis. Vero excepturi, ipsam
-      accusamus voluptates vel deserunt debitis voluptatem consectetur unde
-      reiciendis aliquid provident itaque porro hiLorem ipsum dolor sit amet
-      consectetur adipisicing elit. Sunt incidunt beatae sed quis. Vero
-      excepturi, ipsam accusamus voluptates vel deserunt debitis voluptatem
-      consectetur unde reiciendis aliquid provident itaque porro hiLorem ipsum
-      dolor sit amet consectetur adipisicing elit. Sunt incidunt beatae sed
-      quis. Vero excepturi, ipsam accusamus voluptates vel deserunt debitis
-      voluptatem consectetur unde reiciendis aliquid provident itaque porro
-      hiLorem ipsum dolor sit amet consectetur adipisicing elit. Sunt incidunt
-      beatae sed quis. Vero excepturi, ipsam accusamus voluptates vel deserunt
-      debitis voluptatem consectetur unde reiciendis aliquid provident itaque
-      porro hiLorem ipsum dolor sit amet consectetur adipisicing elit. Sunt
-      incidunt beatae sed quis. Vero excepturi, ipsam accusamus voluptates vel
-      deserunt debitis voluptatem consectetur unde reiciendis aliquid provident
-      itaque porro hiLorem ipsum dolor sit amet consectetur adipisicing elit.
-      Sunt incidunt beatae sed quis. Vero excepturi, ipsam accusamus voluptates
-      vel deserunt debitis voluptatem consectetur unde reiciendis aliquid
-      provident itaque porro hi.{" "}
-      {currentUser ? currentUser.username : "Not auth"}
-    </div>
+    <Container>
+      <Typography variant="h5" color="initial" align="center">
+        Welcome!
+      </Typography>
+      <Typography
+        variant="subtitle1"
+        color="initial"
+        align="center"
+        gutterBottom
+      >
+        You can get started by creating a project
+      </Typography>
+      <UserCreateFakeData />
+    </Container>
   );
 };
 

@@ -15,6 +15,7 @@ import BugCreateButton from "./Create/BugCreateButton";
 import BugCreate from "./Create/BugCreate";
 import { useEffect } from "react";
 import { loadLabels } from "../../store/labels";
+import BugListSearch from "./BugListSearch";
 
 const useStyles = makeStyles((theme) => ({
   root: { textAlign: "left" },
@@ -40,8 +41,8 @@ const Bug = () => {
   };
 
   return (
-    <div className={classes.root}>
-      <Grid container justifyContent="space-between">
+    <>
+      <Grid container item xs={12} justifyContent="space-between">
         <Grid item>
           <Typography gutterBottom variant="h5" color="initial">
             Issue Tracker
@@ -53,11 +54,11 @@ const Bug = () => {
           ></BugCreateButton>
         </Grid>
       </Grid>
-
+      <BugListSearch />
       <BugList></BugList>
       <BugCreate></BugCreate>
       <BugDetails></BugDetails>
-    </div>
+    </>
   );
 };
 

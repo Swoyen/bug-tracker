@@ -7,6 +7,7 @@ import {
   getBugDeleteToggled,
   getShownBug,
   hideBug,
+  modifyBug,
   removeBug,
   setBugResolveShown,
   setTempTitle,
@@ -14,12 +15,15 @@ import {
 } from "../../../store/bug";
 import { useState, useEffect } from "react";
 import { resolveBug, unResolveBug } from "../../../store/bugs";
+import { removeFromBugStatusList } from "../../../store/board";
+import { BASE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
 }));
 
 const BugDetailsPopup = (props) => {
+  const { removeFromBoard } = props;
   const { id, shown, editable: canEdit, loadedBug } = useSelector(getShownBug);
 
   const [bugTitle, setBugTitle] = useState("");
@@ -44,21 +48,46 @@ const BugDetailsPopup = (props) => {
   };
 
   const handleDelete = async () => {
-    dispatch(removeBug(id));
+    removeFromBoard
+      ? dispatch(removeBug(id)).then((res) => {
+          console.log(res);
+          dispatch(removeFromBugStatusList(res.bugId, res.statusId));
+        })
+      : dispatch(removeBug(id));
   };
 
   const handleResolve = () => {
-    dispatch(resolveBug(id, loadedBug));
+    removeFromBoard
+      ? dispatch(resolveBug(id, loadedBug))
+          .then
+
+          // dispatch(removeFromBugStatusList(res.bugId, res.statusId))
+          ()
+      : dispatch(resolveBug(id, loadedBug));
   };
 
   const handleUnresolve = () => {
     dispatch(unResolveBug(id, loadedBug));
   };
 
+  const handleUnsetImg = () => {
+    var newBug = {
+      ...loadedBug,
+      headerBackgroundSet: false,
+      headerBackgroundImgSrc: null,
+    };
+    dispatch(modifyBug(id, newBug));
+  };
+
   return (
     <Popup
-      minWidth="1000px"
-      minHeight="400px"
+      headerImgSrc={
+        loadedBug.headerBackgroundSet &&
+        `${BASE_URL}${RESTRICTEDENDPOINTS.IMAGE}/${loadedBug.headerBackgroundImgSrc}`
+      }
+      handleUnsetImg={handleUnsetImg}
+      minWidth="800px"
+      minHeight="500px"
       class={classes.root}
       title={bugTitle}
       setTitle={setBugTitle}

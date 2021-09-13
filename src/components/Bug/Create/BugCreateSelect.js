@@ -16,7 +16,14 @@ const BugCreateSelect = (props) => {
     onChange,
   } = props;
   return (
-    <Grid className={gridClass} item container xs={10} spacing={1}>
+    <Grid
+      className={gridClass}
+      item
+      container
+      xs={10}
+      spacing={1}
+      alignItems="center"
+    >
       <Grid item xs={5}>
         <Typography variant="subtitle2">{title}</Typography>
       </Grid>

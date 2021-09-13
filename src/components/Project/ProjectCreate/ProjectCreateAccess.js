@@ -1,15 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
 
-import { Typography, Grid, makeStyles, TextField } from "@material-ui/core";
+import {
+  Typography,
+  Grid,
+  makeStyles,
+  TextField,
+  Button,
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import Form from "../../../layouts/Form";
-import Button from "../../../controls/Button";
+
 import ProjectAccessTag from "./ProjectAccessTag";
 import { UserContext } from "../../../context/UserContext";
 import { useSelector } from "react-redux";
 import { getProjectCreateShown } from "../../../store/projects";
 import { getAllUsers } from "../../../store/users";
+import ProjectSettingsAccessList from "../ProjectSettings/ProjectSettingsAccessList";
+import { Add } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -99,6 +107,7 @@ const ProjectCreateAccess = (props) => {
 
   const submitForm = (event) => {
     event.preventDefault();
+
     addProject();
   };
 
@@ -118,7 +127,7 @@ const ProjectCreateAccess = (props) => {
       <Form onSubmit={submitForm} className={classes.accessForm}>
         <Grid container justifyContent="center" spacing={3}>
           <Grid item xs={12}>
-            <Typography align="left" variant="h3" color="initial">
+            <Typography align="left" variant="h4" color="initial">
               Set Access
             </Typography>
           </Grid>
@@ -145,7 +154,13 @@ const ProjectCreateAccess = (props) => {
               />
             </Grid>
             <Grid item xs={4}>
-              <Button onClick={handleAddUsersToList}>Add</Button>
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={handleAddUsersToList}
+              >
+                Add
+              </Button>
             </Grid>
             <Grid
               className={classes.avatars}
@@ -154,7 +169,13 @@ const ProjectCreateAccess = (props) => {
               spacing={3}
               justifyContent="flex-start"
             >
-              {addedUsers.map((user) => {
+              <Grid item xs={12}>
+                <ProjectSettingsAccessList
+                  addedUsers={addedUsers}
+                  removeAddedUser={handleRemoveAddedUsers}
+                />
+              </Grid>
+              {/* {addedUsers.map((user) => {
                 return (
                   <ProjectAccessTag
                     key={user.userId}
@@ -162,10 +183,12 @@ const ProjectCreateAccess = (props) => {
                     removeAddedUser={handleRemoveAddedUsers}
                   ></ProjectAccessTag>
                 );
-              })}
+              })} */}
             </Grid>
           </Grid>
-          <Button type="submit">Create Project</Button>
+          <Button variant="contained" type="submit">
+            Create Project
+          </Button>
         </Grid>
       </Form>
     </>

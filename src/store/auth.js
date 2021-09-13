@@ -1,14 +1,21 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
+import { RESTRICTEDENDPOINTS } from "../api/config";
+import { apiCallBegan, apiCallWithFormDataBegan } from "./api";
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     authenticated: false,
+    apiUserDetails: {},
     userId: null,
     username: null,
     shouldAcquireToken: false,
     accessToken: null,
     acquiringToken: false,
+    expiresOn: 0,
+    unauthorized: false,
+    pageNotFound: false,
+    forbidden: false,
   },
   reducers: {
     userSignedIn: (user, action) => {
@@ -30,9 +37,11 @@ const authSlice = createSlice({
       user.acquiringToken = true;
     },
     userAcquiredToken: (user, action) => {
+      console.log("acquiredToken", action.payload.accessToken);
       user.acquiringToken = false;
       user.accessToken = action.payload.accessToken;
       user.shouldAcquireToken = false;
+      user.expiresOn = action.payload.expiresOn;
     },
     userSignedOut: (user) => {
       user.authenticated = false;
@@ -40,24 +49,61 @@ const authSlice = createSlice({
       user.username = null;
       user.accessToken = null;
       user.shouldAcquireToken = false;
+      user.apiUserDetails = {};
     },
+    userUnauthorized: (user, action) => {
+      user.unauthorized = action.payload;
+    },
+
+    userForbidden: (user, action) => {
+      user.forbidden = true;
+    },
+    pageNotFound: (user, action) => {
+      user.pageNotFound = action.payload;
+    },
+    loadedUserFromApi: (user, action) => {
+      user.apiUserDetails = action.payload;
+    },
+
+    modifiedUserFromApi: (user, action) => {
+      user.apiUserDetails = action.payload;
+    },
+
+    deletedUserFromApi: (user, action) => {},
   },
 });
 
+// Action creators
 export const signUserIn = (user) => (dispatch) => {
   console.log(user);
   dispatch(userSignedIn(user));
   //dispatch({ type: userSignedIn.type, payload: user });
 };
 
+export const loadCurrentUserFromApi = () => (dispatch) => {
+  return dispatch(
+    apiCallBegan({
+      url: RESTRICTEDENDPOINTS.CURRENTUSER,
+      onSuccess: loadedUserFromApi.type,
+    })
+  );
+};
+
 export const acquireToken = (msal) => async (dispatch) => {
   dispatch(userAcquiringToken());
+  console.log("Acquring ");
   try {
     msal.instance
       .acquireTokenSilent(msal.request)
-      .then((response) =>
-        dispatch(userAcquiredToken({ accessToken: response.accessToken }))
-      )
+      .then((response) => {
+        console.log("response", response);
+        dispatch(
+          userAcquiredToken({
+            accessToken: response.accessToken,
+            expiresOn: response.extExpiresOn.getTime(),
+          })
+        );
+      })
       .catch((err) => {
         console.log("here", err);
         if (err.name === "InteractionRequiredAuthError") {
@@ -84,6 +130,51 @@ export const signUserOut = () => (dispatch) => {
   dispatch({ type: userSignedOut.type });
 };
 
+export const testUnauthorize = () => (dispatch) => {
+  return dispatch(
+    apiCallBegan({
+      url: RESTRICTEDENDPOINTS.UNAUTHORIZE,
+    })
+  );
+};
+
+export const unauthorizeUser =
+  (unauthorize = true) =>
+  (dispatch) => {
+    return dispatch(userUnauthorized(unauthorize));
+  };
+
+export const forbidUser = () => (dispatch) => {
+  return dispatch(userForbidden());
+};
+
+export const setPageNotFound =
+  (notfound = true) =>
+  (dispatch) => {
+    return dispatch(pageNotFound(notfound));
+  };
+
+export const modifyCurrentUser = (formData) => (dispatch) => {
+  return dispatch(
+    apiCallWithFormDataBegan({
+      url: RESTRICTEDENDPOINTS.MODIFYCURRENTUSER,
+      data: formData,
+      method: "put",
+      onSuccess: modifiedUserFromApi.type,
+    })
+  );
+};
+
+export const deleteCurrentUser = () => (dispatch) => {
+  return dispatch(
+    apiCallBegan({
+      url: RESTRICTEDENDPOINTS.DELETECURRENTUSER,
+      method: "delete",
+      onSuccess: deletedUserFromApi.type,
+    })
+  );
+};
+// Selectors
 export const getIsAuthenticated = createSelector(
   (state) => state.entities.auth,
   (auth) => auth.authenticated
@@ -95,5 +186,11 @@ const {
   userAcquiringToken,
   userAcquiredToken,
   userRequestedToken,
+  userUnauthorized,
+  loadedUserFromApi,
+  modifiedUserFromApi,
+  deletedUserFromApi,
+  pageNotFound,
+  userForbidden,
 } = authSlice.actions;
 export default authSlice.reducer;

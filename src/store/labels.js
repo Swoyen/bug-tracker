@@ -113,7 +113,10 @@ export const getSelectedLabel = createSelector(
 export const getLabelName = (id) =>
   createSelector(
     (state) => state.entities.labels,
-    (labels) => labels.list.find((label) => label.labelId === id).name
+    (labels) =>
+      labels && labels.list.find((label) => label.labelId === id)
+        ? labels.list.find((label) => label.labelId === id).name
+        : ""
   );
 
 const {

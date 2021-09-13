@@ -12,19 +12,22 @@ import {
 } from "../../../store/board";
 import ContentLoader from "react-content-loader";
 import { loadLabels } from "../../../store/labels";
+import ProjectBoardSearch from "./ProjectBoardSearch";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "left",
+    boxSizing: "border-box",
   },
   boardGridContainer: {
     background: "green",
-    width: "1200px",
     overflow: "auto",
     maxHeight: "1000px",
+    maxWidth: "1200px",
   },
   board: {
     background: "white",
+    minWidth: "1200px",
     maxHeight: "1200px",
   },
   boardGrid: {
@@ -41,17 +44,18 @@ const ProjectBoard = () => {
   const projectId = useSelector(
     (state) => state.entities.projects.currentProjectId
   );
+  const labels = useSelector((state) => state.entities.labels.list);
   const statuses = useSelector(getAllStatuses);
 
   useEffect(() => {
-    if (projectId !== -1) {
+    if (projectId !== -1 && labels.length > 0) {
       dispatch(loadUnresolvedBugs(projectId));
-      dispatch(loadLabels());
     }
-  }, [projectId]);
+  }, [projectId, labels.length]);
 
   useEffect(() => {
     dispatch(loadStatuses());
+    dispatch(loadLabels());
   }, []);
 
   useEffect(() => {
@@ -77,6 +81,7 @@ const ProjectBoard = () => {
         <ContentLoader />
       ) : (
         <>
+          <ProjectBoardSearch />
           <div className={classes.boardGridContainer}>
             <Grid className={classes.board} container>
               {statuses.map((status, index) => {
@@ -91,12 +96,9 @@ const ProjectBoard = () => {
               })}
             </Grid>
           </div>
-          <BugDetails
-            handleDelete={() => console.log("Hello")}
-            s={() => console.log("hello")}
-          ></BugDetails>
         </>
       )}
+      <BugDetails removeFromBoard={true}></BugDetails>
     </div>
   );
 };

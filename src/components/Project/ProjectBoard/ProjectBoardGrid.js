@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Grid } from "@material-ui/core";
+import { Collapse, Grid } from "@material-ui/core";
 import { makeStyles, Typography } from "@material-ui/core";
 
 import ProjectBoardCard from "./ProjectBoardCard";
@@ -41,24 +41,20 @@ const ProjectBoardGrid = (props) => {
 
   const [moveCardIndexInGrid, setMoveCardIndexInGrid] = useState(-1);
 
-  const { index: moveCardIndex, yIndex } = useSelector(
-    getMoveCardSilhouetteIndex
-  );
+  const {
+    index: moveCardIndex,
+    yIndex,
+    height,
+  } = useSelector(getMoveCardSilhouetteIndex);
+
   const bugsWithSameStatus = useSelector(
     getBugsGroupedWithStatus(status.statusId)
   );
 
   useEffect(() => {
     if (moveCardIndex === index) {
-      //setMoveCardSilhouetteVisible(true);
-
-      //console.log("y Index", yIndex);
-      //var heightToMoveTo = yIndex * 152;
-
-      //console.log("h", heightToMoveTo);
       setMoveCardIndexInGrid(yIndex);
     } else {
-      //setMoveCardSilhouetteVisible(false);
       setMoveCardIndexInGrid(-1);
     }
   }, [moveCardIndex, yIndex]);
@@ -91,9 +87,6 @@ const ProjectBoardGrid = (props) => {
       >
         {title}
       </Typography>
-      {/* <div  ref={moveCardSilhouetteRef}>
-        <ProjectBoardCardMoveSilhouette className={classes.moveCard}visible={moveCardSilhouetteVisible} />
-      </div> */}
       {bugsWithSameStatus &&
         bugsWithSameStatus.bugs.map((bug, i) => {
           return (
@@ -102,12 +95,13 @@ const ProjectBoardGrid = (props) => {
                 <ProjectBoardCardMoveSilhouette
                   className={classes.moveCard}
                   visible={true}
+                  height={height}
                 />
               ) : (
                 ""
               )}
               <ProjectBoardCard
-                bug={bug}
+                //bug={bug}
                 index={i}
                 key={bug.bugId}
                 bugId={bug.bugId}
@@ -118,11 +112,13 @@ const ProjectBoardGrid = (props) => {
             </div>
           );
         })}
+
       {bugsWithSameStatus &&
       moveCardIndexInGrid >= bugsWithSameStatus.bugs.length ? (
         <ProjectBoardCardMoveSilhouette
           className={classes.moveCard}
           visible={true}
+          height={height}
         />
       ) : (
         ""

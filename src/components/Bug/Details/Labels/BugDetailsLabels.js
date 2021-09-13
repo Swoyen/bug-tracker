@@ -50,18 +50,6 @@ const BugDetailsLabels = () => {
         alignItems="center"
         spacing={1}
       >
-        {/* {bugTags.map((bugTag) => (
-          <Chip
-            key={bugTag.id}
-            className={classes.bugTag}
-            label={bugTag.name}
-            onDelete={() => handleDelete(bugTag.id)}
-            style={{ background: bugTag.color }}
-            deleteIcon={
-              <HighlightOffRoundedIcon className={classes.deleteIcon} />
-            }
-          ></Chip>
-        ))} */}
         {loadedBug.labels &&
           loadedBug.labels.map((label) => (
             <BugDetailsLabelChip
@@ -70,17 +58,6 @@ const BugDetailsLabels = () => {
               handleDelete={handleDelete}
               canDelete={!loadedBug.resolved}
             />
-
-            // <Chip
-            //   key={label.labelId}
-            //   className={classes.bugTag}
-            //   label={label.label.name}
-            //   onDelete={() => handleDelete(label.labelId)}
-            //   style={{ background: label.label.color }}
-            //   deleteIcon={
-            //     <HighlightOffRoundedIcon className={classes.deleteIcon} />
-            //   }
-            // />
           ))}
         {loadedBug.resolved ? (
           ""

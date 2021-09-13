@@ -138,7 +138,10 @@ const BugPostComment = () => {
           commentedByUserId: userDetails.idTokenClaims.oid,
           commentedOnBugId: bugId,
         };
-        dispatch(addComment(comment));
+        dispatch(addComment(comment)).then(() => {
+          setCommentBody("");
+          setInputFocused(false);
+        });
       }
     }
   };

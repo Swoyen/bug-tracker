@@ -13,6 +13,8 @@ const bugsSlice = createSlice({
     createShown: false,
     loading: false,
     lastFetch: null,
+    searchTerm: "",
+    filterParam: "all",
   },
   reducers: {
     bugsRequested: (bugs) => {
@@ -61,6 +63,54 @@ const bugsSlice = createSlice({
       let bugId = action.payload.bugId;
       bugs.list = bugs.list.filter((bug) => bug.bugId !== bugId);
     },
+
+    bugsUnloaded: (bugs, action) => {
+      bugs.list = [];
+    },
+
+    bugsSearchTermSet: (bugs, action) => {
+      bugs.searchTerm = action.payload;
+    },
+
+    bugsFilterParamSet: (bugs, action) => {
+      bugs.filterParam = action.payload;
+    },
+
+    bugsCheckListItemAdded: (bugs, action) => {
+      let bugId = action.payload;
+      bugs.list = bugs.list.map((bug) =>
+        bug.bugId !== bugId
+          ? bug
+          : { ...bug, totalCheckListItems: bug.totalCheckListItems + 1 }
+      );
+    },
+
+    bugsCheckListItemCompleted: (bugs, action) => {
+      let bugId = action.payload;
+      bugs.list = bugs.list.map((bug) =>
+        bug.bugId !== bugId
+          ? bug
+          : { ...bug, solvedCheckListItems: bug.solvedCheckListItems + 1 }
+      );
+    },
+
+    bugCheckListItemUncompleted: (bugs, action) => {
+      let bugId = action.payload;
+      bugs.list = bugs.list.map((bug) =>
+        bug.bugId !== bugId
+          ? bug
+          : { ...bug, solvedCheckListItems: bug.solvedCheckListItems - 1 }
+      );
+    },
+
+    bugsChecksListItemRemoved: (bugs, action) => {
+      let bugId = action.payload;
+      bugs.list = bugs.list.map((bug) =>
+        bug.bugId !== bugId
+          ? bug
+          : { ...bug, totalCheckListItems: bug.totalCheckListItems - 1 }
+      );
+    },
   },
 });
 
@@ -78,6 +128,10 @@ export const loadUnresolvedBugs = (id) => (dispatch) => {
       onError: bugsRequestFailed.type,
     })
   );
+};
+
+export const UnloadBugs = () => (dispatch) => {
+  return dispatch(bugsUnloaded());
 };
 
 export const loadResolvedBugs = (id) => (dispatch, getState) => {
@@ -145,16 +199,79 @@ export const unResolveBug = (bugId, bug) => (dispatch) => {
   return dispatch(modifyBug(bugId, newBug, true));
 };
 
+export const setBugsSearchTerm = (term) => (dispatch) => {
+  return dispatch(bugsSearchTermSet(term));
+};
+
+export const setBugsFilterParam = (param) => (dispatch) => {
+  return dispatch(bugsFilterParamSet(param));
+};
+
+export const addBugCheckListItem = (bugId) => (dispatch) => {
+  dispatch(bugsCheckListItemAdded(bugId));
+};
+
+export const removeBugCheckListItem = (bugId) => (dispatch) => {
+  dispatch(bugsChecksListItemRemoved(bugId));
+};
+
+export const completeCheckListItem = (bugId) => (dispatch) => {
+  dispatch(bugsCheckListItemCompleted(bugId));
+};
+
+export const uncompleteCheckListItem = (bugId) => (dispatch) => {
+  dispatch(bugCheckListItemUncompleted(bugId));
+};
+
 // Memoization selector
-// export const getUnresolvedBugs = createSelector(
-//   (state) => state.entities.bugs,
-//   (state) => state.entities.projects,
-//   (bugs, projects) => bugs.list.filter((bug) => !bug.resolved)
-// );
 
 export const getAllBugs = createSelector(
   (state) => state.entities.bugs,
   (bugs) => bugs.list
+);
+
+export const getFilteredBugs = createSelector(
+  (state) => state.entities.bugs.list,
+  (state) => state.entities.bugs.searchTerm,
+  (state) => state.entities.bugs.filterParam,
+  (bugs, searchTerm, filterParam) => {
+    switch (filterParam) {
+      case "name":
+        return bugs.filter((bug) =>
+          bug.bugName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      case "description":
+        return bugs.filter((bug) =>
+          bug.bugDescription.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      case "status":
+        return bugs.filter((bug) =>
+          bug.status.statusName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      case "severity":
+        return bugs.filter((bug) =>
+          bug.severity.severityName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        );
+      case "reporter":
+        return bugs.filter((bug) =>
+          bug.reporter.userName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      case "assignee":
+        return bugs.filter((bug) =>
+          bug.assignee.userName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      case "all":
+        return bugs.filter(
+          (bug) =>
+            bug.bugName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            bug.bugDescription.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      default:
+        return bugs;
+    }
+  }
 );
 
 export const getBugCreateShown = createSelector(
@@ -175,6 +292,13 @@ const {
   bugsRequestFailed,
   bugCreateShownToggled,
   bugResolveModified,
+  bugsUnloaded,
+  bugsSearchTermSet,
+  bugsFilterParamSet,
+  bugsCheckListItemAdded,
+  bugsCheckListItemCompleted,
+  bugCheckListItemUncompleted,
+  bugsChecksListItemRemoved,
 } = bugsSlice.actions;
 
 export const { bugArrayModified, bugRemovedFromArray } = bugsSlice.actions;

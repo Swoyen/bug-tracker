@@ -29,7 +29,6 @@ const BugDetailsLabelPopper = () => {
   const targetRef = useRef(null);
   const handleClick = (event) => {
     setAnchorEl(anchorEl ? null : targetRef.current);
-
     let boundingRect = event.currentTarget.getBoundingClientRect();
     setAnchorPos({ x: boundingRect.left + 30, y: boundingRect.top + 30 });
   };

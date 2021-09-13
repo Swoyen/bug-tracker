@@ -71,7 +71,7 @@ const BugDetailsLabelDetails = ({ close }) => {
         size="small"
         className={classes.closeButton}
         aria-label="close"
-        onClick={close}
+        onClick={() => close()}
       >
         <CloseRoundedIcon />
       </IconButton>

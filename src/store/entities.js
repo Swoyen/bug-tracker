@@ -11,6 +11,9 @@ import boardReducer from "./board";
 import timeTrackReducer from "./timeTrack";
 import timeBugTagsReducer from "./timeBugTags";
 import labelsReducer from "./labels";
+import checkListReducer from "./checklist";
+import summaryReducer from "./summary";
+import reportReducer from "./reports";
 
 export default combineReducers({
   bugs: bugsReducer,
@@ -25,4 +28,7 @@ export default combineReducers({
   timeTracks: timeTrackReducer,
   timeBugTags: timeBugTagsReducer,
   labels: labelsReducer,
+  checkList: checkListReducer,
+  summary: summaryReducer,
+  report: reportReducer,
 });

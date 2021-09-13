@@ -24,13 +24,6 @@ const userSlice = createSlice({
     usersRequestFailed: (users, action) => {
       users.loading = false;
     },
-
-    // userAdded: (users, action) => {
-    //   users.push({
-    //     id: ++lastId,
-    //     name: action.payload.name,
-    //   });
-    // },
   },
 });
 

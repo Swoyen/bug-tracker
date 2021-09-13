@@ -1,16 +1,16 @@
-import { makeStyles } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import React, { useRef } from "react";
-import Button from "../../../controls/Button";
+import ImageIcon from "@material-ui/icons/Image";
 
 const useStyles = makeStyles((theme) => ({
   projectPic: {
-    width: "300px",
-    height: "250px",
+    width: "535px",
+    height: "400px",
     objectFit: "cover",
     borderRadius: "10px",
   },
-  uploadButton: {},
+  modifyButton: { position: "absolute", right: "55px", top: "60px" },
 }));
 
 const ProjectSettingsProfile = (props) => {
@@ -21,7 +21,24 @@ const ProjectSettingsProfile = (props) => {
   return (
     <>
       <Grid item xs={12}>
-        <img className={classes.projectPic} src={newSelectedImgSrc} alt="" />
+        {authorized ? (
+          <Button
+            startIcon={<ImageIcon />}
+            variant="contained"
+            color="secondary"
+            onClick={() => fileInput.current.click()}
+            className={classes.modifyButton}
+          >
+            Modify
+          </Button>
+        ) : (
+          ""
+        )}
+        <img
+          className={classes.projectPic}
+          src={newSelectedImgSrc}
+          alt=""
+        ></img>
       </Grid>
       <Grid item xs={12}>
         <input
@@ -31,16 +48,6 @@ const ProjectSettingsProfile = (props) => {
           onChange={previewImg}
           accept=".jpg, .png"
         ></input>
-        {authorized ? (
-          <Button
-            onClick={() => fileInput.current.click()}
-            className={classes.uploadButton}
-          >
-            Change
-          </Button>
-        ) : (
-          ""
-        )}
       </Grid>
     </>
   );

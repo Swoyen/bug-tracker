@@ -26,9 +26,10 @@ const BugTimeTrack = () => {
   const classes = useStyles();
   const [totalDuration, setTotalDuration] = useState("0 h 0 mins");
   const bugId = useSelector((state) => state.entities.bug.id);
+  const userId = useSelector((state) => state.entities.auth.userId);
   const timeList = useSelector((state) => state.entities.timeTracks.list);
   useEffect(() => {
-    if (bugId !== -1) dispatch(loadTimeTracksByBug(bugId));
+    if (bugId !== -1) dispatch(loadTimeTracksByBug(bugId, userId));
     return () => {
       dispatch(emptyTimeTracks());
     };

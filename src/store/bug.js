@@ -1,12 +1,19 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import { RESTRICTEDENDPOINTS } from "../api";
-import { apiCallBegan } from "./api";
+import { RESTRICTEDENDPOINTS } from "../api/config";
+import { apiCallBegan, apiCallWithFormDataBegan } from "./api";
 import { bugArrayModified, bugRemovedFromArray, modifyBugArray } from "./bugs";
+import { successSnackbarEnqueued } from "./notifier";
 
 const bugSlice = createSlice({
   name: "bug",
   initialState: {
     loadedBug: {},
+    attachments: [],
+    attachmentUploading: false,
+    attachmentListLoading: false,
+    attachmentLoading: false,
+    attachmentDeleteShown: false,
+    attachmentDeleteId: -1,
     modifying: false,
     loading: false,
     shown: false,
@@ -47,6 +54,7 @@ const bugSlice = createSlice({
 
     bugHidden: (shownBug) => {
       shownBug.shown = false;
+      shownBug.attachments = [];
       shownBug.id = -1;
     },
 
@@ -83,6 +91,64 @@ const bugSlice = createSlice({
     bugResolveHidden: (bug, action) => {
       bug.resolveShown = false;
     },
+
+    bugFileAttachStarted: (bug) => {
+      bug.attachmentUploading = true;
+    },
+
+    bugFileAttachCompleted: (bug, action) => {
+      bug.attachmentUploading = false;
+      bug.attachments.push(action.payload);
+    },
+
+    bugFileAttachFailed: (bug) => {
+      bug.attachmentUploading = false;
+    },
+
+    bugFileAttachmentRequested: (bug) => {
+      bug.attachmentListLoading = true;
+    },
+    bugFileAttachmentReceived: (bug, action) => {
+      bug.attachmentListLoading = false;
+      bug.attachments = action.payload;
+    },
+    bugFileAttachmentFailed: (bug) => {
+      bug.attachmentListLoading = false;
+    },
+
+    bugFileAttachmentRemoved: (bug, action) => {
+      bug.attachments = bug.attachments.filter(
+        (attachment) => attachment.attachmentId !== action.payload.attachmentId
+      );
+    },
+
+    bugFileAttachmentDeleteShown: (bug, action) => {
+      bug.attachmentDeleteShown = true;
+      bug.attachmentDeleteId = action.payload;
+    },
+    bugFileAttachmentDeleteHidden: (bug) => {
+      bug.attachmentDeleteShown = false;
+      bug.attachmentDeleteId = -1;
+    },
+
+    bugUnloaded: (bug) => {
+      bug.loadedBug = {};
+      bug.attachments = [];
+      bug.attachmentUploading = false;
+      bug.attachmentListLoading = false;
+      bug.attachmentLoading = false;
+      bug.attachmentDeleteShown = false;
+      bug.attachmentDeleteId = -1;
+      bug.modifying = false;
+      bug.loading = false;
+      bug.shown = false;
+      bug.deleteShown = false;
+      bug.resolveShown = false;
+      bug.editable = false;
+      bug.tempDesc = "";
+      bug.tempTitle = "";
+      bug.id = -1;
+    },
   },
 });
 
@@ -116,8 +182,12 @@ export const modifyBug = (id, bug, hide) => (dispatch) => {
     resolvedTime: bug.resolvedTime,
     cardOrder: bug.cardOrder,
     projectId: bug.projectId,
+    headerBackgroundSet: bug.headerBackgroundSet,
+    headerBackgroundImgSrc: bug.headerBackgroundImgSrc,
     labels: cleanedLabels,
+    checkListId: bug.checkListId,
   };
+  console.log(cleanedBug);
   if (hide) {
     dispatch(bugHidden());
   }
@@ -146,7 +216,7 @@ export const showBug = (id) => (dispatch) => {
 };
 
 export const hideBug = () => (dispatch) => {
-  dispatch(bugHidden());
+  dispatch(bugUnloaded());
 };
 
 export const setBugResolveShown = (show) => (dispatch) => {
@@ -167,6 +237,51 @@ export const setTempDesc = (desc) => (dispatch) => {
 
 export const setTempTitle = (title) => (dispatch) => {
   dispatch(bugTempTitleChanged(title));
+};
+
+export const attachFile = (fileFormData) => (dispatch) => {
+  dispatch(
+    apiCallWithFormDataBegan({
+      url: RESTRICTEDENDPOINTS.ATTACHMENTS,
+      method: "post",
+      data: fileFormData,
+      onStart: bugFileAttachStarted.type,
+      onSuccess: [
+        bugFileAttachCompleted.type,
+        { type: successSnackbarEnqueued.type, payload: "File uploaded." },
+      ],
+      onError: bugFileAttachFailed.type,
+    })
+  );
+};
+
+export const loadAttachedFiles = (bugId) => (dispatch) => {
+  dispatch(
+    apiCallBegan({
+      url: RESTRICTEDENDPOINTS.ATTACHMENTS,
+      method: "get",
+      filter: { bugId: bugId },
+      onStart: bugFileAttachmentRequested.type,
+      onSuccess: bugFileAttachmentReceived.type,
+      onError: bugFileAttachmentFailed.type,
+    })
+  );
+};
+
+export const removeAttachment = (attachmentId) => (dispatch, getState) => {
+  dispatch(
+    apiCallBegan({
+      url: RESTRICTEDENDPOINTS.ATTACHMENTS + "/" + attachmentId,
+      method: "delete",
+      onSuccess: bugFileAttachmentRemoved.type,
+    })
+  );
+};
+
+export const setBugAttachmentDeleteShown = (show, id) => (dispatch) => {
+  show
+    ? dispatch(bugFileAttachmentDeleteShown(id))
+    : dispatch(bugFileAttachmentDeleteHidden());
 };
 
 // Selectors
@@ -210,5 +325,15 @@ const {
   bugTempTitleChanged,
   bugResolveShown,
   bugResolveHidden,
+  bugFileAttachStarted,
+  bugFileAttachCompleted,
+  bugFileAttachFailed,
+  bugFileAttachmentRequested,
+  bugFileAttachmentReceived,
+  bugFileAttachmentFailed,
+  bugFileAttachmentRemoved,
+  bugFileAttachmentDeleteShown,
+  bugFileAttachmentDeleteHidden,
+  bugUnloaded,
 } = bugSlice.actions;
 export default bugSlice.reducer;

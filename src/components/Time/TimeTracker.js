@@ -81,7 +81,9 @@ const TimeTracker = () => {
 
   const { timeTrackId: id, started } = useSelector(getTimeTrackIdAndStarted);
   const startedTimeTrack = useSelector(getStartedTimeTrack);
-
+  const projectId = useSelector(
+    (state) => state.entities.projects.currentProjectId
+  );
   const [startTimeInSeconds, setStartTimeinSeconds] = useState(null);
 
   const [timeTrackId, setTimeTrackId] = useState(emptyTimeTrackId);
@@ -179,6 +181,7 @@ const TimeTracker = () => {
     let timeTrack = {
       timeTrackId: "0",
       startTime: currentTimeIso,
+      projectId: projectId,
       // stopTime: currentTimeIso
       startSeconds: currentTimeinSeconds,
       userId: currentUser.userId,
@@ -203,6 +206,7 @@ const TimeTracker = () => {
 
     let timeTrack = {
       timeTrackId: timeTrackId,
+      projectId: projectId,
       startTime: startTimeIso,
       stopTime: stopTimeIso,
       bugId: selectedBugId !== -1 ? selectedBugId : null,

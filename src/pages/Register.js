@@ -13,7 +13,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Input from "../controls/Input";
 
-import { createAuthenticationEndPoint, AUTHENTICATIONENDPOINTS } from "../api";
 import Form from "../layouts/Form";
 
 function Copyright() {
@@ -97,13 +96,13 @@ const Register = () => {
 
     console.log(userToRegister);
 
-    if (validateForm()) {
-      const response = await createAuthenticationEndPoint(
-        AUTHENTICATIONENDPOINTS.REGISTER
-      ).post(userToRegister);
+    // if (validateForm()) {
+    //   const response = await createAuthenticationEndPoint(
+    //     AUTHENTICATIONENDPOINTS.REGISTER
+    //   ).post(userToRegister);
 
-      console.log(response);
-    }
+    //   console.log(response);
+    // }
   };
 
   const validateForm = () => {

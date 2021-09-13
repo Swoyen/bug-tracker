@@ -1,32 +1,36 @@
-import { Grid, IconButton, makeStyles, Typography } from "@material-ui/core";
-import React from "react";
-import Input from "../../../controls/Input";
+import {
+  Grid,
+  IconButton,
+  Input,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
+import React, { useState } from "react";
+
+// import Input from "../../../controls/Input";
 import EditIcon from "@material-ui/icons/Edit";
+import CheckCircleRoundedIcon from "@material-ui/icons/CheckCircleRounded";
 
 const useStyles = makeStyles((theme) => ({
-  input: {
-    background: "#c1c1c1",
-  },
+  // input: {
+  //   background: "#c1c1c1",
+  // },
 }));
 
 const ProjectSettingsTitle = (props) => {
-  const {
-    editProjectTitle,
-    setEditProjectTitle,
-    newProjectTitle,
-    setNewProjectTitle,
-    authorized,
-  } = props;
+  const { newProjectTitle, setNewProjectTitle, authorized } = props;
+  const [editProjectTitle, setEditProjectTitle] = useState(false);
+
   const classes = useStyles();
   return (
     <>
-      <Grid item container xs={12}>
+      <Grid item container xs={12} justifyContent="space-between">
         <Grid item xs={4}>
-          <Typography variant="subtitle1" color="initial">
+          <Typography variant="body1" color="initial">
             Project Title
           </Typography>
         </Grid>
-        <Grid item container xs={8}>
+        <Grid item container xs={6}>
           <Grid item xs={10}>
             {editProjectTitle ? (
               <Input
@@ -40,18 +44,30 @@ const ProjectSettingsTitle = (props) => {
               <Typography variant="subtitle1">{newProjectTitle}</Typography>
             )}
           </Grid>
-          <Grid item xs={2}>
-            {authorized ? (
+        </Grid>
+        <Grid item>
+          {authorized ? (
+            editProjectTitle ? (
               <IconButton
+                color="primary"
+                size="small"
                 aria-label="Edit Project Title"
                 onClick={() => setEditProjectTitle(!editProjectTitle)}
               >
-                <EditIcon />
+                <CheckCircleRoundedIcon fontSize="medium" />
               </IconButton>
             ) : (
-              ""
-            )}
-          </Grid>
+              <IconButton
+                size="small"
+                aria-label="Edit Project Title"
+                onClick={() => setEditProjectTitle(!editProjectTitle)}
+              >
+                <EditIcon fontSize="medium" />
+              </IconButton>
+            )
+          ) : (
+            ""
+          )}
         </Grid>
       </Grid>
     </>

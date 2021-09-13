@@ -2,6 +2,10 @@ import { Grid, Typography } from "@material-ui/core";
 import React from "react";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  getFormattedDateFromIsoString,
+  getFormattedTimeFromIsoString,
+} from "../../../helper/timecalc";
 import { getShownBug, getToggled, modifyBug } from "../../../store/bug";
 import { getAllSeverities, loadSeverities } from "../../../store/severities";
 import { getAllStatuses, loadStatuses } from "../../../store/status";
@@ -64,7 +68,6 @@ const BugDetailsProperties = (props) => {
 
     dispatch(modifyBug(id, newBug));
   };
-
   return (
     <>
       <Grid item container xs={12}>
@@ -72,7 +75,13 @@ const BugDetailsProperties = (props) => {
           <Typography variant="subtitle2">Created at:</Typography>
         </Grid>
         <Grid item xs={6}>
-          <Typography variant="body2">{loadedBug.createdDate}</Typography>
+          <Typography variant="body2">
+            {loadedBug.createdDate
+              ? getFormattedTimeFromIsoString(loadedBug.createdDate) +
+                " on " +
+                getFormattedDateFromIsoString(loadedBug.createdDate)
+              : ""}
+          </Typography>
         </Grid>
       </Grid>
 

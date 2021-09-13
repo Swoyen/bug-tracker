@@ -1,48 +1,6 @@
 import axios from "axios";
-
-export const BASE_URL = "https://localhost:5001/api/";
-
-export const RESTRICTEDENDPOINTS = {
-  PROJECT: "Project",
-  RECENTPROJECTS: "RecentProject",
-  COMMENT: "Comment",
-  LIKE: "Comment/Like",
-  TIMER: "TimeTrack",
-  BUG: "Bug",
-  STATUS: "Status",
-  SEVERITY: "Severity",
-  REGISTER: "Register",
-  IMAGE: "Image",
-  USER: "User",
-  CURRENTUSER: "User/Current",
-  TAGS: "BugTag",
-};
-
-export const ENDPOINTS = {
-  BUG: "Bug",
-  STATUS: "Status",
-  SEVERITY: "Severity",
-  REGISTER: "Register",
-  IMAGE: "Image",
-};
-
-export const AUTHENTICATIONENDPOINTS = {
-  REGISTER: "Register",
-  LOGIN: "Login",
-  JWTLOGIN: "Jwtlogin",
-  LOGOUT: "Logout",
-};
-
-export const createAPIEndPoint = (endPoint) => {
-  let url = BASE_URL + endPoint + "/";
-  return {
-    fetchAll: () => axios.get(url),
-    fetchById: (id) => axios.get(url + id),
-    create: (newRecord) => axios.post(url, newRecord),
-    update: (id, updatedRecord) => axios.put(url + id, updatedRecord),
-    delete: (id) => axios.delete(url + id),
-  };
-};
+import { BASE_URL, RESTRICTEDENDPOINTS } from "./config";
+import fileDownload from "js-file-download";
 
 export const createAuthenticatedEndPoint = async (
   instance,
@@ -74,36 +32,36 @@ export const createAuthenticatedEndPoint = async (
   };
 };
 
-export const createRestrictedAPIEndPoint = (endPoint) => {
-  let url = BASE_URL + endPoint + "/";
-  let config = {
-    headers: {
-      withCredentials: true,
-    },
+export const downloadFile = (id, originalFileName, accessToken) => {
+  var headers = {
+    Authorization: "Bearer " + accessToken,
+    withCredential: true,
+    "Content-type": "application/octet-stream",
   };
-  return {
-    fetchAll: () => axios.get(url, config),
-    fetchById: (id) => axios.get(url + id, config),
-    create: (newRecord) => axios.post(url, newRecord, config),
-    update: (id, updatedRecord) => axios.put(url + id, updatedRecord, config),
-    delete: (id) => axios.delete(url + id, config),
-  };
-};
-
-export const createAuthenticationEndPoint = (endPoint) => {
-  let url = BASE_URL + endPoint + "/";
-  return {
-    post: (user, withCredentials = false) =>
-      axios.post(url, user, { withCredentials: withCredentials }),
-    fetch: () => axios.get(url, { withCredentials: true }),
-    postWithNoArg: () =>
-      // fetch("http://localhost:5000/api/logout", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   credentials: "include",
-      // }),
-      axios.get(url, { withCredentials: true }),
-  };
+  // const baseURL = "https://file.io/";
+  // const url = "OvdimPepjegz";
+  axios
+    .request({
+      baseURL: BASE_URL,
+      url: RESTRICTEDENDPOINTS.DOWNLOAD + "/" + id,
+      method: "get",
+      headers,
+      responseType: "blob",
+    })
+    .then((res) => {
+      const blob = new Blob([res.data], { type: "application/octet-stream" });
+      fileDownload(blob, originalFileName);
+      // const url = window.URL.createObjectURL(new Blob([res.data]));
+      // console.log("url", url);
+      // const link = document.createElement("a");
+      // link.href = url;
+      // link.setAttribute("download", originalFileName);
+      // document.body.append(link);
+      // link.click();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 export const msalConfig = {

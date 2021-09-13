@@ -1,8 +1,15 @@
-import { Grid, IconButton, makeStyles, TextField } from "@material-ui/core";
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import React from "react";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import ProjectAccessTag from "../ProjectCreate/ProjectAccessTag";
+import ProjectSettingsAccessList from "./ProjectSettingsAccessList";
 
 const useStyles = makeStyles((theme) => ({}));
 
@@ -22,9 +29,15 @@ const ProjectSettingsAccess = (props) => {
   const classes = useStyles();
   return authorized ? (
     <>
-      <Grid item justifyContent="center" container xs={12}>
+      <Grid
+        item
+        container
+        xs={12}
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Grid item xs={4}>
-          Project Access
+          <Typography variant="body1">Project Access</Typography>
         </Grid>
         <Grid item xs={6}>
           <Autocomplete
@@ -47,20 +60,13 @@ const ProjectSettingsAccess = (props) => {
             )}
           />
         </Grid>
-        <Grid item xs={2}>
-          <IconButton
-            onClick={() => addUsers()}
-            size="small"
-            style={{ marginLeft: "25px" }}
-          >
-            <AddCircleRoundedIcon
-              style={{ fontSize: "35" }}
-            ></AddCircleRoundedIcon>
+        <Grid item>
+          <IconButton onClick={() => addUsers()} size="small">
+            <AddCircleRoundedIcon fontSize="medium"></AddCircleRoundedIcon>
           </IconButton>
         </Grid>
       </Grid>
-      <Grid item container xs={12}>
-        <Grid item xs={4}></Grid>
+      <Grid item container xs={12} justifyContent="flex-end">
         <Grid item xs={8}>
           <Grid
             item
@@ -68,9 +74,14 @@ const ProjectSettingsAccess = (props) => {
             xs={12}
             className={classes.addedUsers}
             justifyContent="flex-start"
-            spacing={3}
           >
-            {addedUsers.map((user) => {
+            <Grid item xs={12}>
+              <ProjectSettingsAccessList
+                addedUsers={addedUsers}
+                removeAddedUser={removeAddedUser}
+              />
+            </Grid>
+            {/* {addedUsers.map((user) => {
               return (
                 <ProjectAccessTag
                   xs={12}
@@ -80,7 +91,7 @@ const ProjectSettingsAccess = (props) => {
                   removeAddedUser={removeAddedUser}
                 ></ProjectAccessTag>
               );
-            })}
+            })} */}
           </Grid>
         </Grid>
       </Grid>

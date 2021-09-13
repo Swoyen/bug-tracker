@@ -1,7 +1,11 @@
 import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadResolvedBugs, loadUnresolvedBugs } from "../../../store/bugs";
+import {
+  loadResolvedBugs,
+  loadUnresolvedBugs,
+  UnloadBugs,
+} from "../../../store/bugs";
 import BugList from "../BugList";
 import BugDetails from "../Details/BugDetails";
 import Typography from "@material-ui/core/Typography";
@@ -26,6 +30,9 @@ const BugsResolved = () => {
       dispatch(loadResolvedBugs(projectId));
       dispatch(loadLabels());
     }
+    return () => {
+      dispatch(UnloadBugs());
+    };
   }, [projectId]);
 
   return (

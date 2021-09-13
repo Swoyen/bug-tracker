@@ -15,6 +15,7 @@ const projectsSlice = createSlice({
     projectSettingsShownId: -1,
     projectCreateShown: false,
     currentProjectId: -1,
+    projectCreatedId: -1,
   },
   reducers: {
     projectsRequested: (projects, action) => {
@@ -34,6 +35,11 @@ const projectsSlice = createSlice({
 
     projectAdded: (projects, action) => {
       projects.list.push(action.payload);
+      projects.projectCreatedId = action.payload.projectId;
+    },
+
+    projectCreatedShown: (projects, action) => {
+      projects.projectCreatedId = -1;
     },
 
     recentProjectReceived: (projects, action) => {
@@ -177,6 +183,11 @@ export const addProject = (project) => (dispatch) => {
     })
   );
 };
+
+export const setProjectCreatedShown = () => (dispatch) => {
+  return dispatch(projectCreatedShown());
+};
+
 export const setCurrentProject = (projectId) => (dispatch) => {
   return dispatch(projectOpened(projectId));
 };
@@ -220,6 +231,7 @@ const {
   projectCreateShown,
   projectCreateHidden,
   projectAdded,
+  projectCreatedShown,
   projectOpened,
 } = projectsSlice.actions;
 export default projectsSlice.reducer;

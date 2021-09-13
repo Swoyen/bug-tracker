@@ -5,8 +5,6 @@ import { FormControl } from "@material-ui/core";
 // import {  createFilterOptions } from "@material-ui/lab";
 import Autocomplete from "../../controls/Autocomplete";
 import { useEffect } from "react";
-import { useMsal } from "@azure/msal-react";
-import { createAuthenticatedEndPoint, RESTRICTEDENDPOINTS } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addTimeTag,

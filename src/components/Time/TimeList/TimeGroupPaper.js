@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { useEffect } from "react";
+import { getDurationFromArray } from "../../../helper/timecalc";
 import TimePaper from "./TimePaper";
 
 const useStyles = makeStyles((theme) => ({
@@ -44,27 +45,18 @@ const TimeGroupPaper = (props) => {
   const toggleListVisibility = () => {
     setTimeListShown(!timeListShown);
   };
-  const getFormattedTimeFromSeconds = (totalSeconds) => {
-    let hours = totalSeconds / 3600;
-    let minutes = totalSeconds / 60;
-    let seconds = totalSeconds % 60;
-    let t = new Date(1970, 0, 1);
-    t.setHours(hours);
-    t.setMinutes(minutes);
-    t.setSeconds(seconds);
-    return t.toLocaleTimeString();
-  };
 
   useEffect(() => {
     if (timeGroupByBug) {
-      var totalDuration = 0;
-      timeGroupByBug.timeTracks.forEach((timeTrack) => {
-        var startTime = new Date(timeTrack.startTime + "Z");
-        var stopTime = new Date(timeTrack.stopTime + "Z");
-        var duration = stopTime.getTime() - startTime.getTime();
-        totalDuration += duration;
-      });
-      setTimeDuration(getFormattedTimeFromSeconds(totalDuration / 1000));
+      var startEnd = [];
+      timeGroupByBug.timeTracks.forEach((timeTrack) =>
+        startEnd.push({
+          startTime: timeTrack.startTime,
+          endTime: timeTrack.stopTime,
+        })
+      );
+
+      setTimeDuration(getDurationFromArray(startEnd));
     }
   }, [timeGroupByBug]);
 

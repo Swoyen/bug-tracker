@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   fieldGrid: {
-    height: "80",
+    height: "80px",
   },
 }));
 
@@ -37,6 +37,8 @@ const BugCreate = () => {
   const projectId = useSelector(
     (state) => state.entities.projects.currentProjectId
   );
+
+  const { userId } = useSelector((state) => state.entities.auth);
 
   const users = useSelector(getAllUsers);
   const severities = useSelector(getAllSeverities);
@@ -65,12 +67,22 @@ const BugCreate = () => {
     };
   }, [bugCreateShown]);
 
+  useEffect(() => {
+    if (bugCreateShown && userId && users.length > 0) {
+      var user = users.find((user) => user.userId === userId);
+      setReporter(user.userName);
+      setReporterId(userId);
+      setAssignee(user.userName);
+      setAssigneeId(userId);
+    }
+  }, [bugCreateShown, userId, users]);
+
   const validateForm = () => {
     let temp = {};
     temp.bugName = bugName !== "" ? "" : "This field is required.";
-    temp.reporter = reporter !== "" ? "" : "Choose an option.";
-    temp.assignee = assignee !== "" ? "" : "Choose an option.";
-    temp.severity = severity !== "" ? "" : "Choose an option.";
+    temp.reporter = reporter !== "" ? "" : "Reporter is required.";
+    temp.severity = severity !== "" ? "" : "Severity is required.";
+    temp.status = status !== "" ? "" : "Status is required.";
     setErrors({ ...temp });
     return Object.values(temp).every((x) => x === "");
   };
