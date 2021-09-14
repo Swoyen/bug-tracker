@@ -1,5 +1,4 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
 import { RESTRICTEDENDPOINTS } from "../api/config";
 import { apiCallBegan } from "./api";
 
@@ -28,8 +27,7 @@ const statusSlice = createSlice({
 });
 
 export const loadStatuses = () => (dispatch, getState) => {
-  const { lastFetch } = getState().entities.statuses;
-  const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
+  // const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
   // only load if not loaded in last ten minutes
   // if (diffInMinutes < 10) {
   //   return;
@@ -47,6 +45,6 @@ export const getAllStatuses = createSelector(
   (statuses) => statuses.list
 );
 
-const { statusReceived, statusRequested, statusRequestFailed } =
+const { statusReceived /*, statusRequested, statusRequestFailed */ } =
   statusSlice.actions;
 export default statusSlice.reducer;

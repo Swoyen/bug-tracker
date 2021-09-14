@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Avatar,
   Grid,
@@ -12,10 +12,9 @@ import {
   TableRow,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBugs, getFilteredBugs, loadBugs } from "../../store/bugs";
+import { getFilteredBugs } from "../../store/bugs";
 import { showBug } from "../../store/bug";
 import { BASE_URL, RESTRICTEDENDPOINTS } from "../../api/config";
-import BugContentLoader from "./BugContentLoader";
 import BugTableLoading from "./BugTableLoading";
 import {
   getFormattedDateFromIsoString,

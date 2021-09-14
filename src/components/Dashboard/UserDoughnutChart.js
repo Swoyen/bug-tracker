@@ -9,10 +9,7 @@ import React, { useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import {
-  loadBugReportFromProjectId,
-  loadBugReportFromUserId,
-} from "../../store/reports";
+import { loadBugReportFromUserId } from "../../store/reports";
 
 const UserDoughnutChart = () => {
   const dispatch = useDispatch();
@@ -20,7 +17,7 @@ const UserDoughnutChart = () => {
   const userId = useSelector((state) => state.entities.auth.userId);
   useEffect(() => {
     if (userId) dispatch(loadBugReportFromUserId(userId));
-  }, [userId]);
+  }, [userId, dispatch]);
   const theme = useTheme();
   return data.datasets ? (
     <Paper

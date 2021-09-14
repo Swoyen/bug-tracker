@@ -1,17 +1,12 @@
-import React, { useState } from "react";
-import { Grid, makeStyles, Select, Typography } from "@material-ui/core";
+import React from "react";
+import { Grid, makeStyles } from "@material-ui/core";
 import { FormControl } from "@material-ui/core";
 
 // import {  createFilterOptions } from "@material-ui/lab";
 import Autocomplete from "../../controls/Autocomplete";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addTimeTag,
-  emptyAddedTimeBugTag,
-  loadTimeBugTags,
-} from "../../store/timeBugTags";
-import { waitUntil, TimeoutError } from "async-wait-until";
+import { addTimeTag, loadTimeBugTags } from "../../store/timeBugTags";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

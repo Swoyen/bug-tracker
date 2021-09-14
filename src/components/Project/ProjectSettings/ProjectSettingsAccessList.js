@@ -1,4 +1,4 @@
-import { List, ListItem, Paper, Typography } from "@material-ui/core";
+import { List, Paper, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 import React from "react";
 import ProjectSettingsAccessListItem from "./ProjectSettingsAccessListItem";

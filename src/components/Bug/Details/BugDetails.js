@@ -1,21 +1,14 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 
 import { Grid, makeStyles } from "@material-ui/core";
-import BugComment from "../Comment/BugComment";
 
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getShownBug,
-  hideBug,
-  loadBug,
-  setBugResolveShown,
-} from "../../../store/bug";
+import { getShownBug, hideBug, loadBug } from "../../../store/bug";
 import BugDetailsContentLoader from "./BugDetailsContentLoader";
 import BugDetailsDescription from "./BugDetailsDescription";
 import BugDetailsActionProperties from "./BugDetailsActionProperties";
 import BugDetailsPopup from "./BugDetailsPopup";
 import Button from "../../../controls/Button";
-import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
 import BugDetailActivities from "./Activities/BugDetailActivities";
 import BugDetailsLabels from "./Labels/BugDetailsLabels";
 import CancelRoundedIcon from "@material-ui/icons/CancelRounded";
@@ -36,13 +29,13 @@ const BugDetails = ({ removeFromBoard = false }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { id, shown, loading, loadedBug } = useSelector(getShownBug);
+  const { id, shown, loading } = useSelector(getShownBug);
 
   useEffect(() => {
     if (shown) {
       dispatch(loadBug(id));
     }
-  }, [id, shown]);
+  }, [id, shown, dispatch]);
 
   return (
     <>

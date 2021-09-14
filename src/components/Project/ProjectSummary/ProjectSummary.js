@@ -1,4 +1,4 @@
-import { Button, Grid, Paper, Typography } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import React, { useEffect } from "react";
 import ProjectSummaryList from "./ProjectSummaryList";
 import StatusSummaryList from "./StatusSummaryList";
@@ -13,7 +13,7 @@ const ProjectSummary = () => {
     return () => {
       dispatch(unloadSummary());
     };
-  }, []);
+  }, [dispatch]);
   return (
     <>
       <Typography gutterBottom align="left" variant="h5">

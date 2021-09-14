@@ -1,12 +1,4 @@
-import {
-  Button,
-  Collapse,
-  Grid,
-  Grow,
-  List,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { List, Paper, Typography } from "@material-ui/core";
 import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +15,7 @@ const UserSummaryList = () => {
     if (userId) {
       dispatch(loadSummaryFromUserId(userId));
     }
-  }, [userId]);
+  }, [userId, dispatch]);
 
   return (
     <Paper elevation={4}>

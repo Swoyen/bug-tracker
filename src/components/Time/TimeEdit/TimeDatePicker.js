@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TimeDatePicker(props) {
   const classes = useStyles();
-  const { timeTracker, setTimerTracker, setValues } = props;
+  const { timeTracker, setValues } = props;
   // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedStartTime, setSelectedStartTime] = useState(
@@ -155,7 +155,7 @@ export default function TimeDatePicker(props) {
 
     var startYears = selectedStartTimeObj.years;
     var startMonths = selectedStartTimeObj.months;
-    var startDate = selectedStartTimeObj.date;
+    startDate = selectedStartTimeObj.date;
     var dt = new Date(
       startYears,
       startMonths,
@@ -179,7 +179,7 @@ export default function TimeDatePicker(props) {
         startDateTime: startDateTime,
         endDateTime: endDateTime,
       };
-    });
+    }); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStartTimeObj, selectedEndTimeObj]);
 
   const handleDateChange = (date) => {

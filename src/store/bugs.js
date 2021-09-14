@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import { apiCallBegan } from "./api";
 import { RESTRICTEDENDPOINTS } from "../api/config";
-import bug, { modifyBug } from "./bug";
+import { modifyBug } from "./bug";
 import { successSnackbarEnqueued, enqueueSuccessSnackbar } from "./notifier";
 
 const bugsSlice = createSlice({

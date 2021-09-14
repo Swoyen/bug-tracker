@@ -1,4 +1,3 @@
-import { HourglassFullSharp } from "@material-ui/icons";
 import moment from "moment";
 
 export const getDurationFromStartAndEnd = (startTime, endTime) => {
@@ -8,7 +7,7 @@ export const getDurationFromStartAndEnd = (startTime, endTime) => {
 
   var hours = parseInt(duration.asHours());
   var min = parseInt(duration.asMinutes()) % 60;
-  var seconds = parseInt(duration.asSeconds()) % 60;
+  //var seconds = parseInt(duration.asSeconds()) % 60;
   return `${hours} h ${min} min`;
 };
 

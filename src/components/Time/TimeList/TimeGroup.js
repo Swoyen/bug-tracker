@@ -4,15 +4,13 @@ import {
   Typography,
   makeStyles,
   IconButton,
-  Fade,
   Collapse,
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUpRounded";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import TimeBugGroup from "./TimeBugGroup";
-import moment from "moment";
-import { Grow } from "@material-ui/core";
+
 import { getDurationFromArray } from "../../../helper/timecalc";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,22 +39,6 @@ const TimeGroup = (props) => {
     setTimeListWithSameDateGroupedByBug,
   ] = useState({});
   const [listVisible, setListVisible] = useState(false);
-
-  const getFormattedTimeFromSeconds = (totalSeconds) => {
-    let hours = parseInt(totalSeconds / 3600);
-    let minutes = Math.round(hours * 60 - totalSeconds / 60);
-    let seconds = totalSeconds % 60;
-    let t = new Date(1970, 0, 1);
-    t.setHours(hours);
-    t.setMinutes(minutes);
-    t.setSeconds(seconds);
-
-    var h = t.getHours();
-    var m = t.getMinutes();
-    var s = t.getSeconds();
-
-    return `${h} hr ${m} mins`;
-  };
 
   useEffect(() => {
     if (timeListWithDate) {
@@ -120,10 +102,6 @@ const TimeGroup = (props) => {
         });
       }
       setTimeListWithSameDateGroupedByBug(timeTrackGroupedByBug);
-
-      let today = new Date();
-      var secDiff = Math.abs(today.getTime() - d.getTime());
-      var daysDiff = parseInt(secDiff / (24 * 3600 * 1000));
 
       // if (daysDiff <= 1) {
       //   setListVisible(true);

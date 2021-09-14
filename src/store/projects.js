@@ -1,4 +1,3 @@
-import { FormatListNumberedTwoTone } from "@material-ui/icons";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 
 import { RESTRICTEDENDPOINTS } from "../api/config";

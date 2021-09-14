@@ -1,4 +1,4 @@
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import React, { useEffect } from "react";
 import {
   useIsAuthenticated,
@@ -8,11 +8,7 @@ import {
 import { InteractionType } from "@azure/msal-browser";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  Collapse,
-  createTheme as createMuiTheme,
-  makeStyles,
-} from "@material-ui/core";
+import { createTheme as createMuiTheme, makeStyles } from "@material-ui/core";
 
 import { ThemeProvider } from "@material-ui/styles";
 
@@ -21,7 +17,6 @@ import { UserProvider } from "./context/UserContext";
 import Nav from "./components/Main/Nav";
 import Projects from "./components/Project/Projects";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Dashboard from "./components/Dashboard";
 import ProjectCreate from "./components/Project/ProjectCreate/ProjectCreate";
@@ -30,9 +25,7 @@ import { loginRequest } from "./api";
 import Project from "./components/Project/Project";
 
 import PrivateRoute from "./components/Route/PrivateRoute";
-import SignIn from "./components/Auth/SignIn";
 import { acquireToken, signUserIn } from "./store/auth";
-import ProjectSettings from "./components/Project/ProjectSettings/ProjectSettings";
 import { apiRequest } from "./api/config";
 import { Fade } from "@material-ui/core";
 
@@ -119,7 +112,7 @@ const App = () => {
     if (accounts.length > 0) {
       dispatch(signUserIn(accounts[0].idTokenClaims));
     }
-  }, [accounts]);
+  }, [accounts, dispatch]);
 
   useEffect(() => {
     (async () => {
@@ -133,7 +126,7 @@ const App = () => {
         dispatch(acquireToken({ instance, request }));
       }
     })();
-  }, [instance, accounts, shouldAcquireToken, acquiringToken]);
+  }, [instance, accounts, shouldAcquireToken, acquiringToken, dispatch]);
 
   return (
     <div className={classes.root}>

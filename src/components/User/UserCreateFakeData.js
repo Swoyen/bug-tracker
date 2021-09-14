@@ -13,7 +13,7 @@ const UserCreateFakeData = () => {
 
   useEffect(() => {
     dispatch(loadUsers());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (users.length > 0 && userId) {

@@ -9,7 +9,6 @@ import {
   getShownBug,
   getToggled,
   modifyBug,
-  removeBug,
   toggleBugDeleteShown,
   toggleBugEdit,
 } from "../../../store/bug";

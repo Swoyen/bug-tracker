@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@material-ui/core";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getFormattedDateFromIsoString,
@@ -26,7 +26,7 @@ const BugDetailsProperties = (props) => {
     dispatch(loadUsers());
     dispatch(loadStatuses());
     dispatch(loadSeverities());
-  }, []);
+  }, [dispatch]);
 
   const handleChange = (e) => {
     let propertyName = e.target.name;

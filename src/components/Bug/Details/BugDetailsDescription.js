@@ -29,7 +29,7 @@ const BugDetailsDescription = () => {
 
   useEffect(() => {
     dispatch(setTempDesc(description));
-  }, [description]);
+  }, [description, dispatch]);
 
   return (
     <Grid className={classes.root} item xs={12}>

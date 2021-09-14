@@ -8,7 +8,6 @@ import {
 import { Autocomplete } from "@material-ui/lab";
 import React from "react";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
-import ProjectAccessTag from "../ProjectCreate/ProjectAccessTag";
 import ProjectSettingsAccessList from "./ProjectSettingsAccessList";
 
 const useStyles = makeStyles((theme) => ({}));
@@ -81,17 +80,6 @@ const ProjectSettingsAccess = (props) => {
                 removeAddedUser={removeAddedUser}
               />
             </Grid>
-            {/* {addedUsers.map((user) => {
-              return (
-                <ProjectAccessTag
-                  xs={12}
-                  sm={6}
-                  key={user.userId}
-                  user={user}
-                  removeAddedUser={removeAddedUser}
-                ></ProjectAccessTag>
-              );
-            })} */}
           </Grid>
         </Grid>
       </Grid>

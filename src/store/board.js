@@ -1,9 +1,6 @@
-import { BorderAll } from "@material-ui/icons";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
-import { RESTRICTEDENDPOINTS } from "../api/config";
-import { apiCallBegan } from "./api";
-import bug, { modifyBug } from "./bug";
+
+import { modifyBug } from "./bug";
 
 const boardSlice = createSlice({
   name: "board",
@@ -210,9 +207,9 @@ export const modifyBugStatus =
 
     const { bugsGroupedWithStatusList, moveCardYIndex } =
       getState().entities.board;
-    var oldYIndex = bugsGroupedWithStatusList
-      .find((bgs) => bgs.status.statusId === statusId)
-      .bugs.findIndex((bug) => bug.bugId === bugId);
+    // var oldYIndex = bugsGroupedWithStatusList
+    //   .find((bgs) => bgs.status.statusId === statusId)
+    //   .bugs.findIndex((bug) => bug.bugId === bugId);
     var newYIndex = moveCardYIndex;
     if (movedDownInSameStatus) {
       newYIndex = moveCardYIndex - 1;
@@ -339,7 +336,7 @@ export const modifyBugStatus =
                   cardOrder: newCardOrder + i - newYIndex,
                 };
               } else {
-                var bugToModify = bugList.find(
+                bugToModify = bugList.find(
                   (bug) => bug.bugId === allBugs[i - 1].bugId
                 );
 
@@ -373,7 +370,7 @@ export const modifyBugStatus =
 export const showMoveCardSilhouette =
   (statusId, steps, yIndex, height, moveDown = false) =>
   (dispatch, getState) => {
-    console.log("Y index", yIndex);
+    //console.log("Y index", yIndex);
     const { bugsGroupedWithStatusList } = getState().entities.board;
     var statusIndex = bugsGroupedWithStatusList.findIndex(
       (bugWithStatus) => bugWithStatus.status.statusId === statusId
@@ -477,7 +474,7 @@ export const getBugsGroupedWithStatus = (statusId) =>
           return bug.bugDescription
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
-        return;
+        return null;
       });
       const newBugList = { ...bugListWithStatus, bugs: filteredBugList };
 

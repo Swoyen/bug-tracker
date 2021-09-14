@@ -23,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
 const ProjectBoardCardAddCard = ({ status, hideAddCard, index }) => {
   const classes = useStyles();
   const [text, setText] = useState("");
-  const [errors, setErrors] = useState("");
   const { currentUser } = useContext(UserContext);
   const projectId = useSelector(
     (state) => state.entities.projects.currentProjectId

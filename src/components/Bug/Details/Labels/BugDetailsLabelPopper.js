@@ -7,7 +7,6 @@ import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import { Fade } from "@material-ui/core";
 import BugDetailsLabelDetails from "./BugDetailsLabelDetails";
 import { useState } from "react";
-import AdbIcon from "@material-ui/icons/Adb";
 import { useRef } from "react";
 const useStyles = makeStyles((theme) => ({
   paper: {

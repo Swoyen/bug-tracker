@@ -5,7 +5,7 @@ import { makeStyles, Typography } from "@material-ui/core";
 import Button from "../../../controls/Button";
 import Input from "../../../controls/Input";
 import Form from "../../../layouts/Form";
-import Select from "../../../controls/Select";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   addBug,
@@ -65,7 +65,7 @@ const BugCreate = () => {
     return () => {
       resetForm();
     };
-  }, [bugCreateShown]);
+  }, [bugCreateShown, dispatch]);
 
   useEffect(() => {
     if (bugCreateShown && userId && users.length > 0) {

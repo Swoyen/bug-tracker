@@ -4,7 +4,6 @@ import { Link, useRouteMatch } from "react-router-dom";
 import {
   Drawer,
   makeStyles,
-  Toolbar,
   List,
   ListItem,
   ListItemIcon,
@@ -13,7 +12,6 @@ import {
   Avatar,
 } from "@material-ui/core";
 import BugReportIcon from "@material-ui/icons/BugReport";
-import AccountTreeIcon from "@material-ui/icons/AccountTree";
 import WebAssetTwoToneIcon from "@material-ui/icons/WebAssetTwoTone";
 import TimerRoundedIcon from "@material-ui/icons/TimerRounded";
 import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineOutlined";
@@ -168,7 +166,6 @@ const ProjectSideBar = (props) => {
 
   const [values, setValues] = useState({});
   useEffect(() => {
-    console.log(project);
     if (Object.keys(project).length > 0) {
       setValues({
         projectName: project.title,

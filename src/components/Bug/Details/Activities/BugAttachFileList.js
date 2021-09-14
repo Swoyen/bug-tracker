@@ -15,7 +15,7 @@ const BugAttachFileList = () => {
     if (bugId !== -1) {
       dispatch(loadAttachedFiles(bugId));
     }
-  }, [bugId]);
+  }, [bugId, dispatch]);
 
   return (
     <>

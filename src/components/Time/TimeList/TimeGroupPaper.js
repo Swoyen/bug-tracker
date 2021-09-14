@@ -4,7 +4,6 @@ import {
   Grid,
   Typography,
   Avatar,
-  Grow,
   Collapse,
 } from "@material-ui/core";
 import React, { useState } from "react";
@@ -82,7 +81,7 @@ const TimeGroupPaper = (props) => {
             item
             container
             sm={10}
-            className={classes.timeDetail}
+            //className={classes.timeDetail}
             alignItems="center"
             className={classes.header}
           >

@@ -9,7 +9,6 @@ import Typography from "@material-ui/core/Typography";
 import { useState } from "react";
 import BugTimeTrackPaper from "./BugTimeTrackPaper";
 import { makeStyles } from "@material-ui/core";
-import { ClassSharp, StarRateRounded } from "@material-ui/icons";
 import { Grid } from "@material-ui/core";
 import { getDurationFromArray } from "../../../../helper/timecalc";
 
@@ -33,7 +32,7 @@ const BugTimeTrack = () => {
     return () => {
       dispatch(emptyTimeTracks());
     };
-  }, [bugId]);
+  }, [bugId, dispatch, userId]);
 
   useEffect(() => {
     if (timeList.length > 0) {

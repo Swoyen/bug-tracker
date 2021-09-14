@@ -1,5 +1,4 @@
-import { createSelector, createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
+import { createSlice } from "@reduxjs/toolkit";
 import { RESTRICTEDENDPOINTS } from "../api/config";
 import { apiCallBegan } from "./api";
 import { DateTime } from "luxon";
@@ -303,14 +302,14 @@ export const loadBugReportNextWeekFromProjectId =
   };
 
 const {
-  reportsReceived,
-  reportsRequested,
-  reportsRequestFailed,
+  // reportsReceived,
+  // reportsRequested,
+  // reportsRequestFailed,
   timeTrackRequestReceived,
   timeTrackBugRequestReceived,
   timeTrackReportWeekSet,
   bugRequestReceived,
-  bugRequestUserSummaryReceived,
+  // bugRequestUserSummaryReceived,
   bugReportWeekSet,
 } = reportSlice.actions;
 export default reportSlice.reducer;

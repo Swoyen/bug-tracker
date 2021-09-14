@@ -38,7 +38,6 @@ const api =
     );
     try {
       if (canMakeRequest) {
-        console.log("Making request");
         if (onStart) dispatch({ type: onStart });
 
         try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Typography,
@@ -11,8 +11,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import Form from "../../../layouts/Form";
 
-import ProjectAccessTag from "./ProjectAccessTag";
-import { UserContext } from "../../../context/UserContext";
 import { useSelector } from "react-redux";
 import { getProjectCreateShown } from "../../../store/projects";
 import { getAllUsers } from "../../../store/users";
@@ -64,21 +62,19 @@ const ProjectCreateAccess = (props) => {
   const allUsers = useSelector(getAllUsers);
 
   const { addProject, setAssignedUsers } = props;
-  const { currentUser } = useContext(UserContext);
+  const userId = useSelector((state) => state.entities.auth.userId);
 
   useEffect(() => {
     if (openProjectCreate) {
-      if (allUsers && allUsers.length > 0) {
+      if (allUsers && allUsers.length > 0 && userId) {
         let data = [...allUsers];
-        let index = data.findIndex(
-          (user) => user.userId === currentUser.userId
-        );
+        let index = data.findIndex((user) => user.userId === userId);
         if (index > -1) data.splice(index, 1);
         var users = [emptyUser, ...data];
         setUsers(users);
       }
     }
-  }, [openProjectCreate, allUsers]);
+  }, [openProjectCreate, allUsers, userId]);
 
   useEffect(() => {
     let userIds = [];

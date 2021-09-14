@@ -1,23 +1,11 @@
-import {
-  Container,
-  FormControl,
-  Grid,
-  IconButton,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-} from "@material-ui/core";
-import { EditRounded, Warning } from "@material-ui/icons";
+import { Container, Grid, Paper, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Dialog from "../../layouts/Dialog";
-import Form from "../../layouts/Form";
 import { deleteCurrentUser, loadCurrentUserFromApi } from "../../store/auth";
 import UserSettingsProfilePic from "./UserSettingsProfilePic";
 import UserSettingsUserDetails from "./UserSettingsUserDetails";
-import UserSettingsUsername from "./UserSettingsUsername";
 
 const UserSettings = () => {
   const dispatch = useDispatch();
@@ -29,13 +17,13 @@ const UserSettings = () => {
 
   useEffect(() => {
     dispatch(loadCurrentUserFromApi());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {}, [userDetails]);
 
-  const handleShowDelete = () => {
-    setUserDeleteConfirm(true);
-  };
+  // const handleShowDelete = () => {
+  //   setUserDeleteConfirm(true);
+  // };
 
   const handleDeleteAccount = () => {
     dispatch(deleteCurrentUser());

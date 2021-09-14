@@ -7,6 +7,7 @@ const NotFound = () => {
     <div>
       <Container maxWidth="xl" style={{ textAlign: "center" }}>
         <iframe
+          title="NotFoundIframe"
           src="https://giphy.com/embed/3o7aCTPPm4OHfRLSH6"
           width="480"
           height="360"
@@ -15,6 +16,7 @@ const NotFound = () => {
         <p>
           <a
             target="_blank"
+            rel="noreferrer"
             href="https://giphy.com/gifs/reaction-3o7aCTPPm4OHfRLSH6"
           >
             via GIPHY

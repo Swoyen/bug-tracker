@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { useMsal } from "@azure/msal-react";
 
 import Button from "@material-ui/core/Button";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -62,7 +61,7 @@ const ProjectListComposition = () => {
     if (open) {
       dispatch(loadRecentProjects());
     }
-  }, [open]);
+  }, [open, dispatch]);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);

@@ -1,12 +1,11 @@
 import { makeStyles, AppBar, IconButton, Toolbar } from "@material-ui/core";
 import React, { useContext } from "react";
-import { AccountCircle } from "@material-ui/icons";
 import Button from "../../controls/Button";
 import { Link, Redirect } from "react-router-dom";
 
 import BugReportTwoToneIcon from "@material-ui/icons/BugReportTwoTone";
 import ProjectListComposition from "../Project/ProjectListComposition";
-import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import { useIsAuthenticated } from "@azure/msal-react";
 import { UserSettingsMenu } from "../User/UserSettingsMenu";
 import MenuIcon from "@material-ui/icons/Menu";
 import { NavContext } from "../../context/NavContext";

@@ -88,16 +88,18 @@ const BugAttachFileListItem = ({ attachment, index, totalLength }) => {
       var mins = parseInt(a.diff(b, "minutes", true) - hours * 60);
 
       var seconds = parseInt(a.diff(b, "seconds", true) % 60);
+      var totalDuration;
+      if (days >= 1) {
+        totalDuration = date.toString();
+      } else {
+        totalDuration = `${hours > 0 ? hours + " hours " : ""}${
+          mins > 0 ? mins + " mins " : ""
+        } ${seconds > 0 ? seconds + " seconds " : ""} ago.`;
+      }
 
-      setTotalDuration(
-        days >= 1
-          ? date.toDateString()
-          : `${hours > 0 ? hours + " hours " : ""}${
-              mins > 0 ? mins + " mins " : ""
-            } ${seconds > 0 ? seconds + " seconds " : ""} ago.`
-      );
-    }
-  }, [attachment.attachedDate, currentTime.getSeconds()]);
+      setTotalDuration(totalDuration);
+    } // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attachment.attachedDate, currentTime, currentTime.getSeconds()]);
 
   useEffect(() => {
     let mounted = true;

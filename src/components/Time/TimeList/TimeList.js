@@ -1,4 +1,4 @@
-import { makeStyles, Grid, Button, CircularProgress } from "@material-ui/core";
+import { makeStyles, Grid } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import TimeGroup from "./TimeGroup.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,7 +44,7 @@ const TimeList = () => {
     return () => {
       dispatch(emptyTimeTracks());
     };
-  }, [dispatch, projectId, userId]);
+  }, [dispatch, projectId, userId, timeListDateToFetch]);
 
   const handleLoadTimeTracks = async () => {
     var result = dispatch(

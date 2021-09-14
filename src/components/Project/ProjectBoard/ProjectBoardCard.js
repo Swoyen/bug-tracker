@@ -2,19 +2,13 @@ import React, { useEffect, useState } from "react";
 import {
   Grid,
   Typography,
-  Paper,
-  Chip,
-  Avatar,
   CardContent,
   Card,
-  CardActionArea,
   CardMedia,
   Input,
-  Grow,
   Tooltip,
   Fade,
   Button,
-  Divider,
 } from "@material-ui/core";
 import { DraggableCore } from "react-draggable";
 import { makeStyles, IconButton } from "@material-ui/core";
@@ -22,8 +16,6 @@ import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getBugListWithSameStatus,
-  getBugsWithStatus,
-  getMoveCardShownBugList,
   hideMoveCardSilhouette,
   modifyBugStatus,
   setCardHeight,
@@ -33,9 +25,8 @@ import { modifyBug, showBug } from "../../../store/bug";
 import ProjectBoardCardTags from "./ProjectBoardCardTags";
 import { getBugById } from "../../../store/bugs";
 import { BASE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
-import { Edit as EditIcon, Settings as SettingsIcon } from "@material-ui/icons";
+import { Edit as EditIcon } from "@material-ui/icons";
 import { useTheme } from "@material-ui/core";
-import LaunchIcon from "@material-ui/icons/Launch";
 import CheckCircleRoundedIcon from "@material-ui/icons/CheckCircleRounded";
 import DescriptionIcon from "@material-ui/icons/Description";
 import ListRoundedIcon from "@material-ui/icons/ListRounded";
@@ -86,7 +77,6 @@ var startX = 0;
 var startY = 0;
 var pos3 = 0;
 var pos4 = 0;
-var mouseOver = false;
 
 const ProjectBoardCard = (props) => {
   const classes = useStyles();
@@ -118,7 +108,7 @@ const ProjectBoardCard = (props) => {
   const dispatch = useDispatch();
 
   const [isDragging, setIsDragging] = useState(false);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+
   const [height, setHeight] = useState(0);
   const [yOffsetInList, setYOffsetInlist] = useState(0);
   const [prevHeight, setPrevHeight] = useState(0);
@@ -130,7 +120,6 @@ const ProjectBoardCard = (props) => {
       // setStartX(0);
       // setStartY(0);
       setIsDragging(false);
-      setPos({ x: 0, y: 0 });
     };
   }, []);
 
@@ -169,14 +158,22 @@ const ProjectBoardCard = (props) => {
 
         var nextCard = cardsAfter.at(0);
         if (nextCard && nextCard.bugId) {
-          var bug = bugHeightMap.find((bh) => bh.bugId === nextCard.bugId);
-          var height = bug ? bug.height : 0;
+          var b = bugHeightMap.find((bh) => bh.bugId === nextCard.bugId);
+          var height = b ? b.height : 0;
           setNextHeight(height);
         }
         setYOffsetInlist(yPosInList);
       }
     }
-  }, [bug, index, bugListWithSameStatus, statusId, bugHeightMap]);
+  }, [
+    bug,
+    index,
+    bugListWithSameStatus,
+    statusId,
+    bugHeightMap,
+    dispatch,
+    bugId,
+  ]);
 
   useEffect(() => {
     if (gridRef.current) {
@@ -185,7 +182,7 @@ const ProjectBoardCard = (props) => {
       setHeight(h);
       dispatch(setCardHeight(statusId, bugId, h));
     }
-  }, [gridRef]);
+  }, [gridRef, dispatch, bugId, statusId]);
 
   const mouseDown = (e) => {
     if (isDragging) return;
@@ -256,14 +253,15 @@ const ProjectBoardCard = (props) => {
     // if (offY <= 0) {
     //   newYOffsetIndex = 0;
     // } else {
-    console.log("Before loop", newYOffsetIndex);
+    // console.log("Before loop", newYOffsetIndex);
+
     for (var i = 0; i < currentStatusBugList.length; i++) {
-      var bugId = currentStatusBugList[i].bugId;
-      var bugHeight = bugHeightMap.find((bh) => bh.bugId === bugId).height;
+      var bId = currentStatusBugList[i].bugId;
+      var bugHeight = bugHeightMap.find((bh) => bh.bugId === bId).height;
       currentOffsetY += bugHeight + spaceBetween;
-      console.log("currentOffSety", currentOffsetY);
+      //   console.log("currentOffSety", currentOffsetY);
       if (Math.abs(offY) < currentOffsetY && Math.abs(offY) >= prevOffsetY) {
-        console.log("i", i);
+        // console.log("i", i);
         if (offY <= 0) newYOffsetIndex -= i;
         else newYOffsetIndex += i;
         break;
@@ -286,7 +284,7 @@ const ProjectBoardCard = (props) => {
             index < newYOffsetIndex
           )
         );
-        console.log("In If", newYOffsetIndex);
+        //  console.log("In If", newYOffsetIndex);
         setCurrentMoveSilhouetteYIndex(newYOffsetIndex);
         setCurrentMoveSilhouetteSteps(newSteps);
       } else {
@@ -328,11 +326,11 @@ const ProjectBoardCard = (props) => {
     let offsetY = startY - e.clientY;
     var steps;
     if (offsetX > 100) {
-      console.log("Here1");
+      //   console.log("Here1");
       steps = -Math.round(offsetX / cardSize);
       dispatch(modifyBugStatus({ bugId, statusId, steps }));
     } else if (offsetX < -100) {
-      console.log("Here2");
+      //console.log("Here2");
       steps = -Math.round(offsetX / cardSize);
       dispatch(modifyBugStatus({ bugId, statusId, steps }));
     } else {

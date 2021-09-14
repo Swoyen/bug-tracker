@@ -6,7 +6,6 @@ import {
   MenuList,
   MenuItem,
   Grow,
-  Grid,
   Typography,
   ClickAwayListener,
 } from "@material-ui/core";
@@ -51,6 +50,7 @@ const DialogHeaderImg = ({ headerImgSrc, handleUnsetImg }) => {
   return (
     <>
       <img
+        alt="Header"
         src={headerImgSrc}
         style={{
           objectFit: "cover",

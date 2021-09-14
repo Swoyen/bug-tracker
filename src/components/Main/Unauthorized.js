@@ -7,6 +7,7 @@ const Unauthorized = () => {
     <div>
       <Container maxWidth="xl" style={{ textAlign: "center" }}>
         <iframe
+          title="UnauthorizedIframe"
           src="https://giphy.com/embed/t0virGpgSlp4mkfiXq"
           width="480"
           height="270"
@@ -16,6 +17,7 @@ const Unauthorized = () => {
         <p>
           <a
             target="_blank"
+            rel="noreferrer"
             href="https://giphy.com/gifs/adultswim-adult-swim-birdgirl-access-denied-t0virGpgSlp4mkfiXq"
           >
             via GIPHY

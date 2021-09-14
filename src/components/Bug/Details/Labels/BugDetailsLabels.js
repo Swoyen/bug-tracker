@@ -1,31 +1,15 @@
-import { Divider, Fade, Grid, makeStyles, Paper } from "@material-ui/core";
-import { Chip, Typography, IconButton } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import React from "react";
-import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
-import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
-import { Popper } from "@material-ui/core";
-import { useState } from "react";
+
 import BugDetailsLabelPopper from "./BugDetailsLabelPopper";
 import { useDispatch, useSelector } from "react-redux";
 import BugDetailsLabelChip from "./BugDetailsLabelChip";
 
 import { useTheme } from "@material-ui/styles";
-import { removeLabel } from "../../../../store/labels";
 import { modifyBug } from "../../../../store/bug";
-const useStyles = makeStyles((theme) => ({
-  bugTag: {},
-  deleteIcon: {},
-  paper: {
-    border: "1px solid",
-    padding: theme.spacing(1),
-    backgroundColor: theme.palette.background.paper,
-    zIndex: 1003300,
-    position: "absolute",
-  },
-}));
 
 const BugDetailsLabels = () => {
-  const classes = useStyles();
   const loadedBug = useSelector((state) => state.entities.bug.loadedBug);
 
   const dispatch = useDispatch();

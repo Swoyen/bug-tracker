@@ -5,7 +5,7 @@ import toast from "./middleware/toast";
 import api from "./middleware/api";
 import * as actions from "./api";
 
-export default function () {
+const configStore = () => {
   return configureStore({
     reducer,
     middleware: (getDefaultMiddleWare) =>
@@ -15,4 +15,6 @@ export default function () {
         },
       }).concat([logger({ destination: "console" }), toast, api]),
   });
-}
+};
+
+export default configStore;

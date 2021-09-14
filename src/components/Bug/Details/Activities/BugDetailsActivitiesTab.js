@@ -1,5 +1,5 @@
 import { Paper, Tab } from "@material-ui/core";
-import { AppBar, Tabs } from "@material-ui/core";
+import { Tabs } from "@material-ui/core";
 import React, { useState } from "react";
 import BugComment from "../../Comment/BugComment";
 import BugDetailActivitiesTabPanel from "./BugDetailActivitiesTabPanel";

@@ -1,10 +1,10 @@
-import { makeStyles, Typography, Grid, Container } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import { makeStyles, Typography, Grid } from "@material-ui/core";
+import React, { useEffect } from "react";
 import ProjectBoardGrid from "./ProjectBoardGrid";
 
 import BugDetails from "../../Bug/Details/BugDetails";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBugs, loadBugs, loadUnresolvedBugs } from "../../../store/bugs";
+import { loadUnresolvedBugs } from "../../../store/bugs";
 import { getAllStatuses, loadStatuses } from "../../../store/status";
 import {
   initializeAddCardList,
@@ -51,24 +51,24 @@ const ProjectBoard = () => {
     if (projectId !== -1 && labels.length > 0) {
       dispatch(loadUnresolvedBugs(projectId));
     }
-  }, [projectId, labels.length]);
+  }, [projectId, labels.length, dispatch]);
 
   useEffect(() => {
     dispatch(loadStatuses());
     dispatch(loadLabels());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (bugs.length > 0 && statuses.length > 0) {
       dispatch(initializeBugsWithStatus(bugs, statuses));
     }
-  }, [bugs.length, statuses.length]);
+  }, [bugs.length, statuses.length, bugs, statuses, dispatch]);
 
   useEffect(() => {
     if (statuses.length > 0) {
       dispatch(initializeAddCardList(statuses.length));
     }
-  }, [statuses]);
+  }, [statuses, dispatch]);
 
   const classes = useStyles();
 

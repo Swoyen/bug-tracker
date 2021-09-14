@@ -34,7 +34,6 @@ const Dialog = (props) => {
     openDialog,
     setOpenDialog,
     onConfirm,
-    danger = false,
   } = props;
 
   const classes = useStyles(props);

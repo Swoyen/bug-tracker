@@ -1,12 +1,6 @@
 import React, { useContext, useEffect } from "react";
 
-import {
-  Typography,
-  TextField,
-  makeStyles,
-  Tooltip,
-  Paper,
-} from "@material-ui/core";
+import { TextField, makeStyles, Tooltip, Paper } from "@material-ui/core";
 
 import Button from "../../../controls/Button";
 import Form from "../../../layouts/Form";
@@ -76,7 +70,7 @@ const BugPostComment = () => {
     } else {
       dispatch(cancelCommentEdit());
     }
-  }, [shown]);
+  }, [shown, dispatch]);
 
   const handleChangeComment = (e) => {
     var newComment = e.target.value;

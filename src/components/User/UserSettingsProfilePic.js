@@ -3,10 +3,7 @@ import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL, RESTRICTEDENDPOINTS } from "../../api/config";
 import { modifyCurrentUser } from "../../store/auth";
-import {
-  enqueueErrorSnackbar,
-  enqueueSuccessSnackbar,
-} from "../../store/notifier";
+import { enqueueErrorSnackbar } from "../../store/notifier";
 
 const fileSizeLimitInKb = 500000;
 const fileSizeLimitInMb = fileSizeLimitInKb / 1000;

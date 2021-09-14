@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from "react";
-import { useParams, Route, Switch } from "react-router";
+import React, { useEffect } from "react";
+import { useParams, Route } from "react-router";
 
-import { makeStyles, Container } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 
 import Bug from "../Bug";
-import { UserContext } from "../../context/UserContext";
 import { useRouteMatch } from "react-router-dom";
 import ProjectBoard from "./ProjectBoard/ProjectBoard";
 
@@ -39,20 +38,20 @@ const Project = () => {
   const dispatch = useDispatch();
   const { url } = useRouteMatch();
   const { id } = useParams();
-  const { currentUser } = useContext(UserContext);
+  const userId = useSelector((state) => state.entities.auth.userId);
   const loadedProject = useSelector(
     (state) => state.entities.projects.loadedProject
   );
   useEffect(() => {
     dispatch(loadProject(id));
-  }, [id]);
+  }, [id, dispatch]);
 
   useEffect(() => {
-    if (Object.keys(loadedProject).length > 0) {
-      dispatch(addRecentProjects(id, currentUser.userId));
+    if (Object.keys(loadedProject).length > 0 && userId) {
+      dispatch(addRecentProjects(id, userId));
       dispatch(setCurrentProject(id));
     }
-  }, [loadedProject, id]);
+  }, [loadedProject, id, userId, dispatch]);
 
   return (
     <div className={classes.root}>

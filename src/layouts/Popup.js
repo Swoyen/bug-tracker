@@ -58,7 +58,6 @@ const Popup = (props) => {
     titleVariant = "h5",
     center = false,
     maxWidth = "md",
-    topMargin,
   } = props;
   const classes = useStyles(props);
 

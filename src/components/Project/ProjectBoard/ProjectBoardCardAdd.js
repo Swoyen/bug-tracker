@@ -1,5 +1,5 @@
-import { Button, Grid, makeStyles, Paper, Typography } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import { Button, Grid, makeStyles } from "@material-ui/core";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAddCardVisible,

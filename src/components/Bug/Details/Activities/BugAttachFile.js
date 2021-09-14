@@ -2,7 +2,6 @@ import { Button, Grid } from "@material-ui/core";
 import React from "react";
 import AttachFileRoundedIcon from "@material-ui/icons/AttachFileRounded";
 import { useRef } from "react";
-import { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   attachFile,

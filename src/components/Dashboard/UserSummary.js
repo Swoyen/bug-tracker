@@ -1,5 +1,5 @@
-import { Button, Grid, Paper, Typography } from "@material-ui/core";
-import React, { useEffect } from "react";
+import { Grid, Paper, Typography } from "@material-ui/core";
+import React from "react";
 import UserDoughnutChart from "./UserDoughnutChart";
 import UserSummaryList from "./UserSummaryList";
 import UserSummaryLoadButton from "./UserSummaryLoadButton";

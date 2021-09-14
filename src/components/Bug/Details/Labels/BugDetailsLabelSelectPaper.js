@@ -1,17 +1,12 @@
 import {
-  colors,
   Grid,
   Paper,
   useTheme,
   IconButton,
   Typography,
-  TextField,
   Input,
-  Slide,
-  Fade,
   Grow,
   makeStyles,
-  Collapse,
 } from "@material-ui/core";
 import React, { useEffect } from "react";
 import EditRoundedIcon from "@material-ui/icons/EditRounded";
@@ -19,7 +14,6 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getLabelName,
-  getSelectedLabel,
   modifyLabel,
   removeLabel,
 } from "../../../../store/labels";
@@ -60,7 +54,7 @@ const BugDetailsLabelSelectPaper = (props) => {
   useEffect(() => {
     if (currentEditId === label.labelId) setEdit(true);
     else setEdit(false);
-  }, [currentEditId]);
+  }, [currentEditId, label]);
 
   useEffect(() => {
     if (loadedBug.labels && loadedBug.labels.length > 0) {
@@ -92,8 +86,9 @@ const BugDetailsLabelSelectPaper = (props) => {
   };
 
   const handleSelected = (e) => {
+    var newBug;
     if (!selected) {
-      var newBug = {
+      newBug = {
         ...loadedBug,
         labels: [
           ...loadedBug.labels,
@@ -107,7 +102,7 @@ const BugDetailsLabelSelectPaper = (props) => {
     } else {
       var labels = loadedBug.labels;
       labels = labels.filter((l) => l.labelId !== label.labelId);
-      var newBug = {
+      newBug = {
         ...loadedBug,
         labels: labels,
       };

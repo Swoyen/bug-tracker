@@ -1,5 +1,4 @@
-import { createSelector, createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
+import { createSlice } from "@reduxjs/toolkit";
 import { RESTRICTEDENDPOINTS } from "../api/config";
 import { apiCallBegan } from "./api";
 import {
@@ -99,8 +98,6 @@ const checkListSlice = createSlice({
 });
 
 export const loadCheckList = (id) => (dispatch, getState) => {
-  const { lastFetch } = getState().entities.statuses;
-  const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
   // only load if not loaded in last ten minutes
   // if (diffInMinutes < 10) {
   //   return;
@@ -189,8 +186,6 @@ export const unloadCheckList = () => (dispatch) => {
 
 const {
   checkListReceived,
-  checkListRequested,
-  checkListRequestFailed,
   checkListItemAdded,
   checkListItemRemoved,
   checkListUnloaded,

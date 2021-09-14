@@ -16,11 +16,12 @@ const StatusSummaryList = () => {
   );
   useEffect(() => {
     dispatch(loadStatuses());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
-    if (statusList.length !== 0) dispatch(loadStatusCount(projectId));
-  }, [statusList.length]);
+    if (statusList.length !== 0 && projectId !== -1)
+      dispatch(loadStatusCount(projectId));
+  }, [statusList.length, dispatch, projectId]);
 
   return (
     <Paper elevation={2} style={{ padding: theme.spacing(1) }}>

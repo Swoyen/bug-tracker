@@ -1,4 +1,4 @@
-import { Button, Paper } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { Grid, TextField, Typography } from "@material-ui/core";
 import React from "react";
 import { useState } from "react";
@@ -25,7 +25,7 @@ const BugDetailsLabelSelectLabel = (props) => {
     return () => {
       dispatch(modifySearchTerm(""));
     };
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (labels.length === 0) setCurrentEditId(-1);

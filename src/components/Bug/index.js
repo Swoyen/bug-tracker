@@ -1,14 +1,10 @@
 import BugList from "./BugList";
 
 import React from "react";
-import { Grid, makeStyles, Typography, Container } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 
 import { useDispatch, useSelector } from "react-redux";
-import {
-  loadBugs,
-  loadUnresolvedBugs,
-  toggleBugCreateShown,
-} from "../../store/bugs";
+import { loadUnresolvedBugs, toggleBugCreateShown } from "../../store/bugs";
 
 import BugDetails from "./Details/BugDetails";
 import BugCreateButton from "./Create/BugCreateButton";
@@ -17,13 +13,7 @@ import { useEffect } from "react";
 import { loadLabels } from "../../store/labels";
 import BugListSearch from "./BugListSearch";
 
-const useStyles = makeStyles((theme) => ({
-  root: { textAlign: "left" },
-  buttons: { marginBottom: theme.spacing(2) },
-}));
-
 const Bug = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const projectId = useSelector(
     (state) => state.entities.projects.currentProjectId
@@ -34,7 +24,7 @@ const Bug = () => {
       dispatch(loadUnresolvedBugs(projectId));
       dispatch(loadLabels());
     }
-  }, [projectId]);
+  }, [projectId, dispatch]);
 
   const handleToggleBugCreateShown = () => {
     dispatch(toggleBugCreateShown());

@@ -30,7 +30,7 @@ const TimeBugSelectWithEmpty = (props) => {
 
   useEffect(() => {
     if (projectId !== -1) dispatch(loadUnresolvedBugs(projectId));
-  }, [projectId]);
+  }, [projectId, dispatch]);
 
   useEffect(() => {
     setBugListWithEmptyBug([emptyBug, ...bugList]);

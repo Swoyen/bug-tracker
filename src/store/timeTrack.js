@@ -1,6 +1,4 @@
-import { indigo } from "@material-ui/core/colors";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
 import { RESTRICTEDENDPOINTS } from "../api/config";
 import { apiCallBegan, apiCallWithFormDataBegan } from "./api";
 
@@ -350,8 +348,6 @@ const timeTrackSlice = createSlice({
 // Action creators
 export const loadTimeTracksByDate =
   (date, projectId, userId) => (dispatch, getState) => {
-    const { lastFetch } = getState().entities.statuses;
-    const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
     // only load if not loaded in last ten minutes
     // if (diffInMinutes < 10) {
     //   return;

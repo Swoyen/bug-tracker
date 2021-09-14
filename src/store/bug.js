@@ -1,7 +1,7 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { RESTRICTEDENDPOINTS } from "../api/config";
 import { apiCallBegan, apiCallWithFormDataBegan } from "./api";
-import { bugArrayModified, bugRemovedFromArray, modifyBugArray } from "./bugs";
+import { bugArrayModified, bugRemovedFromArray } from "./bugs";
 import { successSnackbarEnqueued } from "./notifier";
 
 const bugSlice = createSlice({
@@ -187,7 +187,7 @@ export const modifyBug = (id, bug, hide) => (dispatch) => {
     labels: cleanedLabels,
     checkListId: bug.checkListId,
   };
-  console.log(cleanedBug);
+  //console.log(cleanedBug);
   if (hide) {
     dispatch(bugHidden());
   }

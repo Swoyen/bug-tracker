@@ -1,4 +1,4 @@
-import { Collapse, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 
 import CloseIcon from "@material-ui/icons/Close";
@@ -17,7 +17,6 @@ import {
 } from "../../../store/projects";
 import { loadUsers } from "../../../store/users";
 import { Redirect } from "react-router";
-import { useRouteMatch } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "absolute",
@@ -84,7 +83,7 @@ const ProjectCreate = () => {
       dispatch(setProjectCreatedShown());
       redirectId = createdProjectId;
     }
-  }, [open, createdProjectId]);
+  }, [open, createdProjectId, dispatch]);
 
   useEffect(() => {
     if (open) dispatch(loadUsers());
@@ -94,7 +93,7 @@ const ProjectCreate = () => {
       setProjectTitle("");
       setStage(1);
     };
-  }, [open]);
+  }, [open, dispatch]);
 
   if (redirect && redirectId !== -1) {
     redirect = false;

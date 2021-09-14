@@ -2,8 +2,6 @@ import React, { useState, createContext, useEffect } from "react";
 import { createAuthenticatedEndPoint } from "../api";
 import { RESTRICTEDENDPOINTS } from "../api/config";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { useSelector } from "react-redux";
-import { Redirect } from "react-router-dom";
 
 export const UserContext = createContext();
 

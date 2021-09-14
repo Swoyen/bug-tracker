@@ -1,15 +1,8 @@
 import React, { useRef } from "react";
-import { Button, Divider, Paper, useTheme } from "@material-ui/core";
-import {
-  makeStyles,
-  Typography,
-  IconButton,
-  Grid,
-  TextField,
-} from "@material-ui/core";
+import { Divider, Paper, useTheme } from "@material-ui/core";
+import { makeStyles, Typography, IconButton } from "@material-ui/core";
 import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 import { useState } from "react";
-import Form from "../../../../layouts/Form";
 import BugDetailsLabelSelectLabel from "./BugDetailsLabelSelectLabel";
 import BugDetailsLabelCreateLabel from "./BugDetailsLabelCreateLabel";
 import ArrowBackIosRoundedIcon from "@material-ui/icons/ArrowBackIosRounded";
@@ -55,6 +48,7 @@ const BugDetailsLabelDetails = ({ close }) => {
         capture: true,
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleGoToNextStage = () => {

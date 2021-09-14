@@ -1,5 +1,4 @@
-import { createSelector, createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
+import { createSlice } from "@reduxjs/toolkit";
 import { RESTRICTEDENDPOINTS } from "../api/config";
 import { apiCallBegan } from "./api";
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Collapse, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { makeStyles, Typography } from "@material-ui/core";
 
 import ProjectBoardCard from "./ProjectBoardCard";
@@ -57,7 +57,7 @@ const ProjectBoardGrid = (props) => {
     } else {
       setMoveCardIndexInGrid(-1);
     }
-  }, [moveCardIndex, yIndex]);
+  }, [moveCardIndex, yIndex, index]);
 
   useEffect(() => {
     if (bugsWithSameStatus) {

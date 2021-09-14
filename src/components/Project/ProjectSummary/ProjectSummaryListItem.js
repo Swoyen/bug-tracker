@@ -2,7 +2,6 @@ import {
   Avatar,
   Collapse,
   Divider,
-  Grow,
   ListItemAvatar,
   ListItemText,
 } from "@material-ui/core";
@@ -36,16 +35,15 @@ const ProjectSummaryListItem = ({
       var mins = parseInt(a.diff(b, "minutes", true) - hours * 60);
 
       var seconds = parseInt(a.diff(b, "seconds", true) % 60);
-
-      setDuration(
+      const duration =
         days >= 1
           ? date.toDateString()
           : `${hours > 0 ? hours + " hours " : ""}${
               mins > 0 ? mins + " mins " : ""
-            } ${mins <= 0 ? seconds + " seconds " : ""}ago.`
-      );
-    }
-  }, [action, currentTime.getSeconds()]);
+            } ${mins <= 0 ? seconds + " seconds " : ""}ago.`;
+      setDuration(duration);
+    } // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action, currentTime, currentTime.getSeconds()]);
 
   useEffect(() => {
     let mounted = true;

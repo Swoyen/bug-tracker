@@ -4,12 +4,7 @@ import { makeStyles } from "@material-ui/core";
 
 import ProjectTable from "./ProjectTable";
 import { useDispatch } from "react-redux";
-import {
-  loadProjects,
-  setProjectCreatedShown,
-  setProjectCreateShown,
-  setProjectSettingsShown,
-} from "../../store/projects";
+import { loadProjects, setProjectSettingsShown } from "../../store/projects";
 import ProjectSettings from "./ProjectSettings/ProjectSettings";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +33,7 @@ const Projects = () => {
     return () => {
       dispatch(setProjectSettingsShown(false));
     };
-  }, []);
+  }, [dispatch]);
   return (
     <div className={classes.root}>
       <div className={classes.content}>

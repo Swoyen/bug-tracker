@@ -3,7 +3,6 @@ import React from "react";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import { useDispatch, useSelector } from "react-redux";
 import { getLabelName } from "../../../../store/labels";
-import { useState } from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import { setProjectCardLabelsExpanded } from "../../../../store/board";
 

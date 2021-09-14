@@ -41,7 +41,7 @@ const BugDetailsPopup = (props) => {
 
   useEffect(() => {
     if (shown) dispatch(setTempTitle(bugTitle));
-  }, [shown, bugTitle]);
+  }, [shown, bugTitle, dispatch]);
 
   const handleClose = () => {
     dispatch(hideBug());

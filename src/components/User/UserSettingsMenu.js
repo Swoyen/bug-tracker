@@ -12,7 +12,6 @@ import {
 } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const UserSettingsMenu = () => {
-  const dispatch = useDispatch();
   const classes = useStyles();
   const { instance } = useMsal();
 

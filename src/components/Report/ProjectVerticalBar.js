@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import Typography from "@material-ui/core/Typography";
 import { useDispatch } from "react-redux";
-import {
-  loadTimeTrackReport,
-  loadTimeTrackReportNextWeek,
-  loadTimeTrackReportPrevWeek,
-} from "../../store/reports";
+import { loadTimeTrackReport } from "../../store/reports";
 import { useSelector } from "react-redux";
 import { getDurationFromHours } from "../../helper/timecalc";
-import { Grid, IconButton, Paper } from "@material-ui/core";
-import ArrowBackIosRoundedIcon from "@material-ui/icons/ArrowBackIosRounded";
-import { DateTime } from "luxon";
+import { Paper } from "@material-ui/core";
+
 import { useTheme } from "@material-ui/styles";
 
 const options = {
@@ -53,7 +48,7 @@ const ProjectVerticalBar = () => {
   useEffect(() => {
     if (projectId !== -1 && userId)
       dispatch(loadTimeTrackReport(projectId, userId));
-  }, [projectId, userId]);
+  }, [projectId, userId, dispatch]);
 
   return (
     <>

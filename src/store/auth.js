@@ -37,7 +37,6 @@ const authSlice = createSlice({
       user.acquiringToken = true;
     },
     userAcquiredToken: (user, action) => {
-      console.log("acquiredToken", action.payload.accessToken);
       user.acquiringToken = false;
       user.accessToken = action.payload.accessToken;
       user.shouldAcquireToken = false;
@@ -75,7 +74,6 @@ const authSlice = createSlice({
 
 // Action creators
 export const signUserIn = (user) => (dispatch) => {
-  console.log(user);
   dispatch(userSignedIn(user));
   //dispatch({ type: userSignedIn.type, payload: user });
 };
@@ -91,12 +89,10 @@ export const loadCurrentUserFromApi = () => (dispatch) => {
 
 export const acquireToken = (msal) => async (dispatch) => {
   dispatch(userAcquiringToken());
-  console.log("Acquring ");
   try {
     msal.instance
       .acquireTokenSilent(msal.request)
       .then((response) => {
-        console.log("response", response);
         dispatch(
           userAcquiredToken({
             accessToken: response.accessToken,
@@ -105,7 +101,7 @@ export const acquireToken = (msal) => async (dispatch) => {
         );
       })
       .catch((err) => {
-        console.log("here", err);
+        console.log("Error acquring", err);
         if (err.name === "InteractionRequiredAuthError") {
           return msal.instance
             .acquireTokenPopup(msal.request)

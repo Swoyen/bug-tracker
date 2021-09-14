@@ -1,4 +1,3 @@
-import { useIsAuthenticated } from "@azure/msal-react";
 import React from "react";
 import { Redirect, Route } from "react-router";
 

@@ -46,7 +46,7 @@ const ProjectLineChart = () => {
     if (userId != null && projectId !== -1) {
       dispatch(loadBugReportFromProjectId(projectId, userId));
     }
-  }, [projectId, userId]);
+  }, [projectId, userId, dispatch]);
 
   return (
     <Paper style={{ padding: theme.spacing(1) }}>

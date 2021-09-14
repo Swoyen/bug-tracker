@@ -45,7 +45,7 @@ const BugDetailsCheckList = () => {
     return () => {
       dispatch(unloadCheckList());
     };
-  }, [bugCheckListId]);
+  }, [bugCheckListId, dispatch]);
 
   useEffect(() => {
     if (
@@ -58,7 +58,7 @@ const BugDetailsCheckList = () => {
       var bugWithCheckListId = { ...loadedBug, checkListId: checkListId };
       dispatch(modifyBug(loadedBug.bugId, bugWithCheckListId));
     }
-  }, [loadedBug, checkListId]);
+  }, [loadedBug, checkListId, dispatch]);
 
   const [canCreateList, setCanCreateList] = useState(false);
   const [intializeButtonVisible, setInitializeButtonVisible] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import BugUserComment from "./BugUserComment";
 import { Grid } from "@material-ui/core";
 
@@ -30,8 +30,8 @@ const BugCommentList = () => {
   const deleteVisible = useSelector(getCommentDeleteShown);
 
   useEffect(() => {
-    dispatch(loadComments(bugId));
-  }, []);
+    if (shown) dispatch(loadComments(bugId));
+  }, [dispatch, bugId, shown]);
 
   const classes = useStyles();
 

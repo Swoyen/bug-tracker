@@ -8,11 +8,10 @@ import {
   Typography,
   useTheme,
 } from "@material-ui/core";
-import { Brightness1 as Brightness1Icon } from "@material-ui/icons";
 import React from "react";
 import { useSelector } from "react-redux";
 import { BASE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
-import { getTotal, getTotalSeverity } from "../../../store/summary";
+import { getTotalSeverity } from "../../../store/summary";
 
 const SeveritySummaryListItem = ({ severity }) => {
   const theme = useTheme();
@@ -20,8 +19,7 @@ const SeveritySummaryListItem = ({ severity }) => {
   return (
     <ListItem key={severity.severityId}>
       <ListItemAvatar>
-        <IconButton size="small" aria-label="Button" size="small">
-          {/* <Brightness1Icon style={{ fontSize: "10px" }}></Brightness1Icon> */}
+        <IconButton size="small" aria-label="Avatar">
           <Avatar
             variant="circular"
             style={{ width: "15px", height: "15px" }}

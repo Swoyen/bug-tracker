@@ -60,8 +60,6 @@ const TimePaper = (props) => {
     setTimeDuration(getFormattedTimeFromSeconds(diffTime / 1000));
   }, [time.startTime, time.stopTime]);
 
-  const handleDeleteTimeTrack = (timeTrackId) => {};
-
   const handleEditTimeTrack = (timeTrackId) => {
     // setTimeTrackIdToEdit(timeTrackId);
     // setOpenTimeEdit(true);

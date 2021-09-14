@@ -1,16 +1,13 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-import { Paper, Grid, Typography, Button, Divider } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/styles";
+import { Paper, Grid, Button } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 
 import Popup from "../../../layouts/Popup";
 import { BASE_URL } from "../../../api/config";
 
-import Input from "../../../controls/Input";
 import Form from "../../../layouts/Form";
 import Dialog from "../../../layouts/Dialog";
-import ProjectAccessTag from "../ProjectCreate/ProjectAccessTag";
-import { UserContext } from "../../../context/UserContext";
 import { useDispatch, useSelector } from "react-redux";
 import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
 import CancelRoundedIcon from "@material-ui/icons/CancelRounded";
@@ -25,7 +22,6 @@ import { getAllUsers, getAssignedUsers, loadUsers } from "../../../store/users";
 import ProjectSettingsProfile from "./ProjectSettingsProfile";
 import ProjectSettingsTitle from "./ProjectSettingsTitle";
 import ProjectSettingsAccess from "./ProjectSettingsAccess";
-import { CopyrightTwoTone } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -53,7 +49,6 @@ const emptyUser = {
 const ProjectSettings = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const theme = useTheme();
 
   const projectIdToShow = useSelector(getProjectShown);
   const projectDetails = useSelector(getLoadedProject);
@@ -76,33 +71,37 @@ const ProjectSettings = () => {
   const [newProjectTitle, setNewProjectTitle] = useState("");
 
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-  const { currentUser } = useContext(UserContext);
+  //const { currentUser } = useContext(UserContext);
+
+  const userId = useSelector((state) => state.entities.auth.userId);
 
   useEffect(() => {
     if (
       openProjectSettings &&
       assignedUsers.length >= 0 &&
-      loadedUsers.length > 0
+      loadedUsers.length > 0 &&
+      userId
     ) {
       let data = [...loadedUsers];
-      let index = data.findIndex((user) => user.userId === currentUser.userId);
+      let index = data.findIndex((user) => user.userId === userId);
       if (index > -1) data.splice(index, 1);
 
       var users = [emptyUser, ...data];
       setUsers(users);
       setAddedUsers([...assignedUsers]);
     }
-  }, [loadedUsers, assignedUsers, openProjectSettings]);
+  }, [loadedUsers, assignedUsers, openProjectSettings, userId]);
+
   useEffect(() => {
     if (
       projectIdToShow !== -1 &&
       Object.keys(projectDetails).length > 0 &&
-      currentUser
+      userId
     ) {
       dispatch(loadUsers());
       setOpenProjectSettings(true);
       setNewProjectTitle(projectDetails.title);
-      setAuthorized(currentUser.userId === projectDetails.creator.userId);
+      setAuthorized(userId === projectDetails.creator.userId);
 
       let imgSrc = BASE_URL + "Image/" + projectDetails.imageName;
       setDefaultImgSrc(imgSrc);
@@ -112,7 +111,7 @@ const ProjectSettings = () => {
     return () => {
       setOpenProjectSettings(false);
     };
-  }, [projectIdToShow, projectDetails, currentUser]);
+  }, [projectIdToShow, projectDetails, userId, dispatch]);
 
   useEffect(() => {
     if (addedUsers && openProjectSettings) {
@@ -173,7 +172,7 @@ const ProjectSettings = () => {
   const compareAccessUsers = () => {
     const prevAccessUserIds = projectDetails.assignedUsers;
     const prevAccessUserIdsWithoutCurrentUser = prevAccessUserIds.filter(
-      (userId) => userId !== currentUser.userId
+      (uId) => uId !== userId
     );
 
     let currentAccessUserIds = [];

@@ -1,10 +1,6 @@
-import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
-import { removeSnackbar } from "../store/notifier";
-
-let displayed = [];
 
 const Notifier = () => {
   const dispatch = useDispatch();
@@ -12,14 +8,6 @@ const Notifier = () => {
     (state) => state.notifications.notifications || []
   );
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
-  const storeDisplayed = (id) => {
-    displayed = [...displayed, id];
-  };
-
-  const removeDisplayed = (id) => {
-    displayed = [...displayed.filter((key) => id !== key)];
-  };
 
   useEffect(() => {
     notifications.forEach(

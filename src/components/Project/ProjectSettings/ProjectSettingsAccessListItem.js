@@ -3,7 +3,6 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   IconButton,
-  ListItemAvatar,
   Avatar,
   ListItemIcon,
   Divider,

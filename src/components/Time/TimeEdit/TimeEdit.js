@@ -68,7 +68,7 @@ const TimeEdit = () => {
       setSelectedTagValues((value) => [...value, addedBugTag]);
       dispatch(emptyAddedTimeBugTag());
     }
-  }, [addedBugTag]);
+  }, [addedBugTag, dispatch]);
 
   useEffect(() => {
     if (timeTrackEditId !== -1) {
@@ -77,7 +77,7 @@ const TimeEdit = () => {
     } else {
       setOpenTimeEdit(false);
     }
-  }, [timeTrackEditId]);
+  }, [timeTrackEditId, dispatch]);
 
   useEffect(() => {
     if (timeTrackEditId !== -1 && Object.keys(timeTracker).length !== 0) {
@@ -103,7 +103,7 @@ const TimeEdit = () => {
     var newTimeTracker = {
       timeTrackId: timeTracker.timeTrackId,
       startSeconds: timeTracker.startSeconds,
-      bugId: timeTracker.bugId,
+
       userId: timeTracker.userId,
       stop: timeTracker.stop ? timeTracker.stop : true,
       description: formattedJsonDescription,

@@ -78,12 +78,26 @@ const BugDetailsLabelCreateLabel = ({ goBack }) => {
   };
 
   useEffect(() => {
+    const validateField = (field, comp, msg) => {
+      let temp = { ...errors };
+      temp[field] = values[field] !== comp ? "" : msg;
+      setErrors({ ...temp });
+    };
+
     validateField("labelName", "", "This field is required.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.labelName]);
 
   useEffect(() => {
+    const validateField = (field, comp, msg) => {
+      let temp = { ...errors };
+      temp[field] = values[field] !== comp ? "" : msg;
+      setErrors({ ...temp });
+    };
     validateField("selectedLabel", 0, "Choose an option.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.selectedLabelColorId]);
+
   const handleLabelTextChange = (e) => {
     setValues((values) => {
       return { ...values, labelName: e.target.value };
@@ -102,12 +116,6 @@ const BugDetailsLabelCreateLabel = ({ goBack }) => {
       setErrors([]);
     };
   }, []);
-
-  const validateField = (field, comp, msg) => {
-    let temp = { ...errors };
-    temp[field] = values[field] !== comp ? "" : msg;
-    setErrors({ ...temp });
-  };
 
   const validate = () => {
     let temp = {};

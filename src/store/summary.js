@@ -1,5 +1,4 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
 import { RESTRICTEDENDPOINTS } from "../api/config";
 import { apiCallBegan } from "./api";
 
@@ -198,7 +197,7 @@ export const getTotalSeverity = (severityId) =>
 
 const {
   summaryReceived,
-  summaryRequested,
+  //summaryRequested,
   summaryRequestFailed,
   moreSummaryReceived,
   moreSummaryRequested,
