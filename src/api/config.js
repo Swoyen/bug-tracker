@@ -28,11 +28,12 @@ export const RESTRICTEDENDPOINTS = {
 
 var redirectUri;
 if (process.env.NODE_ENV === "production") {
-  redirectUri = "bugissuetracker.netlify.app";
+  console.log("Production");
+  redirectUri = "http://bugissuetracker.netlify.app";
 } else if (process.env.NODE_ENV === "development") {
+  console.log("Development");
   redirectUri = "http://localhost:3000";
 }
-
 export const msalConfig = {
   auth: {
     clientId: "434b41d6-e0c7-4c89-98e0-16d1124bfe4f",
