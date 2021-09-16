@@ -29,7 +29,7 @@ export const RESTRICTEDENDPOINTS = {
 var redirectUri;
 if (process.env.NODE_ENV === "production") {
   console.log("Production");
-  redirectUri = "http://bugissuetracker.netlify.app";
+  redirectUri = "https://bugissuetracker.netlify.app";
 } else if (process.env.NODE_ENV === "development") {
   console.log("Development");
   redirectUri = "http://localhost:3000";
