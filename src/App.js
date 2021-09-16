@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Switch } from "react-router-dom";
 import React, { useEffect } from "react";
 import {
   useIsAuthenticated,
@@ -137,7 +137,7 @@ const App = () => {
         >
           <UserProvider>
             <NavProvider>
-              <BrowserRouter>
+              <HashRouter>
                 <RedirectHandler />
                 <Notifier />
                 {isAuthenticated ? <Nav></Nav> : ""}
@@ -174,7 +174,7 @@ const App = () => {
                   </Switch>
                 </main>
                 <ProjectCreate></ProjectCreate>
-              </BrowserRouter>
+              </HashRouter>
             </NavProvider>
           </UserProvider>
         </SnackbarProvider>
