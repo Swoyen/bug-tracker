@@ -26,13 +26,20 @@ export const RESTRICTEDENDPOINTS = {
   GENERATEDATA: "User/Current/GenerateData",
 };
 
+var redirectUri;
+if (process.env.NODE_ENV === "production") {
+  redirectUri = "bugissuetracker.netlify.app";
+} else if (process.env.NODE_ENV === "development") {
+  redirectUri = "http://localhost:3000";
+}
+
 export const msalConfig = {
   auth: {
     clientId: "434b41d6-e0c7-4c89-98e0-16d1124bfe4f",
     authority: "https://login.microsoftonline.com/common",
     // authority:
     //   "https://login.microsoftonline.com/481625b8-feaf-4f2f-83c6-e1cc36399516",
-    redirectUri: "http://localhost:3000",
+    redirectUri,
   },
   cache: {
     cacheLocation: "sessionStorage", // This configures where your cache will be stored

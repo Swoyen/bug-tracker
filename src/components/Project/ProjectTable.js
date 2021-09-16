@@ -60,9 +60,9 @@ const ProjectTable = () => {
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
-          {projects &&
-            projects.map((project) => (
+        {projects && projects.length > 0 ? (
+          <TableBody>
+            {projects.map((project) => (
               <TableRow key={project.projectId}>
                 <TableCell component="th" scope="row">
                   {project.projectId}
@@ -106,7 +106,13 @@ const ProjectTable = () => {
                 </TableCell>
               </TableRow>
             ))}
-        </TableBody>
+          </TableBody>
+        ) : (
+          <caption>
+            There are no projects created. Create a project by going to
+            <b> Project -{">"} Create Project</b>
+          </caption>
+        )}
       </Table>
     </TableContainer>
   );
