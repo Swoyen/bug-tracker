@@ -1,4 +1,6 @@
-export const BASE_URL = "https://localhost:5001/api/";
+export const BASE_URL = "https://bugtrackerapiapi.azure-api.net/api/";
+
+export const SUBSCRIPTION_KEY = "e8c7362cd47b4332a37b874bb9448c95";
 
 export const RESTRICTEDENDPOINTS = {
   PROJECT: "Project",
