@@ -4,7 +4,7 @@ import { Paper, Grid, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
 import Popup from "../../../layouts/Popup";
-import { BASE_URL } from "../../../api/config";
+import { BASE_URL, IMAGE_URL } from "../../../api/config";
 
 import Form from "../../../layouts/Form";
 import Dialog from "../../../layouts/Dialog";
@@ -103,7 +103,7 @@ const ProjectSettings = () => {
       setNewProjectTitle(projectDetails.title);
       setAuthorized(userId === projectDetails.creator.userId);
 
-      let imgSrc = BASE_URL + "Image/" + projectDetails.imageName;
+      let imgSrc = IMAGE_URL + projectDetails.imageName;
       setDefaultImgSrc(imgSrc);
       setNewSelectedImgSrc(imgSrc);
     } else setOpenProjectSettings(false);

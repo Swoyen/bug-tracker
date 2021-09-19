@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BASE_URL, SUBSCRIPTION_KEY } from "../../api/config";
+import { BASE_URL } from "../../api/config";
 import * as actions from "../api";
 import { waitUntil, TimeoutError } from "async-wait-until";
 import {
@@ -48,7 +48,7 @@ const api =
               Authorization: "Bearer " + accessToken,
               withCredential: true,
               "Content-type": "application/json",
-              "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+              //"Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
             };
           }
           //axios.defaults.headers.patch["Content-type"] = "application/json";

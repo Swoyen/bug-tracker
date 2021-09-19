@@ -14,7 +14,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { getFilteredBugs } from "../../store/bugs";
 import { showBug } from "../../store/bug";
-import { BASE_URL, RESTRICTEDENDPOINTS } from "../../api/config";
+import { IMAGE_URL } from "../../api/config";
 import BugTableLoading from "./BugTableLoading";
 import {
   getFormattedDateFromIsoString,
@@ -114,7 +114,7 @@ const BugList = ({ resolved = false }) => {
                           <Grid item>
                             <Avatar
                               style={{ height: "15px", width: "15px" }}
-                              src={`${BASE_URL}${RESTRICTEDENDPOINTS.IMAGE}/${bug.severity.iconName}`}
+                              src={`${IMAGE_URL}${bug.severity.iconName}`}
                             ></Avatar>
                           </Grid>
                           <Grid item>{bug.severity.severityName}</Grid>

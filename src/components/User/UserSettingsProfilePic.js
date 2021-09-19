@@ -1,7 +1,7 @@
 import { Avatar, Button, Grid } from "@material-ui/core";
 import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BASE_URL, RESTRICTEDENDPOINTS } from "../../api/config";
+import { BASE_URL, IMAGE_URL, RESTRICTEDENDPOINTS } from "../../api/config";
 import { modifyCurrentUser } from "../../store/auth";
 import { enqueueErrorSnackbar } from "../../store/notifier";
 
@@ -57,7 +57,7 @@ const UserSettingsProfilePic = () => {
       <Grid item>
         {currentUser.profileImageName ? (
           <Avatar
-            src={`${BASE_URL}${RESTRICTEDENDPOINTS.IMAGE}/${currentUser.profileImageName}`}
+            src={`${IMAGE_URL}${currentUser.profileImageName}`}
             style={{ width: "250px", height: "250px" }}
           ></Avatar>
         ) : (

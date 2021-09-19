@@ -24,7 +24,7 @@ import {
 import { modifyBug, showBug } from "../../../store/bug";
 import ProjectBoardCardTags from "./ProjectBoardCardTags";
 import { getBugById } from "../../../store/bugs";
-import { BASE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
+import { BASE_URL, IMAGE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
 import { Edit as EditIcon } from "@material-ui/icons";
 import { useTheme } from "@material-ui/core";
 import CheckCircleRoundedIcon from "@material-ui/icons/CheckCircleRounded";
@@ -410,7 +410,7 @@ const ProjectBoardCard = (props) => {
             {bug.headerBackgroundSet ? (
               <CardMedia
                 className={classes.media}
-                image={`${BASE_URL}${RESTRICTEDENDPOINTS.IMAGE}/${bug.headerBackgroundImgSrc}`}
+                image={`${IMAGE_URL}${bug.headerBackgroundImgSrc}`}
                 title="Background"
               />
             ) : (

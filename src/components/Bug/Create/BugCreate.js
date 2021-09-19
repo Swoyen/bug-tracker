@@ -98,7 +98,7 @@ const BugCreate = () => {
     newBug.statusId = statusId;
     newBug.severityId = severityId;
     newBug.projectId = projectId;
-
+    console.log("projectid", projectId, typeof projectId);
     dispatch(addBug(newBug));
   };
 

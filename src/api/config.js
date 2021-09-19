@@ -1,6 +1,13 @@
-export const BASE_URL = "https://bugtrackerapiapi.azure-api.net/api/";
+//export const BASE_URL = "https://bugtrackerapiapi.azure-api.net/api/";
 
-export const SUBSCRIPTION_KEY = "e8c7362cd47b4332a37b874bb9448c95";
+// export const BASE_URL = "https://localhost:5001/api/";
+// export const BASE_URL = "http://localhost:8080/api/";
+
+export const BASE_URL =
+  "http://bugtrackerapicontainer.australiaeast.azurecontainer.io/api/";
+export const IMAGE_URL =
+  "https://bugtrackerapi-bucket.s3.ap-southeast-2.amazonaws.com/attachments/";
+//export const SUBSCRIPTION_KEY = "e8c7362cd47b4332a37b874bb9448c95";
 
 export const RESTRICTEDENDPOINTS = {
   PROJECT: "Project",

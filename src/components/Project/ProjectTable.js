@@ -13,7 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import { Avatar, Typography } from "@material-ui/core";
 
-import { BASE_URL } from "../../api/config";
+import { BASE_URL, IMAGE_URL } from "../../api/config";
 import Grid from "@material-ui/core/Grid";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProjects, setProjectSettingsShown } from "../../store/projects";
@@ -73,7 +73,7 @@ const ProjectTable = () => {
                     to={`/projects/${project.projectId}/summary`}
                   >
                     <Grid alignItems="center" container spacing={3}>
-                      <Avatar src={`${BASE_URL}Image/${project.imageName}`} />
+                      <Avatar src={`${IMAGE_URL}${project.imageName}`} />
 
                       <Grid item>
                         <Typography display="inline" variant="subtitle2">

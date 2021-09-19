@@ -48,8 +48,9 @@ const Project = () => {
 
   useEffect(() => {
     if (Object.keys(loadedProject).length > 0 && userId) {
-      dispatch(addRecentProjects(id, userId));
-      dispatch(setCurrentProject(id));
+      let projectId = parseInt(id);
+      dispatch(addRecentProjects(projectId, userId));
+      dispatch(setCurrentProject(projectId));
     }
   }, [loadedProject, id, userId, dispatch]);
 

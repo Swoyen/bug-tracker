@@ -22,7 +22,11 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { downloadFile } from "../../../../api";
-import { BASE_URL, RESTRICTEDENDPOINTS } from "../../../../api/config";
+import {
+  BASE_URL,
+  IMAGE_URL,
+  RESTRICTEDENDPOINTS,
+} from "../../../../api/config";
 import { modifyBug, setBugAttachmentDeleteShown } from "../../../../store/bug";
 import WallpaperRoundedIcon from "@material-ui/icons/WallpaperRounded";
 
@@ -51,9 +55,7 @@ const BugAttachFileListItem = ({ attachment, index, totalLength }) => {
         extension === "png";
 
       if (isPicture) {
-        setImgSrc(
-          `${BASE_URL}${RESTRICTEDENDPOINTS.IMAGE}/${attachment.fileName}`
-        );
+        setImgSrc(`${IMAGE_URL}${attachment.fileName}`);
       }
 
       setIsPictureExtension(isPicture);

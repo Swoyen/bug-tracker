@@ -8,11 +8,11 @@ import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
-import { Divider } from "@material-ui/core";
+import { Avatar, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 
-import { BASE_URL } from "../../api/config";
+import { BASE_URL, IMAGE_URL } from "../../api/config";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getRecentProjects,
@@ -131,8 +131,8 @@ const ProjectListComposition = () => {
                         key={menuItem.openedProjectId}
                       >
                         <MenuItem onClick={handleClose}>
-                          <img
-                            src={`${BASE_URL}Image/${menuItem.openedProject.imageName}`}
+                          <Avatar
+                            src={`${IMAGE_URL}${menuItem.openedProject.imageName}`}
                             alt=""
                             style={{
                               width: "2em",

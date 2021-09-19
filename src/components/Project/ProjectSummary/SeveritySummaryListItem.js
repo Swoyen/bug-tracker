@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { useSelector } from "react-redux";
-import { BASE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
+import { BASE_URL, IMAGE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
 import { getTotalSeverity } from "../../../store/summary";
 
 const SeveritySummaryListItem = ({ severity }) => {
@@ -23,7 +23,7 @@ const SeveritySummaryListItem = ({ severity }) => {
           <Avatar
             variant="circular"
             style={{ width: "15px", height: "15px" }}
-            src={`${BASE_URL}${RESTRICTEDENDPOINTS.IMAGE}/${severity.iconName}`}
+            src={`${IMAGE_URL}${severity.iconName}`}
           ></Avatar>
         </IconButton>
       </ListItemAvatar>

@@ -16,7 +16,7 @@ import {
 import { useState, useEffect } from "react";
 import { resolveBug, unResolveBug } from "../../../store/bugs";
 import { removeFromBugStatusList } from "../../../store/board";
-import { BASE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
+import { BASE_URL, IMAGE_URL, RESTRICTEDENDPOINTS } from "../../../api/config";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -83,7 +83,7 @@ const BugDetailsPopup = (props) => {
     <Popup
       headerImgSrc={
         loadedBug.headerBackgroundSet &&
-        `${BASE_URL}${RESTRICTEDENDPOINTS.IMAGE}/${loadedBug.headerBackgroundImgSrc}`
+        `${IMAGE_URL}${loadedBug.headerBackgroundImgSrc}`
       }
       handleUnsetImg={handleUnsetImg}
       minWidth="800px"

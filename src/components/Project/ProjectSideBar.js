@@ -19,7 +19,7 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 import AssignmentRoundedIcon from "@material-ui/icons/AssignmentRounded";
 import { NavContext } from "../../context/NavContext";
 import { useSelector } from "react-redux";
-import { BASE_URL, RESTRICTEDENDPOINTS } from "../../api/config";
+import { BASE_URL, IMAGE_URL, RESTRICTEDENDPOINTS } from "../../api/config";
 
 const drawerWidth = 250;
 
@@ -169,7 +169,7 @@ const ProjectSideBar = (props) => {
     if (Object.keys(project).length > 0) {
       setValues({
         projectName: project.title,
-        projectImgSrc: `${BASE_URL}${RESTRICTEDENDPOINTS.IMAGE}/${project.imageName}`,
+        projectImgSrc: `${IMAGE_URL}${project.imageName}`,
         creatorName: project.creator.userName,
       });
     }
