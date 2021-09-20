@@ -1,6 +1,14 @@
 //export const BASE_URL = "https://bugtrackerapiapi.azure-api.net/api/";
 
-export const BASE_URL = "https://localhost:5001/api/";
+var baseUrl;
+if (process.env.NODE_ENV === "production") {
+  baseUrl = "https://buhtrackerapi.azurewebsites.net/api/";
+} else if (process.env.NODE_ENV === "development") {
+  baseUrl = "https://localhost:5001/api/";
+}
+
+export const BASE_URL = baseUrl;
+// export const BASE_URL = "https://localhost:5001/api/";
 // export const BASE_URL = "http://localhost:8080/api/";
 
 // export const BASE_URL =
