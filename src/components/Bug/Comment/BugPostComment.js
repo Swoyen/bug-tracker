@@ -127,7 +127,7 @@ const BugPostComment = () => {
       } else {
         //Non edited comment
         comment = {
-          commentId: "0",
+          commentId: 0,
           content: commentBody,
           commentedByUserId: userDetails.idTokenClaims.oid,
           commentedOnBugId: bugId,

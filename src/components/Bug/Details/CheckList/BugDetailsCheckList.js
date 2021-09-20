@@ -66,7 +66,7 @@ const BugDetailsCheckList = () => {
   const theme = useTheme();
 
   const handleCreateList = () => {
-    var data = { checkListId: "0" };
+    var data = { checkListId: 0 };
     dispatch(createCheckList(data)).then((res) => handleToggleInputVisible());
   };
 

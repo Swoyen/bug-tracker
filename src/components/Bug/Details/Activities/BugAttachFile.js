@@ -1,4 +1,4 @@
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid, Tooltip } from "@material-ui/core";
 import React from "react";
 import AttachFileRoundedIcon from "@material-ui/icons/AttachFileRounded";
 import { useRef } from "react";
@@ -83,16 +83,23 @@ const BugAttachFile = () => {
 
       <Grid container spacing={1}>
         {!resolved ? (
-          <Grid item xs={12}>
-            <Button
-              startIcon={<AttachFileRoundedIcon />}
-              variant="outlined"
-              color="primary"
-              onClick={() => fileInput.current.click()}
-            >
-              Attach File
-            </Button>
-          </Grid>
+          <Tooltip
+            title={
+              process.env.NODE_ENV === "production" ? "under construction" : ""
+            }
+          >
+            <Grid item xs={12}>
+              <Button
+                startIcon={<AttachFileRoundedIcon />}
+                variant="outlined"
+                color="primary"
+                disabled={process.env.NODE_ENV === "production"}
+                onClick={() => fileInput.current.click()}
+              >
+                Attach File
+              </Button>
+            </Grid>
+          </Tooltip>
         ) : (
           ""
         )}

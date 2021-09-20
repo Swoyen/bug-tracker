@@ -17,6 +17,7 @@ export const BASE_URL = baseUrl;
 // export const BASE_URL = "https://buhtrackerapi.azurewebsites.net/api/";
 export const IMAGE_URL =
   "https://bugtrackerapi-bucket.s3.ap-southeast-2.amazonaws.com/attachments/";
+
 //export const SUBSCRIPTION_KEY = "e8c7362cd47b4332a37b874bb9448c95";
 
 export const RESTRICTEDENDPOINTS = {

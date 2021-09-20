@@ -1,12 +1,13 @@
 import React, { useState, useRef } from "react";
 
 import { makeStyles } from "@material-ui/styles";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Tooltip, Typography } from "@material-ui/core";
 
 import Input from "../../../controls/Input";
 import Form from "../../../layouts/Form";
 import Button from "../../../controls/Button";
-
+import NavigateNextRoundedIcon from "@material-ui/icons/NavigateNextRounded";
+import PhotoCameraRoundedIcon from "@material-ui/icons/PhotoCameraRounded";
 const useStyles = makeStyles((theme) => ({
   createForm: {
     position: "absolute",
@@ -122,25 +123,34 @@ const ProjectCreateDetails = (props) => {
               />
             </div>
           </Grid>
-          <Grid item xs={10}>
-            <input
-              type="file"
-              style={{ display: "none" }}
-              ref={fileInput}
-              onChange={previewImg}
-              accept=".jpg, .png"
-            ></input>
-            <Button
-              onClick={() => fileInput.current.click()}
-              className={classes.uploadButton}
-            >
-              Upload
-            </Button>
-          </Grid>
+          <Tooltip title="Under construction">
+            <Grid item xs={10}>
+              <input
+                type="file"
+                style={{ display: "none" }}
+                ref={fileInput}
+                onChange={previewImg}
+                accept=".jpg, .png"
+              ></input>
+
+              <Button
+                onClick={() => fileInput.current.click()}
+                startIcon={<PhotoCameraRoundedIcon />}
+                className={classes.uploadButton}
+                disabled
+              >
+                Upload
+              </Button>
+            </Grid>
+          </Tooltip>
         </Grid>
         <Grid item xs={12}>
           {/* <Button onClick={() => uploadImg()}>Upload img</Button> */}
-          <Button className={classes.submitButton} type="submit">
+          <Button
+            startIcon={<NavigateNextRoundedIcon />}
+            className={classes.submitButton}
+            type="submit"
+          >
             Next
           </Button>
         </Grid>
