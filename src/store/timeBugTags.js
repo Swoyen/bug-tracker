@@ -61,7 +61,7 @@ export const loadTimeBugTags = () => (dispatch) => {
 };
 
 export const addTimeTag = (tagName) => (dispatch) => {
-  const newTag = { bugTagId: "0", bugTagName: tagName };
+  const newTag = { bugTagId: 0, bugTagName: tagName };
   return dispatch(
     apiCallBegan({
       url: RESTRICTEDENDPOINTS.TAGS,

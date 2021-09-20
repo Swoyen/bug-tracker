@@ -177,9 +177,9 @@ const TimeTracker = () => {
     setStartTimeinSeconds(currentTimeinSeconds);
     var tags = [];
     selectedTagValues.forEach((tag) => tags.push({ bugTagId: tag.bugTagId }));
-
+    console.log("ProjectId", projectId);
     let timeTrack = {
-      timeTrackId: "0",
+      timeTrackId: 0,
       startTime: currentTimeIso,
       projectId: projectId,
       // stopTime: currentTimeIso

@@ -45,6 +45,7 @@ const ProjectLineChart = () => {
   useEffect(() => {
     if (userId != null && projectId !== -1) {
       dispatch(loadBugReportFromProjectId(projectId, userId));
+      console.log("loading line");
     }
   }, [projectId, userId, dispatch]);
 

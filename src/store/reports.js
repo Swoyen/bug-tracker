@@ -127,6 +127,7 @@ const reportSlice = createSlice({
     },
 
     bugRequestReceived: (reports, action) => {
+      console.log("received");
       let bugs = action.payload;
       let labels = [
         "Monday",
@@ -248,6 +249,7 @@ export const loadTimeTrackReportNextWeek =
   };
 
 export const loadBugReportFromProjectId = (projectId) => (dispatch) => {
+  console.log("loading bugs");
   var week = DateTime.now().weekNumber;
   dispatch(bugReportWeekSet(week));
   return dispatch(
@@ -260,8 +262,8 @@ export const loadBugReportFromProjectId = (projectId) => (dispatch) => {
 };
 
 export const loadBugReportFromUserId = (userId) => (dispatch) => {
-  //var week = DateTime.now().weekNumber;
-  //dispatch(bugReportWeekSet(week));
+  var week = DateTime.now().weekNumber;
+  dispatch(bugReportWeekSet(week));
   return dispatch(
     apiCallBegan({
       url: RESTRICTEDENDPOINTS.TIMETRACK,
