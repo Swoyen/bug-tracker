@@ -1,61 +1,29 @@
-# Bug Tracker
+## Project Name & Pitch
 
-## Ideas
+IssueTracker - FrontEnd
 
-## Things to include
+An application used to track project issues to organize and plan preference, built with React, Redux, JavaScript, and CSS.
 
-### Bugs
+## Project Status
 
-##### Sections:
+This project is currently in development. Users can create issues and filter them. They can also get a report of the issues they worked on. Functionality to generate fake data and upload files is in progress.
 
-###### Detail:
+## Project Screen Shot(s)
 
-- Bug Name
-- Bug Description
+[ PRETEND SCREEN SHOT IS HERE ]
 
-###### Action:
+[ PRETEND OTHER SCREEN SHOT IS HERE ]
 
-- Comment
+## Installation and Setup Instructions
 
-###### Interdependent Properties
+Go to https://bugissuetracker.netlify.app/#/
 
-- Assignor
-- Assignee
+## Reflection
 
-###### General Properties
+This was a 3 month long project built after my graduation. Project goals included using and technologies like React, Redux familiarizing myself with documentation for new features.
 
-- Time Created
-- Last Updated
+Originally I wanted to build an application that allowed users to somehow plan their work and share it with other people. I got some ideas from jira. I started this process by using the `create-react-app` boilerplate, then adding `react-router` and `redux`.
 
-##### Features:
+One of the main challenges I ran into was Authentication. This lead me to spend a few days on a research spike into OAuth, Auth0, and two-factor authentication using Firebase or other third parties. I ended up using Microsoft Authentication Library(MSAL) as I was able to integrate MSAL into the backend and implement server side authentication and authorization as well.
 
-1. CRUD Operation
-2.
-
-##### Properties:
-
-### Users
-
-##### Features:
-
-- Create bugs
-- Assign bugs
-
-### Bug Status
-
-##### Types:
-
-- Open
-- To-do
-- In Progress
-- Testing
-- Closed
-
-### Bug Severity
-
-##### Types:
-
-- Low
-- High
-- Medium
-- Severe
+At the end of the day, the technologies implemented in this project are React, React-Router, Redux, ChartJS, React Hooks, and a significant amount of VanillaJS, JSX, and CSS. I chose to use the `create-react-app` boilerplate to minimize initial setup and invest more time in diving into weird technological rabbit holes.
