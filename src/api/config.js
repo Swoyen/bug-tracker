@@ -4,7 +4,9 @@ var baseUrl;
 if (process.env.NODE_ENV === "production") {
   baseUrl = "https://buhtrackerapi.azurewebsites.net/api/";
 } else if (process.env.NODE_ENV === "development") {
-  baseUrl = "https://localhost:5001/api/";
+  // baseUrl = "https://localhost:5001/api/";
+
+  baseUrl = "https://buhtrackerapi.azurewebsites.net/api/";
 }
 
 export const BASE_URL = baseUrl;
