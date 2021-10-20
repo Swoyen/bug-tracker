@@ -10,9 +10,11 @@ This project is currently in development. Users can create issues and filter the
 
 ## Project Screen Shot(s)
 
-![alt text](https://github.com/Swoyen/bug-tracker/blob/main/public/img/create-project-screenshot.png)
+![create project](https://github.com/Swoyen/bug-tracker/blob/main/public/img/create-project-screenshot.png)
 
-[ PRETEND OTHER SCREEN SHOT IS HERE ]
+![project board](https://github.com/Swoyen/bug-tracker/blob/main/public/img/project-board-screenshot.png)
+
+![project summary](https://github.com/Swoyen/bug-tracker/blob/main/public/img/project-summary-screenshot.png)
 
 ## Installation and Setup Instructions
 
