@@ -1,5 +1,3 @@
-//export const BASE_URL = "https://bugtrackerapiapi.azure-api.net/api/";
-
 var baseUrl;
 if (process.env.NODE_ENV === "production") {
   baseUrl = "https://buhtrackerapi.azurewebsites.net/api/";
@@ -10,13 +8,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export const BASE_URL = baseUrl;
-// export const BASE_URL = "https://localhost:5001/api/";
-// export const BASE_URL = "http://localhost:8080/api/";
-
-// export const BASE_URL =
-//   "http://bugtrackerapicontainer.australiaeast.azurecontainer.io/api/";
-
-// export const BASE_URL = "https://buhtrackerapi.azurewebsites.net/api/";
 export const IMAGE_URL =
   "https://bugtrackerapi-bucket.s3.ap-southeast-2.amazonaws.com/attachments/";
 
