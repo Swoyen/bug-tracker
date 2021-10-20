@@ -2,7 +2,7 @@
 
 IssueTracker - FrontEnd
 
-An application used to track project issues to organize and plan preference, built with React, Redux, JavaScript, and CSS.
+An application used to track project issues to organize and plan preference, built with React, Redux, JavaScript, Material UI and CSS.
 
 ## Project Status
 
@@ -10,7 +10,7 @@ This project is currently in development. Users can create issues and filter the
 
 ## Project Screen Shot(s)
 
-[ PRETEND SCREEN SHOT IS HERE ]
+![alt text](https://github.com/Swoyen/bug-tracker/tree/main/public/img/create-project-screenshot.png?raw=true)
 
 [ PRETEND OTHER SCREEN SHOT IS HERE ]
 
