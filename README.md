@@ -10,7 +10,7 @@ This project is currently in development. Users can create issues and filter the
 
 ## Project Screen Shot(s)
 
-![alt text](https://github.com/Swoyen/bug-tracker/tree/main/public/img/create-project-screenshot.png?raw=true)
+![alt text](https://github.com/Swoyen/bug-tracker/blob/main/public/img/create-project-screenshot.png)
 
 [ PRETEND OTHER SCREEN SHOT IS HERE ]
 
